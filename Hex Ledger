@@ -1,1 +1,1424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scalable Temporal Blockchain Ledger</title>
+  <style>
+    :root {
+        --source-color: #3498db;
+        --dest-color: #2ecc71;
+        --rung-color: #e74c3c;
+        --highlight-color: #f1c40f;
+        --bg-color-1: #0a0a0f;
+        --bg-color-2: #1a1a2e;
+        --pixel-glow: #ffffff;
+        --fork-color: #9b59b6;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      overflow: hidden;
+      background: radial-gradient(ellipse at center, var(--bg-color-2) 0%, var(--bg-color-1) 100%);
+      color: #ecf0f1;
+    }
+    
+    /* PIN Modal Styles */
+    .pin-modal {
+      display: flex;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+    }
+    .pin-content {
+      background-color: var(--bg-color-2);
+      padding: 2rem;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+    .pin-input {
+      width: 100%;
+      padding: 12px;
+      margin: 15px 0;
+      border-radius: 8px;
+      border: 2px solid var(--highlight-color);
+      background: rgba(52, 73, 94, 0.8);
+      color: white;
+      font-size: 1.2rem;
+      text-align: center;
+      letter-spacing: 5px;
+    }
+    .pin-message {
+      margin-top: 1rem;
+      color: var(--highlight-color);
+    }
+    
+    /* Transaction Modal Styles */
+    .tx-modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+    }
+    .tx-content {
+      background-color: var(--bg-color-2);
+      padding: 2rem;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    }
+    .tx-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .tx-form input, .tx-form select {
+      padding: 10px;
+      border-radius: 8px;
+      border: 2px solid var(--highlight-color);
+      background: rgba(52, 73, 94, 0.8);
+      color: white;
+    }
+    .tx-form label {
+      font-weight: 600;
+      color: var(--highlight-color);
+    }
+    .close-btn {
+      align-self: flex-end;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    
+    #controls {
+      padding: 1rem;
+      background: rgba(10, 10, 15, 0.95);
+      backdrop-filter: blur(15px);
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    button {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+    }
+    button:hover { 
+        transform: translateY(-2px); 
+        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.5);
+    }
+    
+    .mode-button.active {
+        background: linear-gradient(135deg, var(--highlight-color), #f39c12);
+        box-shadow: 0 0 20px rgba(241, 196, 64, 0.6);
+    }
+    
+    #searchBox {
+        padding: 0.5rem;
+        border-radius: 8px;
+        border: 2px solid var(--highlight-color);
+        background: rgba(52, 73, 94, 0.8);
+        color: white;
+        width: 250px;
+        backdrop-filter: blur(10px);
+    }
+    #filterSelect {
+        padding: 0.5rem;
+        border-radius: 8px;
+        border: 2px solid var(--highlight-color);
+        background: rgba(52, 73, 94, 0.8);
+        color: white;
+    }
+    #zoomDisplay, #countDisplay {
+      font-weight: 600;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    canvas { 
+        display: block; 
+        cursor: grab; 
+        image-rendering: crisp-edges;
+    }
+    canvas:active { cursor: grabbing; }
+    
+    .details-panel {
+      position: fixed;
+      left: 10px;
+      bottom: 10px;
+      width: 320px;
+      background: rgba(10, 10, 15, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 15px;
+      padding: 1.5rem;
+      z-index: 150;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.1);
+      display: none;
+      animation: slideIn 0.4s ease;
+    }
+    .details-panel h3 { 
+        margin-top: 0; 
+        border-bottom: 2px solid var(--highlight-color); 
+        padding-bottom: 0.5rem;
+        color: var(--highlight-color);
+    }
+    .details-panel p { margin: 0.5rem 0; line-height: 1.5; }
+    .detail-source { color: var(--source-color); }
+    .detail-dest { color: var(--dest-color); }
+    .detail-amount { color: var(--rung-color); }
+    
+    .history-mode {
+        background: linear-gradient(135deg, var(--fork-color), #8e44ad) !important;
+    }
+    
+    .zoom-info {
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 1rem;
+        border-radius: 10px;
+        border-left: 4px solid var(--highlight-color);
+        font-size: 0.9em;
+        max-width: 200px;
+    }
+    
+    .notification {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(46, 204, 113, 0.9);
+        color: white;
+        padding: 1rem;
+        border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 200;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    
+    .notification.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(-20px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    
+    @keyframes pixelPulse {
+        0%, 100% { opacity: 0.8; }
+        50% { opacity: 1; }
+    }
+    
+    @media (max-width: 768px) {
+        #controls {
+            padding: 0.5rem;
+            gap: 0.3rem;
+        }
+        
+        .control-group {
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+        
+        button {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+        
+        #searchBox {
+            width: 150px;
+        }
+        
+        .details-panel {
+            width: 280px;
+            padding: 1rem;
+        }
+    }
+  </style>
+</head>
+<body>
+  <!-- PIN Modal -->
+  <div id="pinModal" class="pin-modal">
+    <div class="pin-content">
+      <h2>Enter PIN</h2>
+      <input type="password" id="pinInput" class="pin-input" maxlength="4" placeholder="••••">
+      <div id="pinMessage" class="pin-message"></div>
+      <button id="pinSubmit">Access Ledger</button>
+    </div>
+  </div>
 
+  <!-- Transaction Modal -->
+  <div id="txModal" class="tx-modal">
+    <div class="tx-content">
+      <button id="closeTxModal" class="close-btn">&times;</button>
+      <h2>Add Transaction</h2>
+      <form id="txForm" class="tx-form">
+        <div>
+          <label for="txFrom">From:</label>
+          <input type="text" id="txFrom" required>
+        </div>
+        <div>
+          <label for="txTo">To:</label>
+          <input type="text" id="txTo" required>
+        </div>
+        <div>
+          <label for="txAmount">Amount:</label>
+          <input type="number" id="txAmount" step="0.01" min="0.01" required>
+        </div>
+        <div>
+          <label for="txDesc">Description:</label>
+          <input type="text" id="txDesc">
+        </div>
+        <button type="submit">Add Transaction</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="controls">
+    <div class="control-group">
+      <button id="addTxButton">✨ Add Transaction</button>
+      <button id="generateButton">🌌 Generate Galaxy</button>
+      <button id="clearButton">🗑️ Clear Ledger</button>
+    </div>
+    
+    <div class="control-group">
+      <button id="historyModeButton" class="mode-button">⏳ History Mode</button>
+      <button id="forkButton">🔀 Fork Timeline</button>
+    </div>
+    
+    <div class="control-group">
+      <input type="search" id="searchBox" placeholder="Search From, To, ID...">
+      <select id="filterSelect">
+        <option value="all">All Transactions</option>
+        <option value="source">Source Only</option>
+        <option value="destination">Destination Only</option>
+      </select>
+    </div>
+    
+    <div class="control-group">
+      <button id="saveButton">💾 Save Ledger</button>
+      <button id="loadButton">📂 Load Ledger</button>
+    </div>
+    
+    <div class="control-group">
+      <label>Zoom:</label>
+      <input type="range" id="zoomSlider" min="0.1" max="5" value="1" step="0.1" />
+      <span id="zoomDisplay">1.0x</span>
+    </div>
+    
+    <div class="control-group">
+      <span id="countDisplay">Transactions: 0</span>
+    </div>
+  </div>
+  
+  <div class="zoom-info" id="zoomInfo">
+    <strong>Galaxy View</strong><br>
+    Each pixel represents a transaction. Blue = source, Green = destination.
+  </div>
+  
+  <canvas id="canvas"></canvas>
+  
+  <div id="detailsPanel" class="details-panel">
+    <h3>Transaction Details</h3>
+    <p><strong>ID:</strong> <span id="detailId"></span></p>
+    <p><strong>From:</strong> <span id="detailFrom" class="detail-source"></span></p>
+    <p><strong>To:</strong> <span id="detailTo" class="detail-dest"></span></p>
+    <p><strong>Amount:</strong> <span id="detailAmount" class="detail-amount"></span></p>
+    <p><strong>Description:</strong> <span id="detailDesc"></span></p>
+    <p><strong>Timestamp:</strong> <span id="detailTs"></span></p>
+    <div id="historyActions" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #444;">
+      <button onclick="moveTransaction()" style="margin-right: 0.5rem;">📋 Move</button>
+      <button onclick="deleteTransaction()" style="margin-right: 0.5rem;">❌ Delete</button>
+      <button onclick="forkFromHere()">🔀 Fork Here</button>
+    </div>
+  </div>
+  
+  <div id="notification" class="notification"></div>
+  
+  <script>
+    /**
+     * Scalable Temporal Blockchain Ledger
+     * A high-performance visualization tool for blockchain transactions
+     * 
+     * @version 1.0.0
+     * @author Your Name
+     * @license MIT
+     */
+
+    'use strict';
+
+    // ======================
+    // DOM Element References
+    // ======================
+    
+    // Authentication elements
+    const pinModal = document.getElementById('pinModal');
+    const pinInput = document.getElementById('pinInput');
+    const pinSubmit = document.getElementById('pinSubmit');
+    const pinMessage = document.getElementById('pinMessage');
+    
+    // Transaction modal elements
+    const txModal = document.getElementById('txModal');
+    const txForm = document.getElementById('txForm');
+    const closeTxModal = document.getElementById('closeTxModal');
+    
+    // Canvas and UI elements
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Control elements
+    const addTxButton = document.getElementById('addTxButton');
+    const generateButton = document.getElementById('generateButton');
+    const clearButton = document.getElementById('clearButton');
+    const saveButton = document.getElementById('saveButton');
+    const loadButton = document.getElementById('loadButton');
+    const historyModeButton = document.getElementById('historyModeButton');
+    const forkButton = document.getElementById('forkButton');
+    const countDisplay = document.getElementById('countDisplay');
+    const detailsPanel = document.getElementById('detailsPanel');
+    const searchBox = document.getElementById('searchBox');
+    const filterSelect = document.getElementById('filterSelect');
+    const zoomSlider = document.getElementById('zoomSlider');
+    const zoomDisplay = document.getElementById('zoomDisplay');
+    const zoomInfo = document.getElementById('zoomInfo');
+    
+    // ======================
+    // Application State
+    // ======================
+    
+    /**
+     * Core data structures
+     * transactions: Array of transaction objects
+     * blocks: Array of visual block objects (source/destination pairs)
+     */
+    let transactions = [];
+    let blocks = [];
+    
+    /**
+     * UI state variables
+     */
+    let zoom = 1.0;                          // Current zoom level
+    let dragOffset = { x: 0, y: 0 };         // Pan offset
+    let dragging = false;                     // Is user dragging?
+    let lastMousePos = { x: 0, y: 0 };       // Last mouse position for drag calculation
+    let hoveredBlockIndex = -1;              // Currently hovered block index
+    let selectedTxId = null;                  // Selected transaction ID
+    let searchQuery = '';                     // Current search query
+    let filterType = 'all';                  // Current filter type
+    let historyMode = false;                  // History mode toggle
+    let needsRedraw = true;                   // Flag to trigger redraw
+    let animationFrameId = null;              // RequestAnimationFrame ID
+    let isAuthenticated = false;              // Authentication status
+    
+    /**
+     * Performance optimization: Object pool for blocks
+     * Reduces garbage collection by reusing objects
+     */
+    const blockPool = [];
+    
+    /**
+     * Get a block from the pool or create a new one
+     * @returns {Object} A block object
+     */
+    function getBlockFromPool() {
+        return blockPool.length ? blockPool.pop() : {};
+    }
+    
+    /**
+     * Release a block back to the pool
+     * @param {Object} block - The block to release
+     */
+    function releaseBlockToPool(block) {
+        blockPool.push(block);
+    }
+    
+    // ======================
+    // Constants
+    // ======================
+    
+    /**
+     * Level-of-detail thresholds for rendering optimization
+     * PIXEL_THRESHOLD: Below this zoom, show pixels
+     * SIMPLE_THRESHOLD: Below this zoom, show simple shapes
+     */
+    const PIXEL_THRESHOLD = 0.3;
+    const SIMPLE_THRESHOLD = 0.8;
+    
+    // ======================
+    // Authentication System
+    // ======================
+    
+    /**
+     * Initialize PIN authentication
+     * Checks if PIN is set and prompts for entry if needed
+     */
+    function checkPin() {
+        const savedPin = localStorage.getItem('ledgerPin');
+        if (savedPin) {
+            // PIN exists, prompt for entry
+            pinModal.style.display = 'flex';
+        } else {
+            // First time use - set a PIN
+            pinMessage.textContent = 'Set a PIN to secure your ledger';
+            pinSubmit.textContent = 'Set PIN';
+            pinModal.style.display = 'flex';
+        }
+    }
+    
+    // PIN submission handler
+    pinSubmit.addEventListener('click', () => {
+        const pin = pinInput.value;
+        if (pin.length !== 4) {
+            pinMessage.textContent = 'PIN must be 4 digits';
+            return;
+        }
+        
+        const savedPin = localStorage.getItem('ledgerPin');
+        if (!savedPin) {
+            // Save new PIN
+            localStorage.setItem('ledgerPin', pin);
+            isAuthenticated = true;
+            pinModal.style.display = 'none';
+            showNotification('PIN set successfully!');
+            initializeApplication();
+        } else if (pin === savedPin) {
+            // Correct PIN
+            isAuthenticated = true;
+            pinModal.style.display = 'none';
+            initializeApplication();
+        } else {
+            // Incorrect PIN
+            pinMessage.textContent = 'Incorrect PIN. Try again.';
+            pinInput.value = '';
+        }
+    });
+    
+    /**
+     * Initialize the application after successful authentication
+     */
+    function initializeApplication() {
+        resizeCanvas();
+        updateZoomInfo();
+        
+        // Auto-generate a small galaxy for demo
+        setTimeout(() => {
+            generateGalaxy(100);
+        }, 500);
+    }
+    
+    // ======================
+    // Transaction Modal
+    // ======================
+    
+    // Close transaction modal
+    closeTxModal.addEventListener('click', () => {
+        txModal.style.display = 'none';
+    });
+    
+    // Transaction form submission
+    txForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const from = document.getElementById('txFrom').value;
+        const to = document.getElementById('txTo').value;
+        const amount = parseFloat(document.getElementById('txAmount').value).toFixed(2);
+        const description = document.getElementById('txDesc').value || 'Manual Transaction';
+        
+        const newTx = {
+            id: `TXN-${10000 + transactions.length}`,
+            from, to, amount, description,
+            timestamp: new Date().toISOString()
+        };
+        
+        addTransaction(newTx);
+        txModal.style.display = 'none';
+        txForm.reset();
+        showNotification('Transaction added successfully!');
+    });
+    
+    // ======================
+    // Notification System
+    // ======================
+    
+    /**
+     * Show a notification message
+     * @param {string} message - The message to display
+     */
+    function showNotification(message) {
+        const notification = document.getElementById('notification');
+        notification.textContent = message;
+        notification.classList.add('show');
+        
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 3000);
+    }
+    
+    // ======================
+    // Canvas Management
+    // ======================
+    
+    /**
+     * Resize canvas to fit window
+     * Centers the view and triggers redraw
+     */
+    function resizeCanvas() {
+        if (!isAuthenticated) return;
+        
+        const controlsHeight = document.getElementById('controls').offsetHeight;
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight - controlsHeight;
+        canvas.style.marginTop = `${controlsHeight}px`;
+        centerView();
+        requestDraw();
+    }
+    
+    window.addEventListener('resize', resizeCanvas);
+    
+    // ======================
+    // Event Listeners
+    // ======================
+    
+    // Add transaction button
+    addTxButton.addEventListener('click', () => {
+        if (!isAuthenticated) return;
+        txModal.style.display = 'flex';
+    });
+    
+    // Generate galaxy button
+    generateButton.addEventListener('click', () => {
+        if (!isAuthenticated) return;
+        generateGalaxy(5000);
+    });
+    
+    // Clear ledger button
+    clearButton.addEventListener('click', () => {
+        if (!isAuthenticated) return;
+        if (confirm('Are you sure you want to clear the entire ledger?')) {
+            clearLedger();
+            showNotification('Ledger cleared');
+        }
+    });
+    
+    // Save ledger button
+    saveButton.addEventListener('click', () => {
+        if (!isAuthenticated) return;
+        try {
+            localStorage.setItem('blockchainLedger', JSON.stringify(transactions));
+            showNotification('Ledger saved successfully!');
+        } catch (e) {
+            showNotification('Failed to save ledger: ' + e.message);
+        }
+    });
+    
+    // Load ledger button
+    loadButton.addEventListener('click', () => {
+        if (!isAuthenticated) return;
+        try {
+            const saved = localStorage.getItem('blockchainLedger');
+            if (saved) {
+                const loadedTransactions = JSON.parse(saved);
+                clearLedger();
+                loadedTransactions.forEach(tx => {
+                    transactions.push(tx);
+                    blocks.push({ type: 'source', txId: tx.id, data: tx });
+                    blocks.push({ type: 'destination', txId: tx.id, data: tx });
+                });
+                updateDisplay();
+                showNotification('Ledger loaded successfully!');
+            } else {
+                showNotification('No saved ledger found');
+            }
+        } catch (e) {
+            showNotification('Failed to load ledger: ' + e.message);
+        }
+    });
+    
+    // History mode toggle
+    historyModeButton.addEventListener('click', toggleHistoryMode);
+    
+    // Fork timeline button
+    forkButton.addEventListener('click', createFork);
+    
+    // Search input
+    searchBox.addEventListener('input', (e) => { 
+        searchQuery = e.target.value.toLowerCase(); 
+        requestDraw(); 
+    });
+    
+    // Filter select
+    filterSelect.addEventListener('change', (e) => {
+        filterType = e.target.value;
+        requestDraw();
+    });
+    
+    // Zoom slider
+    zoomSlider.addEventListener('input', (e) => { 
+        zoom = parseFloat(e.target.value); 
+        zoomDisplay.textContent = zoom.toFixed(1) + 'x';
+        updateZoomInfo();
+        requestDraw(); 
+    });
+    
+    // ======================
+    // Keyboard Shortcuts
+    // ======================
+    
+    document.addEventListener('keydown', (e) => {
+        if (!isAuthenticated) return;
+        
+        if (e.ctrlKey || e.metaKey) {
+            switch(e.key) {
+                case 's':
+                    e.preventDefault();
+                    saveButton.click();
+                    break;
+                case 'o':
+                    e.preventDefault();
+                    loadButton.click();
+                    break;
+                case '=':
+                case '+':
+                    e.preventDefault();
+                    zoomSlider.value = Math.min(5, zoom + 0.1);
+                    zoomSlider.dispatchEvent(new Event('input'));
+                    break;
+                case '-':
+                    e.preventDefault();
+                    zoomSlider.value = Math.max(0.1, zoom - 0.1);
+                    zoomSlider.dispatchEvent(new Event('input'));
+                    break;
+            }
+        }
+    });
+    
+    // ======================
+    // Canvas Interaction
+    // ======================
+    
+    canvas.addEventListener('mousedown', (e) => { 
+        if (!isAuthenticated) return;
+        dragging = true; 
+        lastMousePos = { x: e.clientX, y: e.clientY }; 
+    });
+    
+    canvas.addEventListener('mouseup', () => { 
+        dragging = false; 
+        canvas.style.cursor = 'grab'; 
+    });
+    
+    canvas.addEventListener('mouseleave', () => { 
+        dragging = false; 
+        hoveredBlockIndex = -1; 
+        requestDraw(); 
+    });
+    
+    canvas.addEventListener('mousemove', handleMouseMove);
+    canvas.addEventListener('click', handleClick);
+    canvas.addEventListener('wheel', handleScroll, { passive: false });
+    
+    /**
+     * Handle mouse movement for dragging and hover effects
+     * @param {MouseEvent} e - Mouse event
+     */
+    function handleMouseMove(e) {
+        if (!isAuthenticated) return;
+        
+        if (dragging) {
+            canvas.style.cursor = 'grabbing';
+            dragOffset.x += e.clientX - lastMousePos.x;
+            dragOffset.y += e.clientY - lastMousePos.y;
+            lastMousePos = { x: e.clientX, y: e.clientY };
+            requestDraw();
+        } else {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            const newHoveredIndex = getBlockAtPosition(mouseX, mouseY);
+            if (newHoveredIndex !== hoveredBlockIndex) {
+                hoveredBlockIndex = newHoveredIndex;
+                canvas.style.cursor = hoveredBlockIndex >= 0 ? 'pointer' : 'grab';
+                requestDraw();
+            }
+        }
+    }
+    
+    /**
+     * Handle canvas clicks for block selection
+     */
+    function handleClick() {
+        if (!isAuthenticated) return;
+        
+        if (hoveredBlockIndex !== -1) {
+            selectedTxId = blocks[hoveredBlockIndex].txId;
+            showDetails(selectedTxId);
+            requestDraw();
+        } else {
+            detailsPanel.style.display = 'none';
+            selectedTxId = null;
+            requestDraw();
+        }
+    }
+    
+    /**
+     * Handle mouse wheel for zooming and panning
+     * @param {WheelEvent} e - Wheel event
+     */
+    function handleScroll(e) {
+        if (!isAuthenticated) return;
+        
+        e.preventDefault();
+        if (e.ctrlKey) {
+            // Zoom
+            const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+            zoom = Math.max(0.1, Math.min(5, zoom * zoomFactor));
+            zoomSlider.value = zoom;
+            zoomDisplay.textContent = zoom.toFixed(1) + 'x';
+            updateZoomInfo();
+        } else {
+            // Pan
+            dragOffset.x -= e.deltaX;
+            dragOffset.y -= e.deltaY;
+        }
+        requestDraw();
+    }
+    
+    // ======================
+    // Core Functions
+    // ======================
+    
+    /**
+     * Toggle history mode
+     */
+    function toggleHistoryMode() {
+        historyMode = !historyMode;
+        historyModeButton.classList.toggle('active', historyMode);
+        historyModeButton.classList.toggle('history-mode', historyMode);
+        document.getElementById('historyActions').style.display = historyMode ? 'block' : 'none';
+        requestDraw();
+    }
+    
+    /**
+     * Create a fork from selected transaction
+     */
+    function createFork() {
+        if (selectedTxId) {
+            forkFromHere();
+        } else {
+            showNotification('Select a transaction first to fork from that point!');
+        }
+    }
+    
+    /**
+     * Generate a galaxy of transactions
+     * @param {number} count - Number of transactions to generate
+     */
+    function generateGalaxy(count) {
+        if (!isAuthenticated) return;
+        
+        const names = ["Alice", "Bob", "Charlie", "Diana", "Eve", "Frank", "Grace", "Heidi", "Ivan", "Judy", "Kevin", "Luna", "Mike", "Nina", "Oscar", "Penny"];
+        const items = ["Data Packets", "Compute Cycles", "Storage Units", "API Call", "Token Transfer", "Smart Contract", "NFT Mint", "DeFi Swap", "Governance Vote", "Staking Reward"];
+        
+        console.log(`Generating ${count} transactions...`);
+        
+        // Use batch processing for better performance
+        const batchSize = 1000;
+        let processed = 0;
+        
+        function processBatch() {
+            const end = Math.min(processed + batchSize, count);
+            for (let i = processed; i < end; i++) {
+                const from = names[Math.floor(Math.random() * names.length)];
+                let to;
+                do { to = names[Math.floor(Math.random() * names.length)]; } while (from === to);
+                const amount = (Math.random() * 1000 + 1).toFixed(2);
+                const description = items[Math.floor(Math.random() * items.length)];
+                const timestamp = new Date(Date.now() - (count - i) * 60000).toISOString();
+                
+                const newTx = {
+                    id: `TXN-${10000 + transactions.length}`, 
+                    from, to, amount, description, timestamp
+                };
+                
+                transactions.push(newTx);
+                blocks.push({ type: 'source', txId: newTx.id, data: newTx });
+                blocks.push({ type: 'destination', txId: newTx.id, data: newTx });
+            }
+            
+            processed = end;
+            updateDisplay();
+            
+            if (processed < count) {
+                setTimeout(processBatch, 0); // Let UI breathe
+            } else {
+                console.log(`Galaxy generated with ${transactions.length} transactions!`);
+                showNotification(`Generated ${count} transactions!`);
+            }
+        }
+        
+        processBatch();
+    }
+    
+    /**
+     * Add a transaction to the ledger
+     * @param {Object} txData - Transaction data
+     */
+    function addTransaction(txData) {
+        if (!isAuthenticated) return;
+        
+        const newTx = txData || {
+            id: `TXN-${10000 + transactions.length}`,
+            from: "Unknown",
+            to: "Unknown",
+            amount: (Math.random() * 500 + 10).toFixed(2),
+            description: "Manual Transaction",
+            timestamp: new Date().toISOString()
+        };
+        
+        transactions.push(newTx);
+        blocks.push({ type: 'source', txId: newTx.id, data: newTx });
+        blocks.push({ type: 'destination', txId: newTx.id, data: newTx });
+        updateDisplay();
+    }
+    
+    /**
+     * Update the display with current transaction count
+     */
+    function updateDisplay() {
+        countDisplay.textContent = `Transactions: ${transactions.length.toLocaleString()}`;
+        requestDraw();
+    }
+    
+    /**
+     * Clear all transactions from the ledger
+     */
+    function clearLedger() {
+        if (!isAuthenticated) return;
+        
+        transactions = [];
+        blocks = [];
+        dragOffset = { x: 0, y: 0 };
+        selectedTxId = null;
+        detailsPanel.style.display = 'none';
+        updateDisplay();
+    }
+    
+    /**
+     * Center the view on the ledger
+     */
+    function centerView() {
+        if (!isAuthenticated || blocks.length === 0) return;
+        
+        // Calculate the total dimensions of the ledger
+        const blockSize = 40 * zoom;
+        const hexWidth = 2 * blockSize;
+        const hexHeight = Math.sqrt(3) * blockSize;
+        const cols = Math.max(1, Math.floor(canvas.width / (hexWidth * 0.75)));
+        const rows = Math.ceil(blocks.length / cols);
+        const layoutWidth = cols * hexWidth * 0.75;
+        const layoutHeight = rows * hexHeight;
+        
+        // Center the view
+        dragOffset.x = 0;
+        dragOffset.y = 0;
+    }
+    
+    /**
+     * Request a redraw on the next animation frame
+     */
+    function requestDraw() {
+        needsRedraw = true;
+    }
+    
+    /**
+     * Animation loop for efficient rendering
+     */
+    function animate() {
+        if (needsRedraw) {
+            draw();
+            needsRedraw = false;
+        }
+        animationFrameId = requestAnimationFrame(animate);
+    }
+    
+    // Start the animation loop
+    animate();
+    
+    // ======================
+    // Rendering Functions
+    // ======================
+    
+    /**
+     * Main drawing function - dispatches to appropriate renderer
+     */
+    function draw() {
+        if (!isAuthenticated) return;
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (blocks.length === 0) return;
+        
+        if (zoom < PIXEL_THRESHOLD) {
+            drawGalaxyView();
+        } else if (zoom < SIMPLE_THRESHOLD) {
+            drawClusterView();
+        } else {
+            drawBlockView();
+        }
+    }
+    
+    /**
+     * Draw galaxy view - each transaction as a pixel
+     */
+    function drawGalaxyView() {
+        const cols = Math.max(1, Math.floor(canvas.width / 2));
+        const spacing = 2;
+        
+        ctx.imageSmoothingEnabled = false;
+        
+        // Only process visible blocks for performance
+        const startIdx = Math.max(0, Math.floor((-dragOffset.y - canvas.height/4) / spacing) * cols);
+        const endIdx = Math.min(blocks.length, Math.ceil((canvas.height - dragOffset.y + canvas.height/4) / spacing) * cols);
+        
+        for (let index = startIdx; index < endIdx; index++) {
+            const block = blocks[index];
+            const col = index % cols;
+            const row = Math.floor(index / cols);
+            const x = col * spacing + dragOffset.x + canvas.width / 4;
+            const y = row * spacing + dragOffset.y + canvas.height / 4;
+            
+            // Skip if outside viewport
+            if (x < -10 || x > canvas.width + 10 || y < -10 || y > canvas.height + 10) continue;
+            
+            // Apply filter
+            if (filterType !== 'all' && block.type !== filterType) continue;
+            
+            const isSearched = searchQuery && (block.data.id.toLowerCase().includes(searchQuery) || 
+                                             block.data.from.toLowerCase().includes(searchQuery) || 
+                                             block.data.to.toLowerCase().includes(searchQuery));
+            
+            ctx.globalAlpha = 1.0;
+            if (searchQuery && !isSearched) ctx.globalAlpha = 0.1;
+            
+            // Draw glowing pixel
+            const color = block.type === 'source' ? '#3498db' : '#2ecc71';
+            ctx.fillStyle = color;
+            ctx.shadowColor = color;
+            ctx.shadowBlur = 2;
+            ctx.fillRect(x, y, 1, 1);
+            ctx.shadowBlur = 0;
+        }
+        
+        ctx.globalAlpha = 1.0;
+        ctx.imageSmoothingEnabled = true;
+    }
+    
+    /**
+     * Draw cluster view - simple hexagons
+     */
+    function drawClusterView() {
+        const blockSize = 30 * zoom;
+        const hexWidth = blockSize * 1.5;
+        const hexHeight = Math.sqrt(3) * blockSize;
+        
+        // Calculate visible range
+        const startRow = Math.max(0, Math.floor((-dragOffset.y - canvas.height) / hexHeight));
+        const endRow = Math.ceil(blocks.length / Math.max(1, Math.floor(canvas.width / (hexWidth * 0.75))));
+        const startIdx = startRow * Math.floor(canvas.width / (hexWidth * 0.75));
+        const endIdx = Math.min(blocks.length, endRow * Math.floor(canvas.width / (hexWidth * 0.75)));
+        
+        // Draw connections first
+        ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--rung-color').trim();
+        ctx.lineWidth = 1;
+        
+        for (let i = 0; i < transactions.length; i++) {
+            const tx = transactions[i];
+            const sourceIndex = blocks.findIndex(b => b.txId === tx.id && b.type === 'source');
+            const destIndex = blocks.findIndex(b => b.txId === tx.id && b.type === 'destination');
+            if (sourceIndex === -1 || destIndex === -1) continue;
+            
+            const posA = getBlockPosition(sourceIndex, hexWidth, hexHeight);
+            const posB = getBlockPosition(destIndex, hexWidth, hexHeight);
+            
+            // Skip if both are outside viewport
+            if ((posA.x < -50 && posB.x < -50) || 
+                (posA.x > canvas.width + 50 && posB.x > canvas.width + 50) ||
+                (posA.y < -50 && posB.y < -50) || 
+                (posA.y > canvas.height + 50 && posB.y > canvas.height + 50)) continue;
+            
+            const isSearched = searchQuery && (tx.id.toLowerCase().includes(searchQuery) || 
+                                             tx.from.toLowerCase().includes(searchQuery) || 
+                                             tx.to.toLowerCase().includes(searchQuery));
+            
+            ctx.globalAlpha = 1.0;
+            if (searchQuery && !isSearched) ctx.globalAlpha = 0.2;
+            
+            ctx.beginPath();
+            ctx.moveTo(posA.x, posA.y);
+            ctx.lineTo(posB.x, posB.y);
+            ctx.stroke();
+        }
+        
+        // Draw simple hexagons
+        for (let index = startIdx; index < endIdx; index++) {
+            const block = blocks[index];
+            const pos = getBlockPosition(index, hexWidth, hexHeight);
+            
+            // Skip if outside viewport
+            if (pos.x < -50 || pos.x > canvas.width + 50 || pos.y < -50 || pos.y > canvas.height + 50) continue;
+            
+            // Apply filter
+            if (filterType !== 'all' && block.type !== filterType) continue;
+            
+            const isSearched = searchQuery && (block.data.id.toLowerCase().includes(searchQuery) || 
+                                             block.data.from.toLowerCase().includes(searchQuery) || 
+                                             block.data.to.toLowerCase().includes(searchQuery));
+            
+            ctx.globalAlpha = 1.0;
+            if (searchQuery && !isSearched) ctx.globalAlpha = 0.2;
+            
+            ctx.fillStyle = block.type === 'source' ? 
+                getComputedStyle(document.documentElement).getPropertyValue('--source-color').trim() : 
+                getComputedStyle(document.documentElement).getPropertyValue('--dest-color').trim();
+            
+            // Draw simple hexagon
+            ctx.beginPath();
+            for (let i = 0; i < 6; i++) {
+                let angle = (Math.PI / 3) * i;
+                let px = pos.x + blockSize * Math.cos(angle);
+                let py = pos.y + blockSize * Math.sin(angle);
+                i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+            }
+            ctx.closePath();
+            ctx.fill();
+        }
+        
+        ctx.globalAlpha = 1.0;
+    }
+    
+    /**
+     * Draw block view - detailed hexagons with text
+     */
+    function drawBlockView() {
+        const blockSize = 40 * zoom;
+        const hexHeight = Math.sqrt(3) * blockSize;
+        const hexWidth = 2 * blockSize;
+        
+        // Calculate visible range
+        const startRow = Math.max(0, Math.floor((-dragOffset.y - canvas.height) / hexHeight));
+        const endRow = Math.ceil(blocks.length / Math.max(1, Math.floor(canvas.width / (hexWidth * 0.75))));
+        const startIdx = startRow * Math.floor(canvas.width / (hexWidth * 0.75));
+        const endIdx = Math.min(blocks.length, endRow * Math.floor(canvas.width / (hexWidth * 0.75)));
+        
+        // Draw connections
+        ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--rung-color').trim();
+        ctx.lineWidth = 2 * zoom;
+        
+        for (let i = 0; i < transactions.length; i++) {
+            const tx = transactions[i];
+            const sourceIndex = blocks.findIndex(b => b.txId === tx.id && b.type === 'source');
+            const destIndex = blocks.findIndex(b => b.txId === tx.id && b.type === 'destination');
+            if (sourceIndex === -1 || destIndex === -1) continue;
+            
+            const posA = getBlockPosition(sourceIndex, hexWidth, hexHeight);
+            const posB = getBlockPosition(destIndex, hexWidth, hexHeight);
+            
+            // Skip if both are outside viewport
+            if ((posA.x < -50 && posB.x < -50) || 
+                (posA.x > canvas.width + 50 && posB.x > canvas.width + 50) ||
+                (posA.y < -50 && posB.y < -50) || 
+                (posA.y > canvas.height + 50 && posB.y > canvas.height + 50)) continue;
+            
+            const isHovered = hoveredBlockIndex !== -1 && blocks[hoveredBlockIndex].txId === tx.id;
+            const isSelected = selectedTxId === tx.id;
+            const isSearched = searchQuery && (tx.id.toLowerCase().includes(searchQuery) || 
+                                             tx.from.toLowerCase().includes(searchQuery) || 
+                                             tx.to.toLowerCase().includes(searchQuery));
+            ctx.globalAlpha = 1.0;
+            if (searchQuery && !isSearched) ctx.globalAlpha = 0.1;
+            ctx.beginPath();
+            ctx.moveTo(posA.x, posA.y);
+            ctx.lineTo(posB.x, posB.y);
+            
+            ctx.lineWidth = (isHovered || isSelected) ? 5 * zoom : 2 * zoom;
+            ctx.strokeStyle = (isHovered || isSelected) ? 
+                getComputedStyle(document.documentElement).getPropertyValue('--highlight-color').trim() : 
+                getComputedStyle(document.documentElement).getPropertyValue('--rung-color').trim();
+            ctx.stroke();
+        }
+        ctx.globalAlpha = 1.0;
+        
+        // Draw detailed hexagons
+        for (let index = startIdx; index < endIdx; index++) {
+            const block = blocks[index];
+            const pos = getBlockPosition(index, hexWidth, hexHeight);
+            
+            // Skip if outside viewport
+            if (pos.x < -50 || pos.x > canvas.width + 50 || pos.y < -50 || pos.y > canvas.height + 50) continue;
+            
+            // Apply filter
+            if (filterType !== 'all' && block.type !== filterType) continue;
+            
+            drawDetailedHexBlock(block, pos.x, pos.y, index, blockSize);
+        }
+    }
+    
+    /**
+     * Draw a detailed hexagon block
+     * @param {Object} block - Block object
+     * @param {number} x - X position
+     * @param {number} y - Y position
+     * @param {number} index - Block index
+     * @param {number} blockSize - Size of the block
+     */
+    function drawDetailedHexBlock(block, x, y, index, blockSize) {
+        const isHovered = hoveredBlockIndex !== -1 && blocks[hoveredBlockIndex].txId === block.txId;
+        const isSelected = selectedTxId === block.txId;
+        const isSearched = searchQuery && (block.data.id.toLowerCase().includes(searchQuery) || 
+                                         block.data.from.toLowerCase().includes(searchQuery) || 
+                                         block.data.to.toLowerCase().includes(searchQuery));
+        ctx.globalAlpha = 1.0;
+        if (searchQuery && !isSearched) ctx.globalAlpha = 0.1;
+        ctx.save();
+        ctx.fillStyle = block.type === 'source' ? 
+            getComputedStyle(document.documentElement).getPropertyValue('--source-color').trim() : 
+            getComputedStyle(document.documentElement).getPropertyValue('--dest-color').trim();
+        
+        if (historyMode) {
+            ctx.shadowColor = getComputedStyle(document.documentElement).getPropertyValue('--fork-color').trim();
+            ctx.shadowBlur = 5;
+        }
+        
+        if (isHovered || isSelected) {
+            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--highlight-color').trim();
+            ctx.shadowColor = getComputedStyle(document.documentElement).getPropertyValue('--highlight-color').trim();
+            ctx.shadowBlur = 10;
+        }
+        
+        // Draw hexagon
+        ctx.beginPath();
+        for (let i = 0; i < 6; i++) {
+            let angle = (Math.PI / 3) * i;
+            let px = x + blockSize * Math.cos(angle);
+            let py = y + blockSize * Math.sin(angle);
+            i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+        ctx.fill();
+        if (isSelected) {
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+        }
+        
+        ctx.shadowBlur = 0;
+        
+        // Draw text if zoom is high enough
+        if (zoom > 0.8) {
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            const fontSize = Math.max(8, blockSize * 0.15 * zoom);
+            ctx.font = `bold ${fontSize}px Segoe UI`;
+            ctx.fillText(block.type === 'source' ? 'FROM' : 'TO', x, y - fontSize * 1.2);
+            ctx.font = `${fontSize * 0.8}px Segoe UI`;
+            ctx.fillText(block.type === 'source' ? block.data.from : block.data.to, x, y);
+            if (zoom > 1.2) {
+                ctx.fillText(`ID: ${block.data.id.slice(-4)}`, x, y + fontSize * 1.2);
+            }
+        }
+        
+        ctx.restore();
+        ctx.globalAlpha = 1.0;
+    }
+    
+    // ======================
+    // Utility Functions
+    // ======================
+    
+    /**
+     * Get the position of a block in the grid
+     * @param {number} index - Block index
+     * @param {number} hexWidth - Width of hexagon
+     * @param {number} hexHeight - Height of hexagon
+     * @returns {Object} Position {x, y}
+     */
+    function getBlockPosition(index, hexWidth, hexHeight) {
+        const cols = Math.max(1, Math.floor(canvas.width / (hexWidth * 0.75)));
+        const col = index % cols;
+        const row = Math.floor(index / cols);
+        
+        const layoutWidth = cols * hexWidth * 0.75;
+        const layoutHeight = Math.ceil(blocks.length / cols) * hexHeight;
+        const centerOffsetX = canvas.width / 2 - layoutWidth / 2;
+        const centerOffsetY = canvas.height / 2 - layoutHeight / 2;
+        
+        const x = col * hexWidth * 0.75 + dragOffset.x + centerOffsetX;
+        const y = row * hexHeight + (col % 2 === 0 ? 0 : hexHeight / 2) + dragOffset.y + centerOffsetY;
+        return { x, y };
+    }
+    
+    /**
+     * Get the block at a specific position
+     * @param {number} x - X coordinate
+     * @param {number} y - Y coordinate
+     * @returns {number} Block index or -1 if not found
+     */
+    function getBlockAtPosition(x, y) {
+        if (zoom < SIMPLE_THRESHOLD) return -1; // No interaction in pixel/cluster view
+        
+        const blockSize = 40 * zoom;
+        const hexWidth = 2 * blockSize;
+        const hexHeight = Math.sqrt(3) * blockSize;
+        
+        // Only check visible blocks
+        const startRow = Math.max(0, Math.floor((-dragOffset.y - canvas.height) / hexHeight));
+        const endRow = Math.ceil(blocks.length / Math.max(1, Math.floor(canvas.width / (hexWidth * 0.75))));
+        const startIdx = startRow * Math.floor(canvas.width / (hexWidth * 0.75));
+        const endIdx = Math.min(blocks.length, endRow * Math.floor(canvas.width / (hexWidth * 0.75)));
+        
+        for (let i = endIdx - 1; i >= startIdx; i--) {
+            const pos = getBlockPosition(i, hexWidth, hexHeight);
+            const dx = x - pos.x;
+            const dy = y - pos.y;
+            if (dx * dx + dy * dy < blockSize * blockSize) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    
+    /**
+     * Show transaction details in the details panel
+     * @param {string} txId - Transaction ID
+     */
+    function showDetails(txId) {
+        const tx = transactions.find(t => t.id === txId);
+        if (!tx) return;
+        detailsPanel.style.display = 'block';
+        document.getElementById('detailId').textContent = tx.id;
+        document.getElementById('detailFrom').textContent = tx.from;
+        document.getElementById('detailTo').textContent = tx.to;
+        document.getElementById('detailAmount').textContent = `$${tx.amount}`;
+        document.getElementById('detailDesc').textContent = tx.description;
+        document.getElementById('detailTs').textContent = new Date(tx.timestamp).toLocaleString();
+    }
+    
+    /**
+     * Update zoom info display
+     */
+    function updateZoomInfo() {
+        const info = document.getElementById('zoomInfo');
+        if (zoom < PIXEL_THRESHOLD) {
+            info.innerHTML = '<strong>Galaxy View</strong><br>Each pixel represents a transaction. Blue = source, Green = destination.';
+        } else if (zoom < SIMPLE_THRESHOLD) {
+            info.innerHTML = '<strong>Cluster View</strong><br>Simple hexagons showing transaction structure.';
+        } else {
+            info.innerHTML = '<strong>Block View</strong><br>Full transaction details and interactions.';
+        }
+    }
+    
+    // ======================
+    // History Manipulation
+    // ======================
+    
+    /**
+     * Move a transaction (placeholder)
+     */
+    function moveTransaction() {
+        showNotification('Move functionality: Drag this transaction to reorder the timeline!');
+    }
+    
+    /**
+     * Delete a transaction from history
+     */
+    function deleteTransaction() {
+        if (!isAuthenticated) return;
+        
+        if (confirm('Delete this transaction from history?')) {
+            const txIndex = transactions.findIndex(t => t.id === selectedTxId);
+            if (txIndex !== -1) {
+                transactions.splice(txIndex, 1);
+                blocks = blocks.filter(b => b.txId !== selectedTxId);
+                selectedTxId = null;
+                detailsPanel.style.display = 'none';
+                updateDisplay();
+                showNotification('Transaction deleted! History has been rewritten.');
+            }
+        }
+    }
+    
+    /**
+     * Fork timeline from selected transaction
+     */
+    function forkFromHere() {
+        if (!isAuthenticated) return;
+        
+        const tx = transactions.find(t => t.id === selectedTxId);
+        if (tx) {
+            const forkTx = {
+                ...tx,
+                id: tx.id + '-FORK',
+                description: tx.description + ' (Forked)',
+                timestamp: new Date().toISOString()
+            };
+            addTransaction(forkTx);
+            showNotification('Timeline forked! This creates an alternate history branch.');
+        }
+    }
+    
+    // ======================
+    // Initialize Application
+    // ======================
+    
+    // Check PIN on load
+    checkPin();
+</script>
+</body>
+</html>
