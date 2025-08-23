@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Scalable Temporal Blockchain Ledger</title>
+  <title>Enhanced Scalable Temporal Blockchain Ledger</title>
   <style>
     :root {
         --source-color: #3498db;
@@ -12,59 +12,47 @@
         --highlight-color: #f1c40f;
         --bg-color-1: #0a0a0f;
         --bg-color-2: #1a1a2e;
+        --bg-color-3: #16213e;
         --pixel-glow: #ffffff;
         --fork-color: #9b59b6;
+        --payment-color: #16a085;
+        --qrcode-color: #2c3e50;
+        --success-color: #27ae60;
+        --warning-color: #f39c12;
+        --error-color: #e74c3c;
+        --glass-bg: rgba(255, 255, 255, 0.05);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --shadow-color: rgba(0, 0, 0, 0.3);
     }
     * { box-sizing: border-box; }
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       margin: 0;
       overflow: hidden;
-      background: radial-gradient(ellipse at center, var(--bg-color-2) 0%, var(--bg-color-1) 100%);
+      background: linear-gradient(135deg, var(--bg-color-1) 0%, var(--bg-color-2) 50%, var(--bg-color-3) 100%);
       color: #ecf0f1;
+      font-size: 14px;
+      transition: filter 0.3s ease;
     }
     
-    /* PIN Modal Styles */
-    .pin-modal {
-      display: flex;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.8);
-      justify-content: center;
-      align-items: center;
-    }
-    .pin-content {
-      background-color: var(--bg-color-2);
-      padding: 2rem;
-      border-radius: 15px;
-      width: 90%;
-      max-width: 400px;
-      box-shadow: 0 0 30px rgba(0,0,0,0.5);
-      text-align: center;
-    }
-    .pin-input {
-      width: 100%;
-      padding: 12px;
-      margin: 15px 0;
-      border-radius: 8px;
-      border: 2px solid var(--highlight-color);
-      background: rgba(52, 73, 94, 0.8);
-      color: white;
-      font-size: 1.2rem;
-      text-align: center;
-      letter-spacing: 5px;
-    }
-    .pin-message {
-      margin-top: 1rem;
-      color: var(--highlight-color);
+    /* Enhanced Glass Morphism Effects */
+    .glass {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      box-shadow: 0 8px 32px var(--shadow-color);
     }
     
-    /* Transaction Modal Styles */
-    .tx-modal {
+    .glass-strong {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+    }
+    
+    /* Improved Modal Styles */
+    .modal {
       display: none;
       position: fixed;
       z-index: 1000;
@@ -72,47 +60,139 @@
       top: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0,0,0,0.7);
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(5px);
       justify-content: center;
       align-items: center;
-    }
-    .tx-content {
-      background-color: var(--bg-color-2);
-      padding: 2rem;
-      border-radius: 15px;
-      width: 90%;
-      max-width: 500px;
-      box-shadow: 0 0 30px rgba(0,0,0,0.5);
-    }
-    .tx-form {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .tx-form input, .tx-form select {
-      padding: 10px;
-      border-radius: 8px;
-      border: 2px solid var(--highlight-color);
-      background: rgba(52, 73, 94, 0.8);
-      color: white;
-    }
-    .tx-form label {
-      font-weight: 600;
-      color: var(--highlight-color);
-    }
-    .close-btn {
-      align-self: flex-end;
-      background: none;
-      border: none;
-      color: white;
-      font-size: 1.5rem;
-      cursor: pointer;
+      animation: modalFadeIn 0.3s ease;
     }
     
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .modal-content {
+      background: linear-gradient(145deg, var(--bg-color-2), var(--bg-color-3));
+      padding: 2rem;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      border: 1px solid var(--glass-border);
+      position: relative;
+      transform: scale(0.9);
+      animation: modalSlideIn 0.3s ease forwards;
+    }
+    
+    @keyframes modalSlideIn {
+      to { transform: scale(1); }
+    }
+    
+    /* Enhanced Input Styles */
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      margin: 8px 0;
+      border-radius: 12px;
+      border: 2px solid var(--glass-border);
+      background: var(--glass-bg);
+      color: white;
+      font-size: 1rem;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+    
+    .form-input:focus {
+      border-color: var(--highlight-color);
+      box-shadow: 0 0 0 3px rgba(241, 196, 64, 0.2);
+      outline: none;
+    }
+    
+    .form-input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+    
+    /* Enhanced Button Styles */
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 12px;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+    
+    .btn:hover::before {
+      left: 100%;
+    }
+    
+    .btn:hover { 
+      transform: translateY(-2px); 
+      box-shadow: 0 6px 25px rgba(102, 126, 234, 0.6);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--highlight-color), #f39c12);
+      box-shadow: 0 4px 15px rgba(241, 196, 64, 0.4);
+    }
+    
+    .btn-success {
+      background: linear-gradient(135deg, var(--success-color), #2ecc71);
+      box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
+    }
+    
+    .btn-payment {
+      background: linear-gradient(135deg, var(--payment-color), #1abc9c);
+      box-shadow: 0 4px 15px rgba(22, 160, 133, 0.4);
+    }
+    
+    .btn-qr {
+      background: linear-gradient(135deg, var(--qrcode-color), #34495e);
+      box-shadow: 0 4px 15px rgba(44, 62, 80, 0.4);
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, var(--error-color), #c0392b);
+      box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+    }
+    
+    .btn-small {
+      padding: 8px 16px;
+      font-size: 0.8rem;
+    }
+    
+    .btn.active {
+      background: linear-gradient(135deg, var(--highlight-color), #f39c12);
+      box-shadow: 0 0 25px rgba(241, 196, 64, 0.8);
+    }
+    
+    /* Enhanced Controls */
     #controls {
       padding: 1rem;
-      background: rgba(10, 10, 15, 0.95);
-      backdrop-filter: blur(15px);
+      background: var(--glass-bg);
+      backdrop-filter: blur(25px);
       position: fixed;
       top: 0;
       width: 100%;
@@ -122,123 +202,202 @@
       justify-content: center;
       gap: 1rem;
       flex-wrap: wrap;
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
-      border-bottom: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 4px 30px var(--shadow-color);
+      border-bottom: 1px solid var(--glass-border);
     }
     
     .control-group {
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      padding: 0.5rem;
+      background: var(--glass-bg);
+      border-radius: 12px;
+      border: 1px solid var(--glass-border);
     }
     
-    button {
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 8px;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      color: white;
-      cursor: pointer;
+    .control-label {
+      font-size: 0.8rem;
+      opacity: 0.8;
       font-weight: 500;
+    }
+    
+    /* Enhanced Search and Filter */
+    .search-container {
+      position: relative;
+      min-width: 280px;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 10px 40px 10px 16px;
+      border-radius: 12px;
+      border: 2px solid var(--glass-border);
+      background: var(--glass-bg);
+      color: white;
+      backdrop-filter: blur(15px);
       transition: all 0.3s ease;
-      box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
-    }
-    button:hover { 
-        transform: translateY(-2px); 
-        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.5);
     }
     
-    .mode-button.active {
-        background: linear-gradient(135deg, var(--highlight-color), #f39c12);
-        box-shadow: 0 0 20px rgba(241, 196, 64, 0.6);
+    .search-input:focus {
+      border-color: var(--highlight-color);
+      box-shadow: 0 0 0 3px rgba(241, 196, 64, 0.2);
     }
     
-    #searchBox {
-        padding: 0.5rem;
-        border-radius: 8px;
-        border: 2px solid var(--highlight-color);
-        background: rgba(52, 73, 94, 0.8);
-        color: white;
-        width: 250px;
-        backdrop-filter: blur(10px);
+    .search-icon {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0.5;
     }
-    #filterSelect {
-        padding: 0.5rem;
-        border-radius: 8px;
-        border: 2px solid var(--highlight-color);
-        background: rgba(52, 73, 94, 0.8);
-        color: white;
-    }
-    #zoomDisplay, #countDisplay {
+    
+    /* Enhanced Status Display */
+    .status-display {
       font-weight: 600;
-      background: rgba(0, 0, 0, 0.4);
+      background: var(--glass-bg);
       padding: 0.5rem 1rem;
       border-radius: 20px;
-      border: 1px solid rgba(255,255,255,0.1);
+      border: 1px solid var(--glass-border);
+      font-size: 0.9rem;
     }
     
+    /* Enhanced Canvas */
     canvas { 
-        display: block; 
-        cursor: grab; 
-        image-rendering: crisp-edges;
+      display: block; 
+      cursor: grab; 
+      image-rendering: crisp-edges;
+      transition: filter 0.3s ease;
     }
     canvas:active { cursor: grabbing; }
     
-    .details-panel {
+    /* Enhanced Panels */
+    .panel {
       position: fixed;
-      left: 10px;
-      bottom: 10px;
-      width: 320px;
-      background: rgba(10, 10, 15, 0.95);
-      backdrop-filter: blur(20px);
-      border-radius: 15px;
+      width: 350px;
+      background: var(--glass-strong);
+      backdrop-filter: blur(25px);
+      border-radius: 20px;
       padding: 1.5rem;
       z-index: 150;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.5);
-      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 20px 60px var(--shadow-color);
+      border: 1px solid var(--glass-border);
+      animation: panelSlideIn 0.4s ease;
+    }
+    
+    @keyframes panelSlideIn {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .details-panel {
+      left: 20px;
+      bottom: 20px;
       display: none;
-      animation: slideIn 0.4s ease;
-    }
-    .details-panel h3 { 
-        margin-top: 0; 
-        border-bottom: 2px solid var(--highlight-color); 
-        padding-bottom: 0.5rem;
-        color: var(--highlight-color);
-    }
-    .details-panel p { margin: 0.5rem 0; line-height: 1.5; }
-    .detail-source { color: var(--source-color); }
-    .detail-dest { color: var(--dest-color); }
-    .detail-amount { color: var(--rung-color); }
-    
-    .history-mode {
-        background: linear-gradient(135deg, var(--fork-color), #8e44ad) !important;
     }
     
-    .zoom-info {
-        position: fixed;
-        top: 80px;
-        right: 20px;
-        background: rgba(0, 0, 0, 0.7);
-        padding: 1rem;
-        border-radius: 10px;
-        border-left: 4px solid var(--highlight-color);
-        font-size: 0.9em;
-        max-width: 200px;
+    .wallet-panel {
+      right: 20px;
+      bottom: 20px;
+      display: none;
     }
     
+    .analytics-panel {
+      right: 20px;
+      top: 100px;
+      display: none;
+    }
+    
+    .panel h3 { 
+      margin-top: 0; 
+      border-bottom: 2px solid var(--highlight-color); 
+      padding-bottom: 0.5rem;
+      color: var(--highlight-color);
+      font-size: 1.2rem;
+    }
+    
+    .panel p { 
+      margin: 0.5rem 0; 
+      line-height: 1.6; 
+    }
+    
+    /* Enhanced Wallet Styles */
+    .wallet-balance {
+      background: linear-gradient(145deg, rgba(22, 160, 133, 0.2), rgba(22, 160, 133, 0.1));
+      padding: 1.5rem;
+      border-radius: 16px;
+      margin-bottom: 1rem;
+      text-align: center;
+      border: 1px solid var(--payment-color);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .wallet-balance::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(from 0deg, transparent, rgba(22, 160, 133, 0.1), transparent);
+      animation: rotate 10s linear infinite;
+      z-index: -1;
+    }
+    
+    @keyframes rotate {
+      to { transform: rotate(360deg); }
+    }
+    
+    .balance-amount {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #16a085, #1abc9c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    /* Enhanced QR Code */
+    .qrcode-container {
+      margin: 1.5rem 0;
+      padding: 1.5rem;
+      background: white;
+      border-radius: 16px;
+      display: inline-block;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      position: relative;
+    }
+    
+    .qrcode-container::after {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, var(--qrcode-color), var(--payment-color));
+      border-radius: 18px;
+      z-index: -1;
+    }
+    
+    /* Enhanced Notifications */
     .notification {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: rgba(46, 204, 113, 0.9);
-        color: white;
-        padding: 1rem;
-        border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: linear-gradient(135deg, var(--success-color), #2ecc71);
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
       z-index: 200;
       transform: translateY(100px);
       opacity: 0;
-      transition: all 0.3s ease;
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(10px);
+      max-width: 300px;
     }
     
     .notification.show {
@@ -246,1179 +405,2581 @@
       opacity: 1;
     }
     
-    @keyframes slideIn {
-        from { opacity: 0; transform: translateX(-20px); }
-        to { opacity: 1; transform: translateX(0); }
+    .notification-payment {
+      background: linear-gradient(135deg, var(--payment-color), #1abc9c);
     }
     
-    @keyframes pixelPulse {
-        0%, 100% { opacity: 0.8; }
-        50% { opacity: 1; }
+    .notification-qrcode {
+      background: linear-gradient(135deg, var(--qrcode-color), #34495e);
     }
     
+    .notification-warning {
+      background: linear-gradient(135deg, var(--warning-color), #f39c12);
+    }
+    
+    .notification-error {
+      background: linear-gradient(135deg, var(--error-color), #c0392b);
+    }
+    
+    /* Enhanced Info Panel */
+    .info-panel {
+      position: fixed;
+      top: 120px;
+      right: 20px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      padding: 1rem;
+      border-radius: 16px;
+      border: 1px solid var(--glass-border);
+      font-size: 0.9em;
+      max-width: 250px;
+      box-shadow: 0 10px 30px var(--shadow-color);
+    }
+    
+    /* Performance Indicator */
+    .performance-indicator {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: var(--glass-bg);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      border: 1px solid var(--glass-border);
+      font-size: 0.8rem;
+      backdrop-filter: blur(15px);
+    }
+    
+    .fps-counter {
+      color: var(--success-color);
+      font-weight: 600;
+    }
+    
+    /* Loading Spinner */
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: var(--highlight-color);
+      animation: spin 0.8s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Transaction Status Badges */
+    .tx-status {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .tx-status-pending {
+      background: rgba(241, 196, 64, 0.2);
+      color: var(--warning-color);
+      border: 1px solid var(--warning-color);
+    }
+    
+    .tx-status-completed {
+      background: rgba(39, 174, 96, 0.2);
+      color: var(--success-color);
+      border: 1px solid var(--success-color);
+    }
+    
+    .tx-status-failed {
+      background: rgba(231, 76, 60, 0.2);
+      color: var(--error-color);
+      border: 1px solid var(--error-color);
+    }
+    
+    /* Analytics Charts */
+    .chart-container {
+      margin: 1rem 0;
+      padding: 1rem;
+      background: var(--glass-bg);
+      border-radius: 12px;
+      border: 1px solid var(--glass-border);
+    }
+    
+    .chart-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--highlight-color);
+    }
+    
+    /* Mobile Responsive */
     @media (max-width: 768px) {
-        #controls {
-            padding: 0.5rem;
-            gap: 0.3rem;
-        }
-        
-        .control-group {
-            flex-direction: column;
-            gap: 0.2rem;
-        }
-        
-        button {
-            padding: 0.4rem 0.8rem;
-            font-size: 0.8rem;
-        }
-        
-        #searchBox {
-            width: 150px;
-        }
-        
-        .details-panel {
-            width: 280px;
-            padding: 1rem;
-        }
+      #controls {
+        padding: 0.5rem;
+        gap: 0.3rem;
+      }
+      
+      .control-group {
+        flex-direction: column;
+        gap: 0.3rem;
+        padding: 0.3rem;
+      }
+      
+      .btn {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+      }
+      
+      .search-container {
+        min-width: 200px;
+      }
+      
+      .panel {
+        width: 300px;
+        padding: 1rem;
+      }
+      
+      .modal-content {
+        width: 95%;
+        padding: 1.5rem;
+      }
+    }
+    
+    /* Dark Theme Toggle - Fixed positioning */
+    .theme-toggle {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      z-index: 200;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(15px);
+    }
+    
+    .theme-toggle:hover {
+      background: var(--glass-strong);
+      transform: scale(1.1);
+    }
+    
+    /* Shutdown Button */
+    .shutdown-button {
+      position: fixed;
+      top: 20px;
+      right: 80px;
+      z-index: 200;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(15px);
+      color: var(--error-color);
+      font-size: 1.2rem;
+    }
+    
+    .shutdown-button:hover {
+      background: var(--glass-strong);
+      transform: scale(1.1);
+      color: var(--error-color);
+    }
+    
+    /* Shutdown Modal */
+    .shutdown-modal .modal-content {
+      text-align: center;
+      max-width: 400px;
+    }
+    
+    .shutdown-modal h2 {
+      color: var(--error-color);
+      margin-bottom: 1rem;
+    }
+    
+    .shutdown-modal p {
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+    
+    .shutdown-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
     }
   </style>
 </head>
 <body>
+  <!-- Performance Indicator -->
+  <div class="performance-indicator">
+    FPS: <span class="fps-counter" id="fpsCounter">60</span> | 
+    Blocks: <span id="blockCounter">0</span>
+  </div>
+  
+  <!-- Shutdown Button -->
+  <div class="shutdown-button" id="shutdownButton" title="Shutdown Ledger">
+    ⏻
+  </div>
+  
+  <!-- Theme Toggle -->
+  <div class="theme-toggle" id="themeToggle" title="Toggle Theme">
+    🌙
+  </div>
+  
   <!-- PIN Modal -->
-  <div id="pinModal" class="pin-modal">
-    <div class="pin-content">
-      <h2>Enter PIN</h2>
-      <input type="password" id="pinInput" class="pin-input" maxlength="4" placeholder="••••">
-      <div id="pinMessage" class="pin-message"></div>
-      <button id="pinSubmit">Access Ledger</button>
+  <div id="pinModal" class="modal">
+    <div class="modal-content">
+      <h2>🔐 Secure Access</h2>
+      <input type="password" id="pinInput" class="form-input" maxlength="4" placeholder="Enter 4-digit PIN">
+      <div id="pinMessage" style="margin: 1rem 0; color: var(--warning-color);"></div>
+      <button id="pinSubmit" class="btn btn-primary">Access Ledger</button>
     </div>
   </div>
-
+  
+  <!-- Shutdown Modal -->
+  <div id="shutdownModal" class="modal shutdown-modal">
+    <div class="modal-content">
+      <h2>⚠️ Shutdown Ledger</h2>
+      <p>Are you sure you want to shutdown the Direct Ledger Wallet? This will:</p>
+      <ul style="text-align: left; margin: 1rem 0;">
+        <li>Save all transactions to local storage</li>
+        <li>Clear the current session</li>
+        <li>Require PIN to access again</li>
+      </ul>
+      <div class="shutdown-actions">
+        <button id="cancelShutdown" class="btn">Cancel</button>
+        <button id="confirmShutdown" class="btn btn-danger">Shutdown</button>
+      </div>
+    </div>
+  </div>
+  
   <!-- Transaction Modal -->
-  <div id="txModal" class="tx-modal">
-    <div class="tx-content">
-      <button id="closeTxModal" class="close-btn">&times;</button>
-      <h2>Add Transaction</h2>
-      <form id="txForm" class="tx-form">
-        <div>
-          <label for="txFrom">From:</label>
-          <input type="text" id="txFrom" required>
-        </div>
-        <div>
-          <label for="txTo">To:</label>
-          <input type="text" id="txTo" required>
-        </div>
-        <div>
-          <label for="txAmount">Amount:</label>
-          <input type="number" id="txAmount" step="0.01" min="0.01" required>
-        </div>
-        <div>
-          <label for="txDesc">Description:</label>
-          <input type="text" id="txDesc">
-        </div>
-        <button type="submit">Add Transaction</button>
+  <div id="txModal" class="modal">
+    <div class="modal-content">
+      <button id="closeTxModal" class="btn btn-small" style="position: absolute; right: 1rem; top: 1rem;">✕</button>
+      <h2>✨ Add Transaction</h2>
+      <form id="txForm">
+        <label class="control-label">From:</label>
+        <input type="text" id="txFrom" class="form-input" required>
+        
+        <label class="control-label">To:</label>
+        <input type="text" id="txTo" class="form-input" required>
+        
+        <label class="control-label">Amount:</label>
+        <input type="number" id="txAmount" class="form-input" step="0.01" min="0.01" required>
+        
+        <label class="control-label">Description:</label>
+        <input type="text" id="txDesc" class="form-input" placeholder="Optional description">
+        
+        <button type="submit" class="btn btn-success" style="margin-top: 1rem;">Add Transaction</button>
       </form>
     </div>
   </div>
-
-  <div id="controls">
+  
+  <!-- Payment Modal -->
+  <div id="paymentModal" class="modal">
+    <div class="modal-content">
+      <button id="closePaymentModal" class="btn btn-small" style="position: absolute; right: 1rem; top: 1rem;">✕</button>
+      <h2>💳 DirectLedger Payment</h2>
+      <div class="wallet-balance">
+        <h3>Your Balance</h3>
+        <div class="balance-amount" id="walletBalance">$0.00</div>
+      </div>
+      <form id="paymentForm">
+        <label class="control-label">Recipient ID:</label>
+        <input type="text" id="paymentRecipient" class="form-input" placeholder="Enter recipient's wallet ID" required>
+        
+        <label class="control-label">Amount:</label>
+        <input type="number" id="paymentAmount" class="form-input" step="0.01" min="0.01" required>
+        
+        <label class="control-label">Note (optional):</label>
+        <input type="text" id="paymentNote" class="form-input" placeholder="What's this payment for?">
+        
+        <label class="control-label">Transfer Speed:</label>
+        <select id="paymentSpeed" class="form-input">
+          <option value="instant">⚡ Instant (0.5% fee)</option>
+          <option value="fast" selected>🚀 Fast (0.2% fee)</option>
+          <option value="standard">📦 Standard (no fee)</option>
+        </select>
+        
+        <button type="submit" class="btn btn-payment" style="margin-top: 1rem;">Send Payment</button>
+      </form>
+    </div>
+  </div>
+  
+  <!-- QR Code Modal -->
+  <div id="qrcodeModal" class="modal">
+    <div class="modal-content" style="text-align: center;">
+      <button id="closeQRModal" class="btn btn-small" style="position: absolute; right: 1rem; top: 1rem;">✕</button>
+      <h2>📱 Payment QR Code</h2>
+      <div class="qrcode-container">
+        <canvas id="qrcodeCanvas" width="200" height="200"></canvas>
+      </div>
+      <div style="margin-top: 1rem; font-size: 1.1rem;">
+        <div>Amount: <span style="font-weight: bold; color: var(--payment-color); font-size: 1.3rem;" id="qrAmount">$0.00</span></div>
+        <div style="margin-top: 0.5rem;">To: <span id="qrRecipient" style="font-family: monospace;">Your Wallet</span></div>
+      </div>
+      <p style="margin-top: 1rem; opacity: 0.8;">Show this QR code to the payer or share it with them</p>
+    </div>
+  </div>
+  
+  <!-- Scan QR Code Modal -->
+  <div id="scanModal" class="modal">
+    <div class="modal-content" style="text-align: center;">
+      <button id="closeScanModal" class="btn btn-small" style="position: absolute; right: 1rem; top: 1rem;">✕</button>
+      <h2>📷 Scan QR Code</h2>
+      <div style="margin: 1.5rem 0; height: 300px; background: rgba(0,0,0,0.3); border-radius: 16px; display: flex; justify-content: center; align-items: center; border: 2px dashed var(--qrcode-color);">
+        <div style="color: var(--qrcode-color); font-size: 1.2rem; text-align: center;">
+          <div style="font-size: 3rem;">📷</div>
+          <div style="margin-top: 1rem;">Point camera at QR code</div>
+        </div>
+      </div>
+      <p style="opacity: 0.8; font-size: 0.9rem;">Camera access would be implemented in a real application</p>
+      <button id="simulateScan" class="btn btn-qr">Simulate QR Scan</button>
+    </div>
+  </div>
+  
+  <!-- Analytics Modal -->
+  <div id="analyticsModal" class="modal">
+    <div class="modal-content" style="max-width: 700px;">
+      <button id="closeAnalyticsModal" class="btn btn-small" style="position: absolute; right: 1rem; top: 1rem;">✕</button>
+      <h2>📊 Ledger Analytics</h2>
+      <div class="chart-container">
+        <div class="chart-title">Transaction Volume (24h)</div>
+        <canvas id="volumeChart" width="600" height="200"></canvas>
+      </div>
+      <div class="chart-container">
+        <div class="chart-title">Transaction Types</div>
+        <canvas id="typeChart" width="600" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Main Controls -->
+  <div id="controls" class="glass">
     <div class="control-group">
-      <button id="addTxButton">✨ Add Transaction</button>
-      <button id="generateButton">🌌 Generate Galaxy</button>
-      <button id="clearButton">🗑️ Clear Ledger</button>
+      <button id="addTxButton" class="btn">✨ Add Transaction</button>
+      <button id="generateButton" class="btn">🌌 Generate Galaxy</button>
+      <button id="clearButton" class="btn">🗑️ Clear Ledger</button>
     </div>
     
     <div class="control-group">
-      <button id="historyModeButton" class="mode-button">⏳ History Mode</button>
-      <button id="forkButton">🔀 Fork Timeline</button>
+      <button id="paymentButton" class="btn btn-payment">💳 Payment</button>
+      <button id="walletButton" class="btn btn-payment">👛 Wallet</button>
+      <button id="analyticsButton" class="btn">📊 Analytics</button>
     </div>
     
     <div class="control-group">
-      <input type="search" id="searchBox" placeholder="Search From, To, ID...">
-      <select id="filterSelect">
-        <option value="all">All Transactions</option>
+      <button id="generateQRButton" class="btn btn-qr">📱 Generate QR</button>
+      <button id="scanQRButton" class="btn btn-qr">📷 Scan QR</button>
+    </div>
+    
+    <div class="control-group">
+      <button id="historyModeButton" class="btn">⏳ History Mode</button>
+      <button id="forkButton" class="btn">🔀 Fork Timeline</button>
+    </div>
+    
+    <div class="control-group search-container">
+      <input type="search" id="searchBox" class="search-input" placeholder="Search transactions...">
+      <span class="search-icon">🔍</span>
+    </div>
+    
+    <div class="control-group">
+      <select id="filterSelect" class="form-input" style="min-width: 140px;">
+        <option value="all">All Types</option>
         <option value="source">Source Only</option>
         <option value="destination">Destination Only</option>
+        <option value="payment">Payments Only</option>
+        <option value="qrcode">QR Payments</option>
       </select>
     </div>
     
     <div class="control-group">
-      <button id="saveButton">💾 Save Ledger</button>
-      <button id="loadButton">📂 Load Ledger</button>
+      <button id="saveButton" class="btn">💾 Save</button>
+      <button id="loadButton" class="btn">📂 Load</button>
     </div>
     
     <div class="control-group">
-      <label>Zoom:</label>
-      <input type="range" id="zoomSlider" min="0.1" max="5" value="1" step="0.1" />
-      <span id="zoomDisplay">1.0x</span>
+      <label class="control-label">Zoom:</label>
+      <input type="range" id="zoomSlider" min="0.1" max="5" value="1" step="0.1" style="width: 80px;" />
+      <span class="status-display" id="zoomDisplay">1.0x</span>
     </div>
     
     <div class="control-group">
-      <span id="countDisplay">Transactions: 0</span>
+      <span class="status-display" id="countDisplay">Transactions: 0</span>
     </div>
   </div>
   
-  <div class="zoom-info" id="zoomInfo">
+  <!-- Info Panel -->
+  <div class="info-panel" id="zoomInfo">
     <strong>Galaxy View</strong><br>
-    Each pixel represents a transaction. Blue = source, Green = destination.
+    Each pixel represents a transaction. Zoom in for more details.
   </div>
   
+  <!-- Canvas -->
   <canvas id="canvas"></canvas>
   
-  <div id="detailsPanel" class="details-panel">
+  <!-- Details Panel -->
+  <div id="detailsPanel" class="panel details-panel">
     <h3>Transaction Details</h3>
     <p><strong>ID:</strong> <span id="detailId"></span></p>
-    <p><strong>From:</strong> <span id="detailFrom" class="detail-source"></span></p>
-    <p><strong>To:</strong> <span id="detailTo" class="detail-dest"></span></p>
-    <p><strong>Amount:</strong> <span id="detailAmount" class="detail-amount"></span></p>
+    <p><strong>From:</strong> <span id="detailFrom" style="color: var(--source-color);"></span></p>
+    <p><strong>To:</strong> <span id="detailTo" style="color: var(--dest-color);"></span></p>
+    <p><strong>Amount:</strong> <span id="detailAmount" style="color: var(--rung-color); font-weight: bold;"></span></p>
     <p><strong>Description:</strong> <span id="detailDesc"></span></p>
+    <p><strong>Status:</strong> <span id="detailStatus"></span></p>
     <p><strong>Timestamp:</strong> <span id="detailTs"></span></p>
-    <div id="historyActions" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #444;">
-      <button onclick="moveTransaction()" style="margin-right: 0.5rem;">📋 Move</button>
-      <button onclick="deleteTransaction()" style="margin-right: 0.5rem;">❌ Delete</button>
-      <button onclick="forkFromHere()">🔀 Fork Here</button>
+    <div id="historyActions" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--glass-border);">
+      <button onclick="moveTransaction()" class="btn btn-small">📋 Move</button>
+      <button onclick="deleteTransaction()" class="btn btn-small" style="margin: 0 0.5rem;">❌ Delete</button>
+      <button onclick="forkFromHere()" class="btn btn-small">🔀 Fork Here</button>
     </div>
   </div>
   
+  <!-- Wallet Panel -->
+  <div id="walletPanel" class="panel wallet-panel">
+    <h3>💳 DirectLedger Wallet</h3>
+    <div class="wallet-balance">
+      <div style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 0.5rem;">Wallet ID</div>
+      <div id="walletId" style="font-family: monospace; word-break: break-all; font-weight: bold; font-size: 0.9rem;">DL-XXXX-XXXX-XXXX</div>
+    </div>
+    <div class="wallet-balance">
+      <div style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 0.5rem;">Available Balance</div>
+      <div id="walletPanelBalance" class="balance-amount">$0.00</div>
+    </div>
+    <div style="margin-bottom: 1rem;">
+      <h4 style="margin: 1rem 0 0.5rem 0; color: var(--payment-color);">Recent Payments</h4>
+      <div id="recentPayments" style="max-height: 200px; overflow-y: auto; background: var(--glass-bg); border-radius: 12px; padding: 0.5rem;">
+        <p style="opacity: 0.6; text-align: center; margin: 1rem;">No payments yet</p>
+      </div>
+    </div>
+    <div style="display: flex; gap: 0.5rem;">
+      <button onclick="openPaymentModal()" class="btn btn-payment" style="flex: 1;">Send Money</button>
+      <button onclick="addFunds()" class="btn btn-success" style="flex: 1;">Add Funds</button>
+    </div>
+  </div>
+  
+  <!-- Analytics Panel -->
+  <div id="analyticsPanel" class="panel analytics-panel">
+    <h3>📊 Real-time Analytics</h3>
+    <div class="chart-container">
+      <div class="chart-title">Transaction Rate</div>
+      <div style="font-size: 1.5rem; font-weight: bold; color: var(--success-color);" id="txRate">0 tx/min</div>
+    </div>
+    <div class="chart-container">
+      <div class="chart-title">Total Volume</div>
+      <div style="font-size: 1.3rem; font-weight: bold; color: var(--payment-color);" id="totalVolume">$0.00</div>
+    </div>
+    <div class="chart-container">
+      <div class="chart-title">Network Health</div>
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <div id="networkHealth" style="width: 12px; height: 12px; border-radius: 50%; background: var(--success-color);"></div>
+        <span id="networkStatus">Healthy</span>
+      </div>
+    </div>
+    <div class="chart-container">
+      <div class="chart-title">Active Wallets</div>
+      <div style="font-size: 1.1rem; font-weight: bold;" id="activeWallets">0</div>
+    </div>
+  </div>
+  
+  <!-- Notification Container -->
   <div id="notification" class="notification"></div>
   
   <script>
     /**
-     * Scalable Temporal Blockchain Ledger
-     * A high-performance visualization tool for blockchain transactions
+     * Enhanced Scalable Temporal Blockchain Ledger
+     * High-performance visualization with advanced features
      * 
-     * @version 1.0.0
-     * @author Your Name
+     * @version 3.0.0
+     * @author Enhanced by Claude
      * @license MIT
      */
-
     'use strict';
-
-    // ======================
-    // DOM Element References
-    // ======================
-    
-    // Authentication elements
-    const pinModal = document.getElementById('pinModal');
-    const pinInput = document.getElementById('pinInput');
-    const pinSubmit = document.getElementById('pinSubmit');
-    const pinMessage = document.getElementById('pinMessage');
-    
-    // Transaction modal elements
-    const txModal = document.getElementById('txModal');
-    const txForm = document.getElementById('txForm');
-    const closeTxModal = document.getElementById('closeTxModal');
-    
-    // Canvas and UI elements
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    
-    // Control elements
-    const addTxButton = document.getElementById('addTxButton');
-    const generateButton = document.getElementById('generateButton');
-    const clearButton = document.getElementById('clearButton');
-    const saveButton = document.getElementById('saveButton');
-    const loadButton = document.getElementById('loadButton');
-    const historyModeButton = document.getElementById('historyModeButton');
-    const forkButton = document.getElementById('forkButton');
-    const countDisplay = document.getElementById('countDisplay');
-    const detailsPanel = document.getElementById('detailsPanel');
-    const searchBox = document.getElementById('searchBox');
-    const filterSelect = document.getElementById('filterSelect');
-    const zoomSlider = document.getElementById('zoomSlider');
-    const zoomDisplay = document.getElementById('zoomDisplay');
-    const zoomInfo = document.getElementById('zoomInfo');
     
     // ======================
-    // Application State
+    // Enhanced State Management
     // ======================
     
-    /**
-     * Core data structures
-     * transactions: Array of transaction objects
-     * blocks: Array of visual block objects (source/destination pairs)
-     */
-    let transactions = [];
-    let blocks = [];
-    
-    /**
-     * UI state variables
-     */
-    let zoom = 1.0;                          // Current zoom level
-    let dragOffset = { x: 0, y: 0 };         // Pan offset
-    let dragging = false;                     // Is user dragging?
-    let lastMousePos = { x: 0, y: 0 };       // Last mouse position for drag calculation
-    let hoveredBlockIndex = -1;              // Currently hovered block index
-    let selectedTxId = null;                  // Selected transaction ID
-    let searchQuery = '';                     // Current search query
-    let filterType = 'all';                  // Current filter type
-    let historyMode = false;                  // History mode toggle
-    let needsRedraw = true;                   // Flag to trigger redraw
-    let animationFrameId = null;              // RequestAnimationFrame ID
-    let isAuthenticated = false;              // Authentication status
-    
-    /**
-     * Performance optimization: Object pool for blocks
-     * Reduces garbage collection by reusing objects
-     */
-    const blockPool = [];
-    
-    /**
-     * Get a block from the pool or create a new one
-     * @returns {Object} A block object
-     */
-    function getBlockFromPool() {
-        return blockPool.length ? blockPool.pop() : {};
+    class LedgerState {
+      constructor() {
+        this.transactions = [];
+        this.blocks = [];
+        this.userWallet = {
+          id: '',
+          balance: 0,
+          transactions: []
+        };
+        this.currentQRCode = {
+          recipient: '',
+          amount: 0,
+          note: '',
+          timestamp: null
+        };
+        this.ui = {
+          zoom: 1.0,
+          dragOffset: { x: 0, y: 0 },
+          dragging: false,
+          lastMousePos: { x: 0, y: 0 },
+          hoveredBlockIndex: -1,
+          selectedTxId: null,
+          searchQuery: '',
+          filterType: 'all',
+          historyMode: false,
+          needsRedraw: true,
+          animationFrameId: null,
+          isAuthenticated: false,
+          darkTheme: true,
+          isShuttingDown: false
+        };
+        this.performance = {
+          fps: 60,
+          frameCount: 0,
+          lastFpsUpdate: Date.now(),
+          renderTime: 0,
+          blockPool: []
+        };
+        this.analytics = {
+          txRate: 0,
+          totalVolume: 0,
+          activeWallets: new Set(),
+          networkHealth: 'healthy'
+        };
+      }
     }
     
-    /**
-     * Release a block back to the pool
-     * @param {Object} block - The block to release
-     */
-    function releaseBlockToPool(block) {
-        blockPool.push(block);
+    const state = new LedgerState();
+    
+    // ======================
+    // Enhanced Performance Monitoring
+    // ======================
+    
+    class PerformanceMonitor {
+      constructor() {
+        this.frameStart = 0;
+        this.frameEnd = 0;
+        this.fpsHistory = [];
+        this.renderTimeHistory = [];
+      }
+      
+      startFrame() {
+        this.frameStart = performance.now();
+      }
+      
+      endFrame() {
+        this.frameEnd = performance.now();
+        const renderTime = this.frameEnd - this.frameStart;
+        
+        // Update FPS
+        state.performance.frameCount++;
+        const now = Date.now();
+        if (now - state.performance.lastFpsUpdate >= 1000) {
+          state.performance.fps = state.performance.frameCount;
+          state.performance.frameCount = 0;
+          state.performance.lastFpsUpdate = now;
+          this.updateFPSDisplay();
+        }
+        
+        // Track render time
+        this.renderTimeHistory.push(renderTime);
+        if (this.renderTimeHistory.length > 60) {
+          this.renderTimeHistory.shift();
+        }
+        
+        state.performance.renderTime = renderTime;
+      }
+      
+      updateFPSDisplay() {
+        const fpsElement = document.getElementById('fpsCounter');
+        const blockElement = document.getElementById('blockCounter');
+        
+        if (fpsElement) {
+          fpsElement.textContent = state.performance.fps;
+          fpsElement.style.color = state.performance.fps > 50 ? 'var(--success-color)' : 
+                                   state.performance.fps > 30 ? 'var(--warning-color)' : 'var(--error-color)';
+        }
+        
+        if (blockElement) {
+          blockElement.textContent = state.blocks.length.toLocaleString();
+        }
+      }
+      
+      getAverageRenderTime() {
+        if (this.renderTimeHistory.length === 0) return 0;
+        return this.renderTimeHistory.reduce((a, b) => a + b, 0) / this.renderTimeHistory.length;
+      }
+    }
+    
+    const perfMonitor = new PerformanceMonitor();
+    
+    // ======================
+    // Enhanced DOM Management
+    // ======================
+    
+    const DOM = {
+      // Authentication
+      pinModal: document.getElementById('pinModal'),
+      pinInput: document.getElementById('pinInput'),
+      pinSubmit: document.getElementById('pinSubmit'),
+      pinMessage: document.getElementById('pinMessage'),
+      
+      // Shutdown
+      shutdownModal: document.getElementById('shutdownModal'),
+      shutdownButton: document.getElementById('shutdownButton'),
+      cancelShutdown: document.getElementById('cancelShutdown'),
+      confirmShutdown: document.getElementById('confirmShutdown'),
+      
+      // Modals
+      txModal: document.getElementById('txModal'),
+      paymentModal: document.getElementById('paymentModal'),
+      qrcodeModal: document.getElementById('qrcodeModal'),
+      scanModal: document.getElementById('scanModal'),
+      analyticsModal: document.getElementById('analyticsModal'),
+      
+      // Canvas and main UI
+      canvas: document.getElementById('canvas'),
+      ctx: document.getElementById('canvas').getContext('2d'),
+      
+      // Controls
+      controls: document.getElementById('controls'),
+      searchBox: document.getElementById('searchBox'),
+      filterSelect: document.getElementById('filterSelect'),
+      zoomSlider: document.getElementById('zoomSlider'),
+      zoomDisplay: document.getElementById('zoomDisplay'),
+      countDisplay: document.getElementById('countDisplay'),
+      
+      // Panels
+      detailsPanel: document.getElementById('detailsPanel'),
+      walletPanel: document.getElementById('walletPanel'),
+      analyticsPanel: document.getElementById('analyticsPanel'),
+      zoomInfo: document.getElementById('zoomInfo'),
+      
+      // Notification
+      notification: document.getElementById('notification'),
+      
+      // Theme
+      themeToggle: document.getElementById('themeToggle')
+    };
+    
+    // ======================
+    // Enhanced Utility Functions
+    // ======================
+    
+    class Utils {
+      static formatCurrency(amount) {
+        return new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD'
+        }).format(amount);
+      }
+      
+      static formatDate(dateString) {
+        return new Intl.DateTimeFormat('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }).format(new Date(dateString));
+      }
+      
+      static generateId(prefix = 'TXN') {
+        return `${prefix}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      }
+      
+      static debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+          const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+          };
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+        };
+      }
+      
+      static throttle(func, limit) {
+        let inThrottle;
+        return function() {
+          const args = arguments;
+          const context = this;
+          if (!inThrottle) {
+            func.apply(context, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+          }
+        };
+      }
+      
+      static lerp(start, end, factor) {
+        return start + (end - start) * factor;
+      }
+      
+      static clamp(value, min, max) {
+        return Math.min(Math.max(value, min), max);
+      }
     }
     
     // ======================
-    // Constants
+    // Enhanced Authentication System
     // ======================
     
-    /**
-     * Level-of-detail thresholds for rendering optimization
-     * PIXEL_THRESHOLD: Below this zoom, show pixels
-     * SIMPLE_THRESHOLD: Below this zoom, show simple shapes
-     */
-    const PIXEL_THRESHOLD = 0.3;
-    const SIMPLE_THRESHOLD = 0.8;
-    
-    // ======================
-    // Authentication System
-    // ======================
-    
-    /**
-     * Initialize PIN authentication
-     * Checks if PIN is set and prompts for entry if needed
-     */
-    function checkPin() {
+    class AuthenticationManager {
+      constructor() {
+        this.maxAttempts = 3;
+        this.attempts = 0;
+        this.lockoutTime = 5 * 60 * 1000; // 5 minutes
+      }
+      
+      async checkPin() {
         const savedPin = localStorage.getItem('ledgerPin');
+        const lockout = localStorage.getItem('ledgerLockout');
+        
+        // Check if locked out
+        if (lockout && Date.now() < parseInt(lockout)) {
+          const remainingTime = Math.ceil((parseInt(lockout) - Date.now()) / 1000 / 60);
+          DOM.pinMessage.textContent = `Account locked. Try again in ${remainingTime} minutes.`;
+          DOM.pinSubmit.disabled = true;
+          return;
+        }
+        
         if (savedPin) {
-            // PIN exists, prompt for entry
-            pinModal.style.display = 'flex';
+          DOM.pinMessage.textContent = 'Enter your PIN to access the ledger';
+          DOM.pinSubmit.textContent = 'Access Ledger';
         } else {
-            // First time use - set a PIN
-            pinMessage.textContent = 'Set a PIN to secure your ledger';
-            pinSubmit.textContent = 'Set PIN';
-            pinModal.style.display = 'flex';
+          DOM.pinMessage.textContent = 'Set a 4-digit PIN to secure your ledger';
+          DOM.pinSubmit.textContent = 'Set PIN';
         }
-    }
-    
-    // PIN submission handler
-    pinSubmit.addEventListener('click', () => {
-        const pin = pinInput.value;
-        if (pin.length !== 4) {
-            pinMessage.textContent = 'PIN must be 4 digits';
-            return;
+        
+        DOM.pinModal.style.display = 'flex';
+        DOM.pinInput.focus();
+      }
+      
+      async validatePin(pin) {
+        if (pin.length !== 4 || !/^\d{4}$/.test(pin)) {
+          this.showMessage('PIN must be exactly 4 digits');
+          return false;
         }
         
         const savedPin = localStorage.getItem('ledgerPin');
+        
         if (!savedPin) {
-            // Save new PIN
-            localStorage.setItem('ledgerPin', pin);
-            isAuthenticated = true;
-            pinModal.style.display = 'none';
-            showNotification('PIN set successfully!');
-            initializeApplication();
+          // Set new PIN
+          localStorage.setItem('ledgerPin', pin);
+          this.showMessage('PIN set successfully!', 'success');
+          state.ui.isAuthenticated = true;
+          this.closeModal();
+          await this.initializeApplication();
+          return true;
         } else if (pin === savedPin) {
-            // Correct PIN
-            isAuthenticated = true;
-            pinModal.style.display = 'none';
-            initializeApplication();
+          // Correct PIN
+          this.showMessage('Access granted!', 'success');
+          state.ui.isAuthenticated = true;
+          this.attempts = 0;
+          localStorage.removeItem('ledgerLockout');
+          this.closeModal();
+          await this.initializeApplication();
+          return true;
         } else {
-            // Incorrect PIN
-            pinMessage.textContent = 'Incorrect PIN. Try again.';
-            pinInput.value = '';
+          // Incorrect PIN
+          this.attempts++;
+          if (this.attempts >= this.maxAttempts) {
+            localStorage.setItem('ledgerLockout', (Date.now() + this.lockoutTime).toString());
+            this.showMessage('Too many failed attempts. Account locked for 5 minutes.', 'error');
+            DOM.pinSubmit.disabled = true;
+          } else {
+            this.showMessage(`Incorrect PIN. ${this.maxAttempts - this.attempts} attempts remaining.`, 'error');
+          }
+          DOM.pinInput.value = '';
+          return false;
         }
-    });
-    
-    /**
-     * Initialize the application after successful authentication
-     */
-    function initializeApplication() {
-        resizeCanvas();
-        updateZoomInfo();
+      }
+      
+      showMessage(message, type = 'warning') {
+        DOM.pinMessage.textContent = message;
+        DOM.pinMessage.style.color = `var(--${type}-color)`;
+      }
+      
+      closeModal() {
+        DOM.pinModal.style.display = 'none';
+        DOM.pinInput.value = '';
+        DOM.pinMessage.textContent = '';
+      }
+      
+      async initializeApplication() {
+        await CanvasManager.resizeCanvas();
+        RenderEngine.updateZoomInfo();
+        WalletManager.initialize();
+        AnalyticsManager.initialize();
         
-        // Auto-generate a small galaxy for demo
+        // Show welcome message
+        NotificationManager.show('Welcome to Enhanced Blockchain Ledger!', 'success');
+        
+        // Auto-generate demo data
         setTimeout(() => {
-            generateGalaxy(100);
-        }, 500);
+          TransactionManager.generateGalaxy(250);
+        }, 1000);
+      }
     }
     
-    // ======================
-    // Transaction Modal
-    // ======================
-    
-    // Close transaction modal
-    closeTxModal.addEventListener('click', () => {
-        txModal.style.display = 'none';
-    });
-    
-    // Transaction form submission
-    txForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const from = document.getElementById('txFrom').value;
-        const to = document.getElementById('txTo').value;
-        const amount = parseFloat(document.getElementById('txAmount').value).toFixed(2);
-        const description = document.getElementById('txDesc').value || 'Manual Transaction';
-        
-        const newTx = {
-            id: `TXN-${10000 + transactions.length}`,
-            from, to, amount, description,
-            timestamp: new Date().toISOString()
-        };
-        
-        addTransaction(newTx);
-        txModal.style.display = 'none';
-        txForm.reset();
-        showNotification('Transaction added successfully!');
-    });
+    const authManager = new AuthenticationManager();
     
     // ======================
-    // Notification System
+    // Enhanced Canvas Management
     // ======================
     
-    /**
-     * Show a notification message
-     * @param {string} message - The message to display
-     */
-    function showNotification(message) {
-        const notification = document.getElementById('notification');
-        notification.textContent = message;
-        notification.classList.add('show');
+    class CanvasManager {
+      static async resizeCanvas() {
+        if (!state.ui.isAuthenticated) return;
         
-        setTimeout(() => {
-            notification.classList.remove('show');
-        }, 3000);
-    }
-    
-    // ======================
-    // Canvas Management
-    // ======================
-    
-    /**
-     * Resize canvas to fit window
-     * Centers the view and triggers redraw
-     */
-    function resizeCanvas() {
-        if (!isAuthenticated) return;
+        const controlsHeight = DOM.controls.offsetHeight;
+        DOM.canvas.width = window.innerWidth;
+        DOM.canvas.height = window.innerHeight - controlsHeight;
+        DOM.canvas.style.marginTop = `${controlsHeight}px`;
         
-        const controlsHeight = document.getElementById('controls').offsetHeight;
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight - controlsHeight;
-        canvas.style.marginTop = `${controlsHeight}px`;
-        centerView();
-        requestDraw();
-    }
-    
-    window.addEventListener('resize', resizeCanvas);
-    
-    // ======================
-    // Event Listeners
-    // ======================
-    
-    // Add transaction button
-    addTxButton.addEventListener('click', () => {
-        if (!isAuthenticated) return;
-        txModal.style.display = 'flex';
-    });
-    
-    // Generate galaxy button
-    generateButton.addEventListener('click', () => {
-        if (!isAuthenticated) return;
-        generateGalaxy(5000);
-    });
-    
-    // Clear ledger button
-    clearButton.addEventListener('click', () => {
-        if (!isAuthenticated) return;
-        if (confirm('Are you sure you want to clear the entire ledger?')) {
-            clearLedger();
-            showNotification('Ledger cleared');
-        }
-    });
-    
-    // Save ledger button
-    saveButton.addEventListener('click', () => {
-        if (!isAuthenticated) return;
-        try {
-            localStorage.setItem('blockchainLedger', JSON.stringify(transactions));
-            showNotification('Ledger saved successfully!');
-        } catch (e) {
-            showNotification('Failed to save ledger: ' + e.message);
-        }
-    });
-    
-    // Load ledger button
-    loadButton.addEventListener('click', () => {
-        if (!isAuthenticated) return;
-        try {
-            const saved = localStorage.getItem('blockchainLedger');
-            if (saved) {
-                const loadedTransactions = JSON.parse(saved);
-                clearLedger();
-                loadedTransactions.forEach(tx => {
-                    transactions.push(tx);
-                    blocks.push({ type: 'source', txId: tx.id, data: tx });
-                    blocks.push({ type: 'destination', txId: tx.id, data: tx });
-                });
-                updateDisplay();
-                showNotification('Ledger loaded successfully!');
-            } else {
-                showNotification('No saved ledger found');
-            }
-        } catch (e) {
-            showNotification('Failed to load ledger: ' + e.message);
-        }
-    });
-    
-    // History mode toggle
-    historyModeButton.addEventListener('click', toggleHistoryMode);
-    
-    // Fork timeline button
-    forkButton.addEventListener('click', createFork);
-    
-    // Search input
-    searchBox.addEventListener('input', (e) => { 
-        searchQuery = e.target.value.toLowerCase(); 
-        requestDraw(); 
-    });
-    
-    // Filter select
-    filterSelect.addEventListener('change', (e) => {
-        filterType = e.target.value;
-        requestDraw();
-    });
-    
-    // Zoom slider
-    zoomSlider.addEventListener('input', (e) => { 
-        zoom = parseFloat(e.target.value); 
-        zoomDisplay.textContent = zoom.toFixed(1) + 'x';
-        updateZoomInfo();
-        requestDraw(); 
-    });
-    
-    // ======================
-    // Keyboard Shortcuts
-    // ======================
-    
-    document.addEventListener('keydown', (e) => {
-        if (!isAuthenticated) return;
+        // Enable high DPI rendering
+        const devicePixelRatio = window.devicePixelRatio || 1;
+        const rect = DOM.canvas.getBoundingClientRect();
         
-        if (e.ctrlKey || e.metaKey) {
-            switch(e.key) {
-                case 's':
-                    e.preventDefault();
-                    saveButton.click();
-                    break;
-                case 'o':
-                    e.preventDefault();
-                    loadButton.click();
-                    break;
-                case '=':
-                case '+':
-                    e.preventDefault();
-                    zoomSlider.value = Math.min(5, zoom + 0.1);
-                    zoomSlider.dispatchEvent(new Event('input'));
-                    break;
-                case '-':
-                    e.preventDefault();
-                    zoomSlider.value = Math.max(0.1, zoom - 0.1);
-                    zoomSlider.dispatchEvent(new Event('input'));
-                    break;
-            }
-        }
-    });
-    
-    // ======================
-    // Canvas Interaction
-    // ======================
-    
-    canvas.addEventListener('mousedown', (e) => { 
-        if (!isAuthenticated) return;
-        dragging = true; 
-        lastMousePos = { x: e.clientX, y: e.clientY }; 
-    });
-    
-    canvas.addEventListener('mouseup', () => { 
-        dragging = false; 
-        canvas.style.cursor = 'grab'; 
-    });
-    
-    canvas.addEventListener('mouseleave', () => { 
-        dragging = false; 
-        hoveredBlockIndex = -1; 
-        requestDraw(); 
-    });
-    
-    canvas.addEventListener('mousemove', handleMouseMove);
-    canvas.addEventListener('click', handleClick);
-    canvas.addEventListener('wheel', handleScroll, { passive: false });
-    
-    /**
-     * Handle mouse movement for dragging and hover effects
-     * @param {MouseEvent} e - Mouse event
-     */
-    function handleMouseMove(e) {
-        if (!isAuthenticated) return;
+        DOM.canvas.width = rect.width * devicePixelRatio;
+        DOM.canvas.height = rect.height * devicePixelRatio;
+        DOM.canvas.style.width = rect.width + 'px';
+        DOM.canvas.style.height = rect.height + 'px';
         
-        if (dragging) {
-            canvas.style.cursor = 'grabbing';
-            dragOffset.x += e.clientX - lastMousePos.x;
-            dragOffset.y += e.clientY - lastMousePos.y;
-            lastMousePos = { x: e.clientX, y: e.clientY };
-            requestDraw();
-        } else {
-            const rect = canvas.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
-            const newHoveredIndex = getBlockAtPosition(mouseX, mouseY);
-            if (newHoveredIndex !== hoveredBlockIndex) {
-                hoveredBlockIndex = newHoveredIndex;
-                canvas.style.cursor = hoveredBlockIndex >= 0 ? 'pointer' : 'grab';
-                requestDraw();
-            }
-        }
-    }
-    
-    /**
-     * Handle canvas clicks for block selection
-     */
-    function handleClick() {
-        if (!isAuthenticated) return;
+        DOM.ctx.scale(devicePixelRatio, devicePixelRatio);
         
-        if (hoveredBlockIndex !== -1) {
-            selectedTxId = blocks[hoveredBlockIndex].txId;
-            showDetails(selectedTxId);
-            requestDraw();
-        } else {
-            detailsPanel.style.display = 'none';
-            selectedTxId = null;
-            requestDraw();
-        }
-    }
-    
-    /**
-     * Handle mouse wheel for zooming and panning
-     * @param {WheelEvent} e - Wheel event
-     */
-    function handleScroll(e) {
-        if (!isAuthenticated) return;
+        this.centerView();
+        RenderEngine.requestDraw();
+      }
+      
+      static centerView() {
+        if (!state.ui.isAuthenticated || state.blocks.length === 0) return;
         
-        e.preventDefault();
-        if (e.ctrlKey) {
-            // Zoom
-            const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
-            zoom = Math.max(0.1, Math.min(5, zoom * zoomFactor));
-            zoomSlider.value = zoom;
-            zoomDisplay.textContent = zoom.toFixed(1) + 'x';
-            updateZoomInfo();
-        } else {
-            // Pan
-            dragOffset.x -= e.deltaX;
-            dragOffset.y -= e.deltaY;
-        }
-        requestDraw();
-    }
-    
-    // ======================
-    // Core Functions
-    // ======================
-    
-    /**
-     * Toggle history mode
-     */
-    function toggleHistoryMode() {
-        historyMode = !historyMode;
-        historyModeButton.classList.toggle('active', historyMode);
-        historyModeButton.classList.toggle('history-mode', historyMode);
-        document.getElementById('historyActions').style.display = historyMode ? 'block' : 'none';
-        requestDraw();
-    }
-    
-    /**
-     * Create a fork from selected transaction
-     */
-    function createFork() {
-        if (selectedTxId) {
-            forkFromHere();
-        } else {
-            showNotification('Select a transaction first to fork from that point!');
-        }
-    }
-    
-    /**
-     * Generate a galaxy of transactions
-     * @param {number} count - Number of transactions to generate
-     */
-    function generateGalaxy(count) {
-        if (!isAuthenticated) return;
-        
-        const names = ["Alice", "Bob", "Charlie", "Diana", "Eve", "Frank", "Grace", "Heidi", "Ivan", "Judy", "Kevin", "Luna", "Mike", "Nina", "Oscar", "Penny"];
-        const items = ["Data Packets", "Compute Cycles", "Storage Units", "API Call", "Token Transfer", "Smart Contract", "NFT Mint", "DeFi Swap", "Governance Vote", "Staking Reward"];
-        
-        console.log(`Generating ${count} transactions...`);
-        
-        // Use batch processing for better performance
-        const batchSize = 1000;
-        let processed = 0;
-        
-        function processBatch() {
-            const end = Math.min(processed + batchSize, count);
-            for (let i = processed; i < end; i++) {
-                const from = names[Math.floor(Math.random() * names.length)];
-                let to;
-                do { to = names[Math.floor(Math.random() * names.length)]; } while (from === to);
-                const amount = (Math.random() * 1000 + 1).toFixed(2);
-                const description = items[Math.floor(Math.random() * items.length)];
-                const timestamp = new Date(Date.now() - (count - i) * 60000).toISOString();
-                
-                const newTx = {
-                    id: `TXN-${10000 + transactions.length}`, 
-                    from, to, amount, description, timestamp
-                };
-                
-                transactions.push(newTx);
-                blocks.push({ type: 'source', txId: newTx.id, data: newTx });
-                blocks.push({ type: 'destination', txId: newTx.id, data: newTx });
-            }
-            
-            processed = end;
-            updateDisplay();
-            
-            if (processed < count) {
-                setTimeout(processBatch, 0); // Let UI breathe
-            } else {
-                console.log(`Galaxy generated with ${transactions.length} transactions!`);
-                showNotification(`Generated ${count} transactions!`);
-            }
-        }
-        
-        processBatch();
-    }
-    
-    /**
-     * Add a transaction to the ledger
-     * @param {Object} txData - Transaction data
-     */
-    function addTransaction(txData) {
-        if (!isAuthenticated) return;
-        
-        const newTx = txData || {
-            id: `TXN-${10000 + transactions.length}`,
-            from: "Unknown",
-            to: "Unknown",
-            amount: (Math.random() * 500 + 10).toFixed(2),
-            description: "Manual Transaction",
-            timestamp: new Date().toISOString()
-        };
-        
-        transactions.push(newTx);
-        blocks.push({ type: 'source', txId: newTx.id, data: newTx });
-        blocks.push({ type: 'destination', txId: newTx.id, data: newTx });
-        updateDisplay();
-    }
-    
-    /**
-     * Update the display with current transaction count
-     */
-    function updateDisplay() {
-        countDisplay.textContent = `Transactions: ${transactions.length.toLocaleString()}`;
-        requestDraw();
-    }
-    
-    /**
-     * Clear all transactions from the ledger
-     */
-    function clearLedger() {
-        if (!isAuthenticated) return;
-        
-        transactions = [];
-        blocks = [];
-        dragOffset = { x: 0, y: 0 };
-        selectedTxId = null;
-        detailsPanel.style.display = 'none';
-        updateDisplay();
-    }
-    
-    /**
-     * Center the view on the ledger
-     */
-    function centerView() {
-        if (!isAuthenticated || blocks.length === 0) return;
-        
-        // Calculate the total dimensions of the ledger
-        const blockSize = 40 * zoom;
+        const blockSize = 40 * state.ui.zoom;
         const hexWidth = 2 * blockSize;
         const hexHeight = Math.sqrt(3) * blockSize;
-        const cols = Math.max(1, Math.floor(canvas.width / (hexWidth * 0.75)));
-        const rows = Math.ceil(blocks.length / cols);
+        const cols = Math.max(1, Math.floor(DOM.canvas.width / (hexWidth * 0.75)));
+        const rows = Math.ceil(state.blocks.length / cols);
         const layoutWidth = cols * hexWidth * 0.75;
         const layoutHeight = rows * hexHeight;
         
-        // Center the view
-        dragOffset.x = 0;
-        dragOffset.y = 0;
+        state.ui.dragOffset.x = (DOM.canvas.width - layoutWidth) / 2;
+        state.ui.dragOffset.y = (DOM.canvas.height - layoutHeight) / 2;
+      }
     }
     
-    /**
-     * Request a redraw on the next animation frame
-     */
-    function requestDraw() {
-        needsRedraw = true;
-    }
+    // ======================
+    // Enhanced Render Engine
+    // ======================
     
-    /**
-     * Animation loop for efficient rendering
-     */
-    function animate() {
-        if (needsRedraw) {
-            draw();
-            needsRedraw = false;
+    class RenderEngine {
+      static PIXEL_THRESHOLD = 0.3;
+      static SIMPLE_THRESHOLD = 0.8;
+      static colors = {
+        source: '#3498db',
+        dest: '#2ecc71',
+        payment: '#16a085',
+        qrcode: '#2c3e50',
+        connection: '#e74c3c',
+        highlight: '#f1c40f'
+      };
+      
+      static requestDraw() {
+        state.ui.needsRedraw = true;
+      }
+      
+      static animate() {
+        if (state.ui.needsRedraw) {
+          perfMonitor.startFrame();
+          this.draw();
+          state.ui.needsRedraw = false;
+          perfMonitor.endFrame();
         }
-        animationFrameId = requestAnimationFrame(animate);
-    }
-    
-    // Start the animation loop
-    animate();
-    
-    // ======================
-    // Rendering Functions
-    // ======================
-    
-    /**
-     * Main drawing function - dispatches to appropriate renderer
-     */
-    function draw() {
-        if (!isAuthenticated) return;
+        state.ui.animationFrameId = requestAnimationFrame(() => this.animate());
+      }
+      
+      static draw() {
+        if (!state.ui.isAuthenticated) return;
         
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if (blocks.length === 0) return;
+        DOM.ctx.clearRect(0, 0, DOM.canvas.width, DOM.canvas.height);
         
-        if (zoom < PIXEL_THRESHOLD) {
-            drawGalaxyView();
-        } else if (zoom < SIMPLE_THRESHOLD) {
-            drawClusterView();
+        if (state.blocks.length === 0) {
+          this.drawEmptyState();
+          return;
+        }
+        
+        // Apply theme
+        this.applyTheme();
+        
+        if (state.ui.zoom < this.PIXEL_THRESHOLD) {
+          this.drawGalaxyView();
+        } else if (state.ui.zoom < this.SIMPLE_THRESHOLD) {
+          this.drawClusterView();
         } else {
-            drawBlockView();
+          this.drawBlockView();
         }
-    }
-    
-    /**
-     * Draw galaxy view - each transaction as a pixel
-     */
-    function drawGalaxyView() {
-        const cols = Math.max(1, Math.floor(canvas.width / 2));
-        const spacing = 2;
         
-        ctx.imageSmoothingEnabled = false;
+        // Draw overlay effects
+        this.drawOverlayEffects();
+      }
+      
+      static applyTheme() {
+        if (!state.ui.darkTheme) {
+          // Light theme adjustments
+          this.colors.source = '#2980b9';
+          this.colors.dest = '#27ae60';
+          this.colors.payment = '#138d75';
+          DOM.ctx.globalCompositeOperation = 'source-over';
+        } else {
+          // Dark theme (default)
+          this.colors.source = '#3498db';
+          this.colors.dest = '#2ecc71';
+          this.colors.payment = '#16a085';
+        }
+      }
+      
+      static drawEmptyState() {
+        DOM.ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        DOM.ctx.font = '24px Inter, sans-serif';
+        DOM.ctx.textAlign = 'center';
+        DOM.ctx.textBaseline = 'middle';
+        DOM.ctx.fillText(
+          'No transactions yet. Click "Add Transaction" or "Generate Galaxy" to start!',
+          DOM.canvas.width / 2,
+          DOM.canvas.height / 2
+        );
+      }
+      
+      static drawGalaxyView() {
+        const cols = Math.max(1, Math.floor(DOM.canvas.width / 3));
+        const spacing = 3;
         
-        // Only process visible blocks for performance
-        const startIdx = Math.max(0, Math.floor((-dragOffset.y - canvas.height/4) / spacing) * cols);
-        const endIdx = Math.min(blocks.length, Math.ceil((canvas.height - dragOffset.y + canvas.height/4) / spacing) * cols);
+        DOM.ctx.imageSmoothingEnabled = false;
+        
+        // Optimized viewport culling
+        const viewportBuffer = 50;
+        const startIdx = Math.max(0, Math.floor((-state.ui.dragOffset.y - viewportBuffer) / spacing) * cols);
+        const endIdx = Math.min(state.blocks.length, 
+          Math.ceil((DOM.canvas.height - state.ui.dragOffset.y + viewportBuffer) / spacing) * cols);
+        
+        // Batch render pixels for better performance
+        const imageData = DOM.ctx.createImageData(DOM.canvas.width, DOM.canvas.height);
+        const data = imageData.data;
         
         for (let index = startIdx; index < endIdx; index++) {
-            const block = blocks[index];
-            const col = index % cols;
-            const row = Math.floor(index / cols);
-            const x = col * spacing + dragOffset.x + canvas.width / 4;
-            const y = row * spacing + dragOffset.y + canvas.height / 4;
-            
-            // Skip if outside viewport
-            if (x < -10 || x > canvas.width + 10 || y < -10 || y > canvas.height + 10) continue;
-            
-            // Apply filter
-            if (filterType !== 'all' && block.type !== filterType) continue;
-            
-            const isSearched = searchQuery && (block.data.id.toLowerCase().includes(searchQuery) || 
-                                             block.data.from.toLowerCase().includes(searchQuery) || 
-                                             block.data.to.toLowerCase().includes(searchQuery));
-            
-            ctx.globalAlpha = 1.0;
-            if (searchQuery && !isSearched) ctx.globalAlpha = 0.1;
-            
-            // Draw glowing pixel
-            const color = block.type === 'source' ? '#3498db' : '#2ecc71';
-            ctx.fillStyle = color;
-            ctx.shadowColor = color;
-            ctx.shadowBlur = 2;
-            ctx.fillRect(x, y, 1, 1);
-            ctx.shadowBlur = 0;
+          const block = state.blocks[index];
+          if (!this.passesFilter(block)) continue;
+          
+          const col = index % cols;
+          const row = Math.floor(index / cols);
+          const x = Math.floor(col * spacing + state.ui.dragOffset.x + DOM.canvas.width / 4);
+          const y = Math.floor(row * spacing + state.ui.dragOffset.y + DOM.canvas.height / 4);
+          
+          if (x < 0 || x >= DOM.canvas.width || y < 0 || y >= DOM.canvas.height) continue;
+          
+          const isSearched = this.isSearchMatch(block);
+          const alpha = (state.ui.searchQuery && !isSearched) ? 25 : 255;
+          
+          const pixelIndex = (y * DOM.canvas.width + x) * 4;
+          const color = this.getBlockColor(block);
+          const rgb = this.hexToRgb(color);
+          
+          data[pixelIndex] = rgb.r;     // Red
+          data[pixelIndex + 1] = rgb.g; // Green
+          data[pixelIndex + 2] = rgb.b; // Blue
+          data[pixelIndex + 3] = alpha; // Alpha
         }
         
-        ctx.globalAlpha = 1.0;
-        ctx.imageSmoothingEnabled = true;
-    }
-    
-    /**
-     * Draw cluster view - simple hexagons
-     */
-    function drawClusterView() {
-        const blockSize = 30 * zoom;
-        const hexWidth = blockSize * 1.5;
+        DOM.ctx.putImageData(imageData, 0, 0);
+        DOM.ctx.imageSmoothingEnabled = true;
+      }
+      
+      static drawClusterView() {
+        const blockSize = 25 * state.ui.zoom;
+        const hexWidth = blockSize * 1.8;
         const hexHeight = Math.sqrt(3) * blockSize;
         
-        // Calculate visible range
-        const startRow = Math.max(0, Math.floor((-dragOffset.y - canvas.height) / hexHeight));
-        const endRow = Math.ceil(blocks.length / Math.max(1, Math.floor(canvas.width / (hexWidth * 0.75))));
-        const startIdx = startRow * Math.floor(canvas.width / (hexWidth * 0.75));
-        const endIdx = Math.min(blocks.length, endRow * Math.floor(canvas.width / (hexWidth * 0.75)));
+        // Draw connections with improved styling
+        this.drawConnections(hexWidth, hexHeight, 1.5 * state.ui.zoom);
         
-        // Draw connections first
-        ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--rung-color').trim();
-        ctx.lineWidth = 1;
+        // Draw simplified hexagons with better performance
+        const visibleBlocks = this.getVisibleBlocks(hexWidth, hexHeight);
         
-        for (let i = 0; i < transactions.length; i++) {
-            const tx = transactions[i];
-            const sourceIndex = blocks.findIndex(b => b.txId === tx.id && b.type === 'source');
-            const destIndex = blocks.findIndex(b => b.txId === tx.id && b.type === 'destination');
-            if (sourceIndex === -1 || destIndex === -1) continue;
-            
-            const posA = getBlockPosition(sourceIndex, hexWidth, hexHeight);
-            const posB = getBlockPosition(destIndex, hexWidth, hexHeight);
-            
-            // Skip if both are outside viewport
-            if ((posA.x < -50 && posB.x < -50) || 
-                (posA.x > canvas.width + 50 && posB.x > canvas.width + 50) ||
-                (posA.y < -50 && posB.y < -50) || 
-                (posA.y > canvas.height + 50 && posB.y > canvas.height + 50)) continue;
-            
-            const isSearched = searchQuery && (tx.id.toLowerCase().includes(searchQuery) || 
-                                             tx.from.toLowerCase().includes(searchQuery) || 
-                                             tx.to.toLowerCase().includes(searchQuery));
-            
-            ctx.globalAlpha = 1.0;
-            if (searchQuery && !isSearched) ctx.globalAlpha = 0.2;
-            
-            ctx.beginPath();
-            ctx.moveTo(posA.x, posA.y);
-            ctx.lineTo(posB.x, posB.y);
-            ctx.stroke();
+        for (const { block, index, pos } of visibleBlocks) {
+          if (!this.passesFilter(block)) continue;
+          
+          const isSearched = this.isSearchMatch(block);
+          DOM.ctx.globalAlpha = (state.ui.searchQuery && !isSearched) ? 0.3 : 1.0;
+          
+          this.drawSimpleHexagon(pos.x, pos.y, blockSize, this.getBlockColor(block));
         }
         
-        // Draw simple hexagons
-        for (let index = startIdx; index < endIdx; index++) {
-            const block = blocks[index];
-            const pos = getBlockPosition(index, hexWidth, hexHeight);
-            
-            // Skip if outside viewport
-            if (pos.x < -50 || pos.x > canvas.width + 50 || pos.y < -50 || pos.y > canvas.height + 50) continue;
-            
-            // Apply filter
-            if (filterType !== 'all' && block.type !== filterType) continue;
-            
-            const isSearched = searchQuery && (block.data.id.toLowerCase().includes(searchQuery) || 
-                                             block.data.from.toLowerCase().includes(searchQuery) || 
-                                             block.data.to.toLowerCase().includes(searchQuery));
-            
-            ctx.globalAlpha = 1.0;
-            if (searchQuery && !isSearched) ctx.globalAlpha = 0.2;
-            
-            ctx.fillStyle = block.type === 'source' ? 
-                getComputedStyle(document.documentElement).getPropertyValue('--source-color').trim() : 
-                getComputedStyle(document.documentElement).getPropertyValue('--dest-color').trim();
-            
-            // Draw simple hexagon
-            ctx.beginPath();
-            for (let i = 0; i < 6; i++) {
-                let angle = (Math.PI / 3) * i;
-                let px = pos.x + blockSize * Math.cos(angle);
-                let py = pos.y + blockSize * Math.sin(angle);
-                i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
-            }
-            ctx.closePath();
-            ctx.fill();
-        }
-        
-        ctx.globalAlpha = 1.0;
-    }
-    
-    /**
-     * Draw block view - detailed hexagons with text
-     */
-    function drawBlockView() {
-        const blockSize = 40 * zoom;
-        const hexHeight = Math.sqrt(3) * blockSize;
+        DOM.ctx.globalAlpha = 1.0;
+      }
+      
+      static drawBlockView() {
+        const blockSize = 40 * state.ui.zoom;
         const hexWidth = 2 * blockSize;
+        const hexHeight = Math.sqrt(3) * blockSize;
         
-        // Calculate visible range
-        const startRow = Math.max(0, Math.floor((-dragOffset.y - canvas.height) / hexHeight));
-        const endRow = Math.ceil(blocks.length / Math.max(1, Math.floor(canvas.width / (hexWidth * 0.75))));
-        const startIdx = startRow * Math.floor(canvas.width / (hexWidth * 0.75));
-        const endIdx = Math.min(blocks.length, endRow * Math.floor(canvas.width / (hexWidth * 0.75)));
+        // Draw enhanced connections
+        this.drawConnections(hexWidth, hexHeight, 3 * state.ui.zoom);
         
-        // Draw connections
-        ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--rung-color').trim();
-        ctx.lineWidth = 2 * zoom;
+        // Draw detailed blocks
+        const visibleBlocks = this.getVisibleBlocks(hexWidth, hexHeight);
         
-        for (let i = 0; i < transactions.length; i++) {
-            const tx = transactions[i];
-            const sourceIndex = blocks.findIndex(b => b.txId === tx.id && b.type === 'source');
-            const destIndex = blocks.findIndex(b => b.txId === tx.id && b.type === 'destination');
-            if (sourceIndex === -1 || destIndex === -1) continue;
-            
-            const posA = getBlockPosition(sourceIndex, hexWidth, hexHeight);
-            const posB = getBlockPosition(destIndex, hexWidth, hexHeight);
-            
-            // Skip if both are outside viewport
-            if ((posA.x < -50 && posB.x < -50) || 
-                (posA.x > canvas.width + 50 && posB.x > canvas.width + 50) ||
-                (posA.y < -50 && posB.y < -50) || 
-                (posA.y > canvas.height + 50 && posB.y > canvas.height + 50)) continue;
-            
-            const isHovered = hoveredBlockIndex !== -1 && blocks[hoveredBlockIndex].txId === tx.id;
-            const isSelected = selectedTxId === tx.id;
-            const isSearched = searchQuery && (tx.id.toLowerCase().includes(searchQuery) || 
-                                             tx.from.toLowerCase().includes(searchQuery) || 
-                                             tx.to.toLowerCase().includes(searchQuery));
-            ctx.globalAlpha = 1.0;
-            if (searchQuery && !isSearched) ctx.globalAlpha = 0.1;
-            ctx.beginPath();
-            ctx.moveTo(posA.x, posA.y);
-            ctx.lineTo(posB.x, posB.y);
-            
-            ctx.lineWidth = (isHovered || isSelected) ? 5 * zoom : 2 * zoom;
-            ctx.strokeStyle = (isHovered || isSelected) ? 
-                getComputedStyle(document.documentElement).getPropertyValue('--highlight-color').trim() : 
-                getComputedStyle(document.documentElement).getPropertyValue('--rung-color').trim();
-            ctx.stroke();
+        for (const { block, index, pos } of visibleBlocks) {
+          if (!this.passesFilter(block)) continue;
+          this.drawDetailedHexBlock(block, pos.x, pos.y, index, blockSize);
         }
-        ctx.globalAlpha = 1.0;
+      }
+      
+      static drawConnections(hexWidth, hexHeight, lineWidth) {
+        DOM.ctx.strokeStyle = this.colors.connection;
+        DOM.ctx.lineWidth = lineWidth;
+        DOM.ctx.lineCap = 'round';
         
-        // Draw detailed hexagons
-        for (let index = startIdx; index < endIdx; index++) {
-            const block = blocks[index];
-            const pos = getBlockPosition(index, hexWidth, hexHeight);
-            
-            // Skip if outside viewport
-            if (pos.x < -50 || pos.x > canvas.width + 50 || pos.y < -50 || pos.y > canvas.height + 50) continue;
-            
-            // Apply filter
-            if (filterType !== 'all' && block.type !== filterType) continue;
-            
-            drawDetailedHexBlock(block, pos.x, pos.y, index, blockSize);
-        }
-    }
-    
-    /**
-     * Draw a detailed hexagon block
-     * @param {Object} block - Block object
-     * @param {number} x - X position
-     * @param {number} y - Y position
-     * @param {number} index - Block index
-     * @param {number} blockSize - Size of the block
-     */
-    function drawDetailedHexBlock(block, x, y, index, blockSize) {
-        const isHovered = hoveredBlockIndex !== -1 && blocks[hoveredBlockIndex].txId === block.txId;
-        const isSelected = selectedTxId === block.txId;
-        const isSearched = searchQuery && (block.data.id.toLowerCase().includes(searchQuery) || 
-                                         block.data.from.toLowerCase().includes(searchQuery) || 
-                                         block.data.to.toLowerCase().includes(searchQuery));
-        ctx.globalAlpha = 1.0;
-        if (searchQuery && !isSearched) ctx.globalAlpha = 0.1;
-        ctx.save();
-        ctx.fillStyle = block.type === 'source' ? 
-            getComputedStyle(document.documentElement).getPropertyValue('--source-color').trim() : 
-            getComputedStyle(document.documentElement).getPropertyValue('--dest-color').trim();
-        
-        if (historyMode) {
-            ctx.shadowColor = getComputedStyle(document.documentElement).getPropertyValue('--fork-color').trim();
-            ctx.shadowBlur = 5;
+        for (let i = 0; i < state.transactions.length; i++) {
+          const tx = state.transactions[i];
+          const sourceIndex = state.blocks.findIndex(b => b.txId === tx.id && b.type === 'source');
+          const destIndex = state.blocks.findIndex(b => b.txId === tx.id && b.type === 'destination');
+          
+          if (sourceIndex === -1 || destIndex === -1) continue;
+          
+          const posA = this.getBlockPosition(sourceIndex, hexWidth, hexHeight);
+          const posB = this.getBlockPosition(destIndex, hexWidth, hexHeight);
+          
+          // Viewport culling for connections
+          if (!this.isConnectionVisible(posA, posB)) continue;
+          
+          const isHovered = state.ui.hoveredBlockIndex !== -1 && 
+            state.blocks[state.ui.hoveredBlockIndex].txId === tx.id;
+          const isSelected = state.ui.selectedTxId === tx.id;
+          const isSearched = this.isTransactionSearchMatch(tx);
+          
+          DOM.ctx.globalAlpha = (state.ui.searchQuery && !isSearched) ? 0.2 : 1.0;
+          
+          // Enhanced connection styling
+          if (isHovered || isSelected) {
+            DOM.ctx.strokeStyle = this.colors.highlight;
+            DOM.ctx.lineWidth = lineWidth * 1.5;
+            DOM.ctx.shadowColor = this.colors.highlight;
+            DOM.ctx.shadowBlur = 10;
+          } else if (tx.type === 'payment') {
+            DOM.ctx.strokeStyle = tx.paymentType === 'qrcode' ? this.colors.qrcode : this.colors.payment;
+          } else {
+            DOM.ctx.strokeStyle = this.colors.connection;
+          }
+          
+          DOM.ctx.beginPath();
+          DOM.ctx.moveTo(posA.x, posA.y);
+          DOM.ctx.lineTo(posB.x, posB.y);
+          DOM.ctx.stroke();
+          
+          // Reset effects
+          DOM.ctx.shadowBlur = 0;
+          DOM.ctx.strokeStyle = this.colors.connection;
+          DOM.ctx.lineWidth = lineWidth;
         }
         
+        DOM.ctx.globalAlpha = 1.0;
+      }
+      
+      static drawDetailedHexBlock(block, x, y, index, blockSize) {
+        const isHovered = state.ui.hoveredBlockIndex !== -1 && 
+          state.blocks[state.ui.hoveredBlockIndex].txId === block.txId;
+        const isSelected = state.ui.selectedTxId === block.txId;
+        const isSearched = this.isSearchMatch(block);
+        
+        DOM.ctx.save();
+        DOM.ctx.globalAlpha = (state.ui.searchQuery && !isSearched) ? 0.2 : 1.0;
+        
+        // Enhanced visual effects
         if (isHovered || isSelected) {
-            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--highlight-color').trim();
-            ctx.shadowColor = getComputedStyle(document.documentElement).getPropertyValue('--highlight-color').trim();
-            ctx.shadowBlur = 10;
+          DOM.ctx.fillStyle = this.colors.highlight;
+          DOM.ctx.shadowColor = this.colors.highlight;
+          DOM.ctx.shadowBlur = 15;
+        } else {
+          DOM.ctx.fillStyle = this.getBlockColor(block);
+          if (state.ui.historyMode) {
+            DOM.ctx.shadowColor = '#9b59b6';
+            DOM.ctx.shadowBlur = 8;
+          }
         }
         
-        // Draw hexagon
-        ctx.beginPath();
-        for (let i = 0; i < 6; i++) {
-            let angle = (Math.PI / 3) * i;
-            let px = x + blockSize * Math.cos(angle);
-            let py = y + blockSize * Math.sin(angle);
-            i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
-        }
-        ctx.closePath();
-        ctx.fill();
+        // Draw hexagon with improved geometry
+        this.drawHexagon(x, y, blockSize);
+        DOM.ctx.fill();
+        
         if (isSelected) {
-            ctx.strokeStyle = 'white';
-            ctx.lineWidth = 3;
-            ctx.stroke();
+          DOM.ctx.strokeStyle = 'white';
+          DOM.ctx.lineWidth = 4;
+          DOM.ctx.stroke();
         }
         
-        ctx.shadowBlur = 0;
-        
-        // Draw text if zoom is high enough
-        if (zoom > 0.8) {
-            ctx.fillStyle = 'white';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            
-            const fontSize = Math.max(8, blockSize * 0.15 * zoom);
-            ctx.font = `bold ${fontSize}px Segoe UI`;
-            ctx.fillText(block.type === 'source' ? 'FROM' : 'TO', x, y - fontSize * 1.2);
-            ctx.font = `${fontSize * 0.8}px Segoe UI`;
-            ctx.fillText(block.type === 'source' ? block.data.from : block.data.to, x, y);
-            if (zoom > 1.2) {
-                ctx.fillText(`ID: ${block.data.id.slice(-4)}`, x, y + fontSize * 1.2);
-            }
+        // Draw enhanced text labels
+        if (state.ui.zoom > 0.6) {
+          this.drawBlockText(block, x, y, blockSize, isHovered || isSelected);
         }
         
-        ctx.restore();
-        ctx.globalAlpha = 1.0;
-    }
-    
-    // ======================
-    // Utility Functions
-    // ======================
-    
-    /**
-     * Get the position of a block in the grid
-     * @param {number} index - Block index
-     * @param {number} hexWidth - Width of hexagon
-     * @param {number} hexHeight - Height of hexagon
-     * @returns {Object} Position {x, y}
-     */
-    function getBlockPosition(index, hexWidth, hexHeight) {
-        const cols = Math.max(1, Math.floor(canvas.width / (hexWidth * 0.75)));
+        DOM.ctx.restore();
+      }
+      
+      static drawHexagon(x, y, size) {
+        DOM.ctx.beginPath();
+        for (let i = 0; i < 6; i++) {
+          const angle = (Math.PI / 3) * i;
+          const px = x + size * Math.cos(angle);
+          const py = y + size * Math.sin(angle);
+          i === 0 ? DOM.ctx.moveTo(px, py) : DOM.ctx.lineTo(px, py);
+        }
+        DOM.ctx.closePath();
+      }
+      
+      static drawSimpleHexagon(x, y, size, color) {
+        DOM.ctx.fillStyle = color;
+        this.drawHexagon(x, y, size);
+        DOM.ctx.fill();
+      }
+      
+      static drawBlockText(block, x, y, blockSize, isHighlighted) {
+        DOM.ctx.fillStyle = isHighlighted ? '#000' : '#fff';
+        DOM.ctx.textAlign = 'center';
+        DOM.ctx.textBaseline = 'middle';
+        DOM.ctx.font = `bold ${Math.max(8, blockSize * 0.12)}px Inter, sans-serif`;
+        
+        let label = block.type === 'source' ? 'FROM' : 'TO';
+        if (block.data.type === 'payment') {
+          label = block.type === 'source' ? 'PAYER' : 'PAYEE';
+          if (block.data.paymentType === 'qrcode') {
+            label = '📱 ' + label;
+          }
+        }
+        
+        // Draw label
+        DOM.ctx.fillText(label, x, y - blockSize * 0.3);
+        
+        // Draw identifier
+        DOM.ctx.font = `${Math.max(7, blockSize * 0.1)}px Inter, sans-serif`;
+        let displayText = block.type === 'source' ? block.data.from : block.data.to;
+        if (displayText.length > 8) {
+          displayText = displayText.substring(0, 8) + '…';
+        }
+        DOM.ctx.fillText(displayText, x, y);
+        
+        // Draw additional info for high zoom
+        if (state.ui.zoom > 1.5) {
+          DOM.ctx.fillText(`ID: ${block.data.id.slice(-4)}`, x, y + blockSize * 0.3);
+        }
+      }
+      
+      static drawOverlayEffects() {
+        // Draw selection highlights, animations, etc.
+        if (state.ui.hoveredBlockIndex !== -1) {
+          // Add subtle glow effect for hovered items
+          const block = state.blocks[state.ui.hoveredBlockIndex];
+          // Additional hover effects can be implemented here
+        }
+      }
+      
+      // Utility methods
+      static getVisibleBlocks(hexWidth, hexHeight) {
+        const visible = [];
+        const buffer = 100;
+        
+        for (let i = 0; i < state.blocks.length; i++) {
+          const pos = this.getBlockPosition(i, hexWidth, hexHeight);
+          if (pos.x > -buffer && pos.x < DOM.canvas.width + buffer &&
+              pos.y > -buffer && pos.y < DOM.canvas.height + buffer) {
+            visible.push({ block: state.blocks[i], index: i, pos });
+          }
+        }
+        
+        return visible;
+      }
+      
+      static getBlockPosition(index, hexWidth, hexHeight) {
+        const cols = Math.max(1, Math.floor(DOM.canvas.width / (hexWidth * 0.75)));
         const col = index % cols;
         const row = Math.floor(index / cols);
         
         const layoutWidth = cols * hexWidth * 0.75;
-        const layoutHeight = Math.ceil(blocks.length / cols) * hexHeight;
-        const centerOffsetX = canvas.width / 2 - layoutWidth / 2;
-        const centerOffsetY = canvas.height / 2 - layoutHeight / 2;
+        const layoutHeight = Math.ceil(state.blocks.length / cols) * hexHeight;
+        const centerOffsetX = DOM.canvas.width / 2 - layoutWidth / 2;
+        const centerOffsetY = DOM.canvas.height / 2 - layoutHeight / 2;
         
-        const x = col * hexWidth * 0.75 + dragOffset.x + centerOffsetX;
-        const y = row * hexHeight + (col % 2 === 0 ? 0 : hexHeight / 2) + dragOffset.y + centerOffsetY;
+        const x = col * hexWidth * 0.75 + state.ui.dragOffset.x + centerOffsetX;
+        const y = row * hexHeight + (col % 2 === 0 ? 0 : hexHeight / 2) + state.ui.dragOffset.y + centerOffsetY;
         return { x, y };
+      }
+      
+      static isConnectionVisible(posA, posB) {
+        const buffer = 50;
+        return !((posA.x < -buffer && posB.x < -buffer) || 
+                (posA.x > DOM.canvas.width + buffer && posB.x > DOM.canvas.width + buffer) ||
+                (posA.y < -buffer && posB.y < -buffer) || 
+                (posA.y > DOM.canvas.height + buffer && posB.y > DOM.canvas.height + buffer));
+      }
+      
+      static passesFilter(block) {
+        if (state.ui.filterType === 'all') return true;
+        if (state.ui.filterType === 'payment' && block.data.type !== 'payment') return false;
+        if (state.ui.filterType === 'qrcode' && block.data.paymentType !== 'qrcode') return false;
+        if (state.ui.filterType !== 'payment' && state.ui.filterType !== 'qrcode' && block.type !== state.ui.filterType) return false;
+        return true;
+      }
+      
+      static isSearchMatch(block) {
+        if (!state.ui.searchQuery) return true;
+        const query = state.ui.searchQuery.toLowerCase();
+        return block.data.id.toLowerCase().includes(query) ||
+               block.data.from.toLowerCase().includes(query) ||
+               block.data.to.toLowerCase().includes(query) ||
+               block.data.description?.toLowerCase().includes(query);
+      }
+      
+      static isTransactionSearchMatch(tx) {
+        if (!state.ui.searchQuery) return true;
+        const query = state.ui.searchQuery.toLowerCase();
+        return tx.id.toLowerCase().includes(query) ||
+               tx.from.toLowerCase().includes(query) ||
+               tx.to.toLowerCase().includes(query) ||
+               tx.description?.toLowerCase().includes(query);
+      }
+      
+      static getBlockColor(block) {
+        if (block.data.type === 'payment') {
+          return block.data.paymentType === 'qrcode' ? this.colors.qrcode : this.colors.payment;
+        }
+        return block.type === 'source' ? this.colors.source : this.colors.dest;
+      }
+      
+      static hexToRgb(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16)
+        } : { r: 255, g: 255, b: 255 };
+      }
+      
+      static updateZoomInfo() {
+        const info = DOM.zoomInfo;
+        if (state.ui.zoom < this.PIXEL_THRESHOLD) {
+          info.innerHTML = '<strong>🌌 Galaxy View</strong><br>Each pixel represents a transaction. Zoom in for details.';
+        } else if (state.ui.zoom < this.SIMPLE_THRESHOLD) {
+          info.innerHTML = '<strong>🔍 Cluster View</strong><br>Simplified hexagons showing transaction structure.';
+        } else {
+          info.innerHTML = '<strong>📋 Detail View</strong><br>Full transaction details and interactions.';
+        }
+      }
     }
     
-    /**
-     * Get the block at a specific position
-     * @param {number} x - X coordinate
-     * @param {number} y - Y coordinate
-     * @returns {number} Block index or -1 if not found
-     */
-    function getBlockAtPosition(x, y) {
-        if (zoom < SIMPLE_THRESHOLD) return -1; // No interaction in pixel/cluster view
+    // ======================
+    // Enhanced Transaction Management
+    // ======================
+    
+    class TransactionManager {
+      static generateGalaxy(count = 1000) {
+        if (!state.ui.isAuthenticated) return;
         
-        const blockSize = 40 * zoom;
+        const names = [
+          "Alice", "Bob", "Charlie", "Diana", "Eve", "Frank", "Grace", "Heidi", 
+          "Ivan", "Judy", "Kevin", "Luna", "Mike", "Nina", "Oscar", "Penny",
+          "Quinn", "Rachel", "Steve", "Tina", "Uma", "Victor", "Wendy", "Xander"
+        ];
+        
+        const items = [
+          "Smart Contract Execution", "DeFi Token Swap", "NFT Marketplace Trade",
+          "Cross-chain Bridge", "Governance Voting", "Staking Rewards", "Liquidity Mining",
+          "Oracle Data Feed", "Layer 2 Settlement", "Privacy Transaction", "DAO Proposal",
+          "Yield Farming", "Flash Loan", "Arbitrage Trade", "Insurance Claim"
+        ];
+        
+        NotificationManager.show(`Generating ${count.toLocaleString()} transactions...`, 'default');
+        
+        const batchSize = 500;
+        let processed = 0;
+        
+        const processBatch = () => {
+          const end = Math.min(processed + batchSize, count);
+          const newTransactions = [];
+          const newBlocks = [];
+          
+          for (let i = processed; i < end; i++) {
+            const from = names[Math.floor(Math.random() * names.length)];
+            let to;
+            do { to = names[Math.floor(Math.random() * names.length)]; } while (from === to);
+            
+            const amount = (Math.random() * 5000 + 10).toFixed(2);
+            const description = items[Math.floor(Math.random() * items.length)];
+            const timestamp = new Date(Date.now() - (count - i) * 30000).toISOString();
+            
+            // Add some payment transactions
+            const isPayment = Math.random() > 0.8;
+            const isQRPayment = isPayment && Math.random() > 0.7;
+            
+            const newTx = {
+              id: Utils.generateId(isPayment ? (isQRPayment ? 'QRP' : 'PAY') : 'TXN'),
+              from, to, amount, description, timestamp,
+              type: isPayment ? 'payment' : 'standard',
+              paymentType: isQRPayment ? 'qrcode' : 'standard',
+              status: 'completed'
+            };
+            
+            newTransactions.push(newTx);
+            newBlocks.push({ type: 'source', txId: newTx.id, data: newTx });
+            newBlocks.push({ type: 'destination', txId: newTx.id, data: newTx });
+            
+            // Track analytics
+            state.analytics.activeWallets.add(from);
+            state.analytics.activeWallets.add(to);
+            state.analytics.totalVolume += parseFloat(amount);
+          }
+          
+          // Batch update for better performance
+          state.transactions.push(...newTransactions);
+          state.blocks.push(...newBlocks);
+          
+          processed = end;
+          this.updateDisplay();
+          AnalyticsManager.updateRealTimeStats();
+          
+          if (processed < count) {
+            requestAnimationFrame(processBatch);
+          } else {
+            NotificationManager.show(`Galaxy generated with ${count.toLocaleString()} transactions!`, 'success');
+            CanvasManager.centerView();
+          }
+        };
+        
+        processBatch();
+      }
+      
+      static addTransaction(txData) {
+        if (!state.ui.isAuthenticated) return;
+        
+        const newTx = txData || {
+          id: Utils.generateId(),
+          from: "User_" + Math.floor(Math.random() * 1000),
+          to: "User_" + Math.floor(Math.random() * 1000),
+          amount: (Math.random() * 500 + 10).toFixed(2),
+          description: "Manual Transaction",
+          timestamp: new Date().toISOString(),
+          type: 'standard',
+          status: 'completed'
+        };
+        
+        state.transactions.push(newTx);
+        state.blocks.push({ type: 'source', txId: newTx.id, data: newTx });
+        state.blocks.push({ type: 'destination', txId: newTx.id, data: newTx });
+        
+        // Update analytics
+        state.analytics.activeWallets.add(newTx.from);
+        state.analytics.activeWallets.add(newTx.to);
+        state.analytics.totalVolume += parseFloat(newTx.amount);
+        
+        this.updateDisplay();
+        AnalyticsManager.updateRealTimeStats();
+      }
+      
+      static updateDisplay() {
+        DOM.countDisplay.textContent = `Transactions: ${state.transactions.length.toLocaleString()}`;
+        RenderEngine.requestDraw();
+      }
+      
+      static clearLedger() {
+        if (!state.ui.isAuthenticated) return;
+        
+        state.transactions = [];
+        state.blocks = [];
+        state.ui.dragOffset = { x: 0, y: 0 };
+        state.ui.selectedTxId = null;
+        state.analytics.totalVolume = 0;
+        state.analytics.activeWallets.clear();
+        
+        UIManager.hidePanels();
+        this.updateDisplay();
+        AnalyticsManager.updateRealTimeStats();
+      }
+      
+      static deleteTransaction(txId) {
+        const txIndex = state.transactions.findIndex(t => t.id === txId);
+        if (txIndex !== -1) {
+          const tx = state.transactions[txIndex];
+          state.transactions.splice(txIndex, 1);
+          state.blocks = state.blocks.filter(b => b.txId !== txId);
+          
+          // Update analytics
+          state.analytics.totalVolume -= parseFloat(tx.amount);
+          
+          state.ui.selectedTxId = null;
+          UIManager.hidePanel('details');
+          this.updateDisplay();
+          AnalyticsManager.updateRealTimeStats();
+          NotificationManager.show('Transaction deleted from history!', 'warning');
+        }
+      }
+      
+      static forkTransaction(txId) {
+        const tx = state.transactions.find(t => t.id === txId);
+        if (tx) {
+          const forkTx = {
+            ...tx,
+            id: tx.id + '-FORK-' + Date.now(),
+            description: tx.description + ' (Timeline Fork)',
+            timestamp: new Date().toISOString()
+          };
+          this.addTransaction(forkTx);
+          NotificationManager.show('Timeline forked! Created alternate history branch.', 'success');
+        }
+      }
+    }
+    
+    // ======================
+    // Enhanced Wallet Management
+    // ======================
+    
+    class WalletManager {
+      static initialize() {
+        const saved = localStorage.getItem('directLedgerWallet');
+        if (saved) {
+          state.userWallet = JSON.parse(saved);
+        } else {
+          state.userWallet = {
+            id: this.generateWalletId(),
+            balance: 500.00, // Enhanced starting balance
+            transactions: []
+          };
+          this.save();
+        }
+        this.updateUI();
+      }
+      
+      static generateWalletId() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let result = 'DL-';
+        for (let i = 0; i < 12; i++) {
+          if (i > 0 && i % 4 === 0) result += '-';
+          result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+      }
+      
+      static save() {
+        localStorage.setItem('directLedgerWallet', JSON.stringify(state.userWallet));
+      }
+      
+      static updateUI() {
+        const elements = {
+          walletId: document.getElementById('walletId'),
+          walletBalance: document.getElementById('walletBalance'),
+          walletPanelBalance: document.getElementById('walletPanelBalance'),
+          recentPayments: document.getElementById('recentPayments')
+        };
+        
+        if (elements.walletId) elements.walletId.textContent = state.userWallet.id;
+        if (elements.walletBalance) elements.walletBalance.textContent = Utils.formatCurrency(state.userWallet.balance);
+        if (elements.walletPanelBalance) elements.walletPanelBalance.textContent = Utils.formatCurrency(state.userWallet.balance);
+        
+        this.updateRecentPayments(elements.recentPayments);
+      }
+      
+      static updateRecentPayments(container) {
+        if (!container) return;
+        
+        if (state.userWallet.transactions.length === 0) {
+          container.innerHTML = '<p style="opacity: 0.6; text-align: center; margin: 1rem;">No payments yet</p>';
+          return;
+        }
+        
+        container.innerHTML = '';
+        const recent = state.userWallet.transactions.slice(-5).reverse();
+        
+        recent.forEach(tx => {
+          const isOutgoing = tx.from === state.userWallet.id;
+          const txEl = document.createElement('div');
+          txEl.className = 'payment-item';
+          txEl.style.cssText = `
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--glass-border);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            background: var(--glass-bg);
+            transition: all 0.2s ease;
+            cursor: pointer;
+          `;
+          
+          txEl.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-weight: 600; color: ${isOutgoing ? 'var(--error-color)' : 'var(--success-color)'};">
+                  ${isOutgoing ? '→' : '←'} ${isOutgoing ? tx.to.substring(0, 12) + '...' : tx.from.substring(0, 12) + '...'}
+                </div>
+                <div style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.2rem;">
+                  ${Utils.formatDate(tx.timestamp)}
+                </div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-weight: bold; font-size: 1.1rem; color: ${isOutgoing ? 'var(--error-color)' : 'var(--success-color)'};">
+                  ${isOutgoing ? '-' : '+'}${Utils.formatCurrency(parseFloat(tx.amount))}
+                </div>
+                <div class="tx-status tx-status-${tx.status}" style="margin-top: 0.2rem;">
+                  ${tx.status}
+                </div>
+              </div>
+            </div>
+          `;
+          
+          txEl.addEventListener('mouseenter', () => {
+            txEl.style.background = 'var(--glass-strong)';
+            txEl.style.transform = 'translateX(5px)';
+          });
+          
+          txEl.addEventListener('mouseleave', () => {
+            txEl.style.background = 'var(--glass-bg)';
+            txEl.style.transform = 'translateX(0)';
+          });
+          
+          container.appendChild(txEl);
+        });
+      }
+      
+      static processPayment(recipient, amount, note, speed, paymentType = 'standard') {
+        const fees = { instant: 0.005, fast: 0.002, standard: 0 };
+        const fee = amount * (fees[speed] || 0);
+        const totalAmount = amount + fee;
+        
+        if (state.userWallet.balance < totalAmount) {
+          NotificationManager.show('Insufficient balance for this payment!', 'error');
+          return false;
+        }
+        
+        const paymentTx = {
+          id: Utils.generateId(paymentType === 'qrcode' ? 'QRP' : 'PAY'),
+          from: state.userWallet.id,
+          to: recipient,
+          amount: amount,
+          fee: fee,
+          description: note || 'DirectLedger Payment',
+          timestamp: new Date().toISOString(),
+          speed: speed,
+          type: 'payment',
+          paymentType: paymentType,
+          status: 'pending'
+        };
+        
+        // Immediate UI updates
+        state.userWallet.balance -= totalAmount;
+        state.userWallet.transactions.push(paymentTx);
+        
+        // Add to main ledger
+        TransactionManager.addTransaction(paymentTx);
+        
+        // Simulate processing time
+        const processingTime = speed === 'instant' ? 500 : speed === 'fast' ? 2000 : 5000;
+        
+        setTimeout(() => {
+          paymentTx.status = 'completed';
+          this.save();
+          this.updateUI();
+          NotificationManager.show(
+            `${paymentType === 'qrcode' ? 'QR ' : ''}Payment of ${Utils.formatCurrency(amount)} sent successfully!`, 
+            'payment-notification'
+          );
+        }, processingTime);
+        
+        this.save();
+        this.updateUI();
+        return true;
+      }
+      
+      static addFunds(amount) {
+        if (!amount || amount <= 0) return false;
+        
+        state.userWallet.balance += amount;
+        state.userWallet.transactions.push({
+          id: Utils.generateId('ADD'),
+          from: 'SYSTEM',
+          to: state.userWallet.id,
+          amount: amount,
+          description: 'Funds Added',
+          timestamp: new Date().toISOString(),
+          type: 'add_funds',
+          status: 'completed'
+        });
+        
+        this.save();
+        this.updateUI();
+        NotificationManager.show(`Added ${Utils.formatCurrency(amount)} to your wallet!`, 'success');
+        return true;
+      }
+    }
+    
+    // ======================
+    // Enhanced Analytics Management
+    // ======================
+    
+    class AnalyticsManager {
+      static initialize() {
+        this.updateRealTimeStats();
+        this.startRealTimeUpdates();
+      }
+      
+      static updateRealTimeStats() {
+        const elements = {
+          txRate: document.getElementById('txRate'),
+          totalVolume: document.getElementById('totalVolume'),
+          activeWallets: document.getElementById('activeWallets'),
+          networkStatus: document.getElementById('networkStatus'),
+          networkHealth: document.getElementById('networkHealth')
+        };
+        
+        // Calculate transaction rate (simplified)
+        const recentTx = state.transactions.filter(tx => {
+          const age = Date.now() - new Date(tx.timestamp).getTime();
+          return age < 60000; // Last minute
+        });
+        
+        state.analytics.txRate = recentTx.length;
+        
+        // Update UI
+        if (elements.txRate) elements.txRate.textContent = `${state.analytics.txRate} tx/min`;
+        if (elements.totalVolume) elements.totalVolume.textContent = Utils.formatCurrency(state.analytics.totalVolume);
+        if (elements.activeWallets) elements.activeWallets.textContent = state.analytics.activeWallets.size.toLocaleString();
+        
+        // Network health simulation
+        const health = state.analytics.txRate > 50 ? 'congested' : state.analytics.txRate > 20 ? 'busy' : 'healthy';
+        const healthColors = { healthy: 'var(--success-color)', busy: 'var(--warning-color)', congested: 'var(--error-color)' };
+        
+        if (elements.networkHealth) elements.networkHealth.style.background = healthColors[health];
+        if (elements.networkStatus) elements.networkStatus.textContent = health.charAt(0).toUpperCase() + health.slice(1);
+      }
+      
+      static startRealTimeUpdates() {
+        setInterval(() => {
+          this.updateRealTimeStats();
+        }, 5000);
+      }
+      
+      static showAnalyticsModal() {
+        DOM.analyticsModal.style.display = 'flex';
+        this.renderCharts();
+      }
+      
+      static renderCharts() {
+        this.renderVolumeChart();
+        this.renderTypeChart();
+      }
+      
+      static renderVolumeChart() {
+        const canvas = document.getElementById('volumeChart');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Simple volume chart visualization
+        ctx.fillStyle = 'var(--payment-color)';
+        ctx.fillRect(50, 150, 500, 30);
+        
+        ctx.fillStyle = 'white';
+        ctx.font = '14px Inter';
+        ctx.fillText('Transaction Volume Over Time', 10, 20);
+        ctx.fillText(`Total: ${Utils.formatCurrency(state.analytics.totalVolume)}`, 10, 40);
+      }
+      
+      static renderTypeChart() {
+        const canvas = document.getElementById('typeChart');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Simple pie chart for transaction types
+        const types = {
+          standard: state.transactions.filter(tx => tx.type === 'standard').length,
+          payment: state.transactions.filter(tx => tx.type === 'payment' && tx.paymentType !== 'qrcode').length,
+          qrcode: state.transactions.filter(tx => tx.paymentType === 'qrcode').length
+        };
+        
+        const total = Object.values(types).reduce((a, b) => a + b, 0);
+        let startAngle = 0;
+        const colors = ['var(--source-color)', 'var(--payment-color)', 'var(--qrcode-color)'];
+        
+        Object.entries(types).forEach(([type, count], index) => {
+          if (count === 0) return;
+          
+          const sliceAngle = (count / total) * 2 * Math.PI;
+          ctx.fillStyle = colors[index];
+          ctx.beginPath();
+          ctx.moveTo(150, 100);
+          ctx.arc(150, 100, 80, startAngle, startAngle + sliceAngle);
+          ctx.closePath();
+          ctx.fill();
+          
+          startAngle += sliceAngle;
+        });
+        
+        ctx.fillStyle = 'white';
+        ctx.font = '14px Inter';
+        ctx.fillText('Transaction Types Distribution', 10, 20);
+      }
+    }
+    
+    // ======================
+    // Enhanced UI Management
+    // ======================
+    
+    class UIManager {
+      static showPanel(type) {
+        this.hidePanels();
+        
+        switch (type) {
+          case 'wallet':
+            DOM.walletPanel.style.display = 'block';
+            WalletManager.updateUI();
+            break;
+          case 'analytics':
+            DOM.analyticsPanel.style.display = 'block';
+            AnalyticsManager.updateRealTimeStats();
+            break;
+          case 'details':
+            DOM.detailsPanel.style.display = 'block';
+            break;
+        }
+      }
+      
+      static hidePanel(type) {
+        switch (type) {
+          case 'wallet':
+            DOM.walletPanel.style.display = 'none';
+            break;
+          case 'analytics':
+            DOM.analyticsPanel.style.display = 'none';
+            break;
+          case 'details':
+            DOM.detailsPanel.style.display = 'none';
+            break;
+        }
+      }
+      
+      static hidePanels() {
+        DOM.detailsPanel.style.display = 'none';
+        DOM.walletPanel.style.display = 'none';
+        DOM.analyticsPanel.style.display = 'none';
+      }
+      
+      static showTransactionDetails(txId) {
+        const tx = state.transactions.find(t => t.id === txId);
+        if (!tx) return;
+        
+        this.showPanel('details');
+        
+        const elements = {
+          detailId: document.getElementById('detailId'),
+          detailFrom: document.getElementById('detailFrom'),
+          detailTo: document.getElementById('detailTo'),
+          detailAmount: document.getElementById('detailAmount'),
+          detailDesc: document.getElementById('detailDesc'),
+          detailStatus: document.getElementById('detailStatus'),
+          detailTs: document.getElementById('detailTs'),
+          historyActions: document.getElementById('historyActions')
+        };
+        
+        if (elements.detailId) elements.detailId.textContent = tx.id;
+        if (elements.detailFrom) elements.detailFrom.textContent = tx.from;
+        if (elements.detailTo) elements.detailTo.textContent = tx.to;
+        if (elements.detailAmount) {
+          let amountText = Utils.formatCurrency(parseFloat(tx.amount));
+          if (tx.fee && tx.fee > 0) {
+            amountText += ` (Fee: ${Utils.formatCurrency(tx.fee)})`;
+          }
+          elements.detailAmount.textContent = amountText;
+        }
+        if (elements.detailDesc) {
+          let desc = tx.description;
+          if (tx.paymentType === 'qrcode') desc += ' (QR Code Payment)';
+          elements.detailDesc.textContent = desc;
+        }
+        if (elements.detailStatus) {
+          elements.detailStatus.innerHTML = `<span class="tx-status tx-status-${tx.status}">${tx.status}</span>`;
+        }
+        if (elements.detailTs) elements.detailTs.textContent = Utils.formatDate(tx.timestamp);
+        if (elements.historyActions) {
+          elements.historyActions.style.display = state.ui.historyMode ? 'block' : 'none';
+        }
+      }
+      
+      static toggleHistoryMode() {
+        state.ui.historyMode = !state.ui.historyMode;
+        const button = document.getElementById('historyModeButton');
+        button.classList.toggle('active', state.ui.historyMode);
+        
+        const historyActions = document.getElementById('historyActions');
+        if (historyActions) {
+          historyActions.style.display = state.ui.historyMode ? 'block' : 'none';
+        }
+        
+        RenderEngine.requestDraw();
+        NotificationManager.show(
+          state.ui.historyMode ? 'History mode enabled' : 'History mode disabled',
+          'default'
+        );
+      }
+      
+      static toggleTheme() {
+        state.ui.darkTheme = !state.ui.darkTheme;
+        document.body.style.filter = state.ui.darkTheme ? 'none' : 'invert(1) hue-rotate(180deg)';
+        DOM.themeToggle.textContent = state.ui.darkTheme ? '🌙' : '☀️';
+        RenderEngine.requestDraw();
+      }
+      
+      static showShutdownModal() {
+        DOM.shutdownModal.style.display = 'flex';
+      }
+      
+      static hideShutdownModal() {
+        DOM.shutdownModal.style.display = 'none';
+      }
+    }
+    
+    // ======================
+    // Enhanced Notification System
+    // ======================
+    
+    class NotificationManager {
+      static queue = [];
+      static isShowing = false;
+      
+      static show(message, type = 'default', duration = 3000) {
+        this.queue.push({ message, type, duration });
+        this.processQueue();
+      }
+      
+      static processQueue() {
+        if (this.isShowing || this.queue.length === 0) return;
+        
+        const { message, type, duration } = this.queue.shift();
+        this.displayNotification(message, type, duration);
+      }
+      
+      static displayNotification(message, type, duration) {
+        this.isShowing = true;
+        
+        DOM.notification.textContent = message;
+        DOM.notification.className = 'notification';
+        
+        if (type !== 'default') {
+          DOM.notification.classList.add(`notification-${type}`);
+        }
+        
+        DOM.notification.classList.add('show');
+        
+        setTimeout(() => {
+          DOM.notification.classList.remove('show');
+          this.isShowing = false;
+          setTimeout(() => this.processQueue(), 400);
+        }, duration);
+      }
+    }
+    
+    // ======================
+    // Enhanced QR Code System
+    // ======================
+    
+    class QRCodeManager {
+      static generateQRCode(amount, note = '') {
+        state.currentQRCode = {
+          recipient: state.userWallet.id,
+          amount: amount,
+          note: note,
+          timestamp: new Date().toISOString()
+        };
+        
+        const qrAmount = document.getElementById('qrAmount');
+        const qrRecipient = document.getElementById('qrRecipient');
+        
+        if (qrAmount) qrAmount.textContent = Utils.formatCurrency(amount);
+        if (qrRecipient) qrRecipient.textContent = state.userWallet.id;
+        
+        this.renderQRCode();
+        DOM.qrcodeModal.style.display = 'flex';
+        NotificationManager.show('QR Code generated! Share with the payer.', 'qrcode-notification');
+      }
+      
+      static renderQRCode() {
+        const canvas = document.getElementById('qrcodeCanvas');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, 200, 200);
+        
+        // Enhanced QR code pattern
+        ctx.fillStyle = 'black';
+        const cellSize = 8;
+        const gridSize = 25;
+        
+        // Generate more realistic QR pattern
+        for (let x = 0; x < gridSize; x++) {
+          for (let y = 0; y < gridSize; y++) {
+            const shouldFill = this.getQRPattern(x, y, gridSize);
+            if (shouldFill) {
+              ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+            }
+          }
+        }
+        
+        // Draw position detection patterns (corners)
+        this.drawPositionMarkers(ctx, cellSize);
+      }
+      
+      static getQRPattern(x, y, size) {
+        // Simulate QR code data pattern
+        const hash = (x * 31 + y * 17 + state.currentQRCode.amount * 13) % 100;
+        return hash > 45 || this.isPositionMarker(x, y, size) || this.isTimingPattern(x, y, size);
+      }
+      
+      static isPositionMarker(x, y, size) {
+        const markers = [
+          { x: 0, y: 0 }, // Top-left
+          { x: size - 7, y: 0 }, // Top-right
+          { x: 0, y: size - 7 } // Bottom-left
+        ];
+        
+        return markers.some(marker => 
+          x >= marker.x && x < marker.x + 7 && 
+          y >= marker.y && y < marker.y + 7
+        );
+      }
+      
+      static isTimingPattern(x, y, size) {
+        return (x === 6 && y > 7 && y < size - 8) || (y === 6 && x > 7 && x < size - 8);
+      }
+      
+      static drawPositionMarkers(ctx, cellSize) {
+        const positions = [
+          { x: 0, y: 0 },
+          { x: 17 * cellSize, y: 0 },
+          { x: 0, y: 17 * cellSize }
+        ];
+        
+        positions.forEach(pos => {
+          // Outer square
+          ctx.fillRect(pos.x, pos.y, 7 * cellSize, 7 * cellSize);
+          ctx.fillStyle = 'white';
+          ctx.fillRect(pos.x + cellSize, pos.y + cellSize, 5 * cellSize, 5 * cellSize);
+          ctx.fillStyle = 'black';
+          ctx.fillRect(pos.x + 2 * cellSize, pos.y + 2 * cellSize, 3 * cellSize, 3 * cellSize);
+        });
+      }
+      
+      static processQRPayment(qrData) {
+        if (!qrData || !qrData.recipient || !qrData.amount) {
+          NotificationManager.show('Invalid QR Code data!', 'error');
+          return false;
+        }
+        
+        if (qrData.recipient === state.userWallet.id) {
+          NotificationManager.show('Cannot pay yourself!', 'warning');
+          return false;
+        }
+        
+        return WalletManager.processPayment(qrData.recipient, qrData.amount, qrData.note, 'standard', 'qrcode');
+      }
+      
+      static simulateQRScan() {
+        // Simulate scanning a QR code with sample data
+        const sampleQRData = {
+          recipient: 'DL-DEMO-' + Math.random().toString(36).substr(2, 8).toUpperCase(),
+          amount: Math.floor(Math.random() * 100) + 10,
+          note: 'QR Code Payment',
+          timestamp: new Date().toISOString()
+        };
+        
+        if (this.processQRPayment(sampleQRData)) {
+          DOM.scanModal.style.display = 'none';
+          NotificationManager.show(`QR payment of ${Utils.formatCurrency(sampleQRData.amount)} processed!`, 'success');
+        }
+      }
+    }
+    
+    // ======================
+    // Enhanced Interaction Management
+    // ======================
+    
+    class InteractionManager {
+      static getBlockAtPosition(x, y) {
+        if (state.ui.zoom < RenderEngine.SIMPLE_THRESHOLD) return -1;
+        
+        const blockSize = 40 * state.ui.zoom;
         const hexWidth = 2 * blockSize;
         const hexHeight = Math.sqrt(3) * blockSize;
         
-        // Only check visible blocks
-        const startRow = Math.max(0, Math.floor((-dragOffset.y - canvas.height) / hexHeight));
-        const endRow = Math.ceil(blocks.length / Math.max(1, Math.floor(canvas.width / (hexWidth * 0.75))));
-        const startIdx = startRow * Math.floor(canvas.width / (hexWidth * 0.75));
-        const endIdx = Math.min(blocks.length, endRow * Math.floor(canvas.width / (hexWidth * 0.75)));
+        // Check visible blocks only for performance
+        const visibleBlocks = RenderEngine.getVisibleBlocks(hexWidth, hexHeight);
         
-        for (let i = endIdx - 1; i >= startIdx; i--) {
-            const pos = getBlockPosition(i, hexWidth, hexHeight);
-            const dx = x - pos.x;
-            const dy = y - pos.y;
-            if (dx * dx + dy * dy < blockSize * blockSize) {
-                return i;
-            }
+        for (let i = visibleBlocks.length - 1; i >= 0; i--) {
+          const { index, pos } = visibleBlocks[i];
+          const dx = x - pos.x;
+          const dy = y - pos.y;
+          
+          // Use hexagon collision detection
+          if (this.isPointInHexagon(dx, dy, blockSize)) {
+            return index;
+          }
         }
+        
         return -1;
-    }
-    
-    /**
-     * Show transaction details in the details panel
-     * @param {string} txId - Transaction ID
-     */
-    function showDetails(txId) {
-        const tx = transactions.find(t => t.id === txId);
-        if (!tx) return;
-        detailsPanel.style.display = 'block';
-        document.getElementById('detailId').textContent = tx.id;
-        document.getElementById('detailFrom').textContent = tx.from;
-        document.getElementById('detailTo').textContent = tx.to;
-        document.getElementById('detailAmount').textContent = `$${tx.amount}`;
-        document.getElementById('detailDesc').textContent = tx.description;
-        document.getElementById('detailTs').textContent = new Date(tx.timestamp).toLocaleString();
-    }
-    
-    /**
-     * Update zoom info display
-     */
-    function updateZoomInfo() {
-        const info = document.getElementById('zoomInfo');
-        if (zoom < PIXEL_THRESHOLD) {
-            info.innerHTML = '<strong>Galaxy View</strong><br>Each pixel represents a transaction. Blue = source, Green = destination.';
-        } else if (zoom < SIMPLE_THRESHOLD) {
-            info.innerHTML = '<strong>Cluster View</strong><br>Simple hexagons showing transaction structure.';
+      }
+      
+      static isPointInHexagon(x, y, radius) {
+        // Simplified hexagon collision detection
+        const distance = Math.sqrt(x * x + y * y);
+        return distance <= radius;
+      }
+      
+      static handleMouseMove(e) {
+        if (!state.ui.isAuthenticated) return;
+        
+        if (state.ui.dragging) {
+          DOM.canvas.style.cursor = 'grabbing';
+          const deltaX = e.clientX - state.ui.lastMousePos.x;
+          const deltaY = e.clientY - state.ui.lastMousePos.y;
+          
+          state.ui.dragOffset.x += deltaX;
+          state.ui.dragOffset.y += deltaY;
+          state.ui.lastMousePos = { x: e.clientX, y: e.clientY };
+          
+          RenderEngine.requestDraw();
         } else {
-            info.innerHTML = '<strong>Block View</strong><br>Full transaction details and interactions.';
+          const rect = DOM.canvas.getBoundingClientRect();
+          const mouseX = e.clientX - rect.left;
+          const mouseY = e.clientY - rect.top;
+          const newHoveredIndex = this.getBlockAtPosition(mouseX, mouseY);
+          
+          if (newHoveredIndex !== state.ui.hoveredBlockIndex) {
+            state.ui.hoveredBlockIndex = newHoveredIndex;
+            DOM.canvas.style.cursor = newHoveredIndex >= 0 ? 'pointer' : 'grab';
+            RenderEngine.requestDraw();
+          }
         }
-    }
-    
-    // ======================
-    // History Manipulation
-    // ======================
-    
-    /**
-     * Move a transaction (placeholder)
-     */
-    function moveTransaction() {
-        showNotification('Move functionality: Drag this transaction to reorder the timeline!');
-    }
-    
-    /**
-     * Delete a transaction from history
-     */
-    function deleteTransaction() {
-        if (!isAuthenticated) return;
+      }
+      
+      static handleMouseDown(e) {
+        if (!state.ui.isAuthenticated) return;
+        state.ui.dragging = true;
+        state.ui.lastMousePos = { x: e.clientX, y: e.clientY };
+      }
+      
+      static handleMouseUp() {
+        state.ui.dragging = false;
+        DOM.canvas.style.cursor = 'grab';
+      }
+      
+      static handleClick() {
+        if (!state.ui.isAuthenticated) return;
         
-        if (confirm('Delete this transaction from history?')) {
-            const txIndex = transactions.findIndex(t => t.id === selectedTxId);
-            if (txIndex !== -1) {
-                transactions.splice(txIndex, 1);
-                blocks = blocks.filter(b => b.txId !== selectedTxId);
-                selectedTxId = null;
-                detailsPanel.style.display = 'none';
-                updateDisplay();
-                showNotification('Transaction deleted! History has been rewritten.');
+        if (state.ui.hoveredBlockIndex !== -1) {
+          const block = state.blocks[state.ui.hoveredBlockIndex];
+          state.ui.selectedTxId = block.txId;
+          UIManager.showTransactionDetails(block.txId);
+          RenderEngine.requestDraw();
+        } else {
+          state.ui.selectedTxId = null;
+          UIManager.hidePanels();
+          RenderEngine.requestDraw();
+        }
+      }
+      
+      static handleWheel(e) {
+        if (!state.ui.isAuthenticated) return;
+        
+        e.preventDefault();
+        
+        if (e.ctrlKey || e.metaKey) {
+          // Zoom
+          const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+          const newZoom = Utils.clamp(state.ui.zoom * zoomFactor, 0.1, 5);
+          
+          state.ui.zoom = newZoom;
+          DOM.zoomSlider.value = newZoom;
+          DOM.zoomDisplay.textContent = newZoom.toFixed(1) + 'x';
+          RenderEngine.updateZoomInfo();
+        } else {
+          // Pan
+          state.ui.dragOffset.x -= e.deltaX;
+          state.ui.dragOffset.y -= e.deltaY;
+        }
+        
+        RenderEngine.requestDraw();
+      }
+      
+      static handleKeyboard(e) {
+        if (!state.ui.isAuthenticated) return;
+        
+        if (e.ctrlKey || e.metaKey) {
+          switch (e.key) {
+            case 's':
+              e.preventDefault();
+              DataManager.saveToStorage();
+              break;
+            case 'o':
+              e.preventDefault();
+              DataManager.loadFromStorage();
+              break;
+            case '=':
+            case '+':
+              e.preventDefault();
+              state.ui.zoom = Utils.clamp(state.ui.zoom + 0.1, 0.1, 5);
+              this.updateZoomUI();
+              break;
+            case '-':
+              e.preventDefault();
+              state.ui.zoom = Utils.clamp(state.ui.zoom - 0.1, 0.1, 5);
+              this.updateZoomUI();
+              break;
+          }
+        }
+        
+        // Escape key to close panels
+        if (e.key === 'Escape') {
+          UIManager.hidePanels();
+          state.ui.selectedTxId = null;
+          RenderEngine.requestDraw();
+        }
+      }
+      
+      static updateZoomUI() {
+        DOM.zoomSlider.value = state.ui.zoom;
+        DOM.zoomDisplay.textContent = state.ui.zoom.toFixed(1) + 'x';
+        RenderEngine.updateZoomInfo();
+        RenderEngine.requestDraw();
+      }
+    }
+    
+    // ======================
+    // Enhanced Data Management
+    // ======================
+    
+    class DataManager {
+      static saveToStorage() {
+        try {
+          const saveData = {
+            transactions: state.transactions,
+            wallet: state.userWallet,
+            version: '3.0.0',
+            timestamp: new Date().toISOString()
+          };
+          
+          localStorage.setItem('blockchainLedger_v3', JSON.stringify(saveData));
+          NotificationManager.show('Ledger saved successfully!', 'success');
+        } catch (e) {
+          NotificationManager.show('Failed to save: Storage quota exceeded', 'error');
+        }
+      }
+      
+      static loadFromStorage() {
+        try {
+          const saved = localStorage.getItem('blockchainLedger_v3');
+          if (!saved) {
+            // Try legacy format
+            return this.loadLegacyFormat();
+          }
+          
+          const data = JSON.parse(saved);
+          
+          if (data.transactions && Array.isArray(data.transactions)) {
+            TransactionManager.clearLedger();
+            
+            data.transactions.forEach(tx => {
+              state.transactions.push(tx);
+              state.blocks.push({ type: 'source', txId: tx.id, data: tx });
+              state.blocks.push({ type: 'destination', txId: tx.id, data: tx });
+            });
+            
+            if (data.wallet) {
+              state.userWallet = { ...state.userWallet, ...data.wallet };
+              WalletManager.updateUI();
             }
+            
+            TransactionManager.updateDisplay();
+            AnalyticsManager.updateRealTimeStats();
+            NotificationManager.show(`Loaded ${data.transactions.length} transactions!`, 'success');
+          }
+        } catch (e) {
+          NotificationManager.show('Failed to load ledger: Invalid format', 'error');
         }
-    }
-    
-    /**
-     * Fork timeline from selected transaction
-     */
-    function forkFromHere() {
-        if (!isAuthenticated) return;
+      }
+      
+      static loadLegacyFormat() {
+        const legacy = localStorage.getItem('blockchainLedger');
+        if (!legacy) {
+          NotificationManager.show('No saved ledger found', 'warning');
+          return;
+        }
         
-        const tx = transactions.find(t => t.id === selectedTxId);
-        if (tx) {
-            const forkTx = {
-                ...tx,
-                id: tx.id + '-FORK',
-                description: tx.description + ' (Forked)',
-                timestamp: new Date().toISOString()
-            };
-            addTransaction(forkTx);
-            showNotification('Timeline forked! This creates an alternate history branch.');
+        try {
+          const transactions = JSON.parse(legacy);
+          if (Array.isArray(transactions)) {
+            TransactionManager.clearLedger();
+            transactions.forEach(tx => TransactionManager.addTransaction(tx));
+            NotificationManager.show('Loaded legacy format successfully!', 'success');
+          }
+        } catch (e) {
+          NotificationManager.show('Failed to load legacy format', 'error');
         }
+      }
+      
+      static exportData() {
+        const exportData = {
+          transactions: state.transactions,
+          wallet: state.userWallet,
+          metadata: {
+            version: '3.0.0',
+            exportDate: new Date().toISOString(),
+            totalTransactions: state.transactions.length,
+            totalVolume: state.analytics.totalVolume
+          }
+        };
+        
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `blockchain-ledger-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        
+        NotificationManager.show('Ledger exported successfully!', 'success');
+      }
     }
     
     // ======================
-    // Initialize Application
+    // Enhanced Shutdown Management
     // ======================
     
-    // Check PIN on load
-    checkPin();
-</script>
+    class ShutdownManager {
+      static async shutdown() {
+        if (state.ui.isShuttingDown) return;
+        
+        state.ui.isShuttingDown = true;
+        
+        try {
+          // Save all data first
+          await this.saveAllData();
+          
+          // Stop animation loop
+          if (state.ui.animationFrameId) {
+            cancelAnimationFrame(state.ui.animationFrameId);
+            state.ui.animationFrameId = null;
+          }
+          
+          // Clear UI
+          UIManager.hidePanels();
+          
+          // Reset authentication state
+          state.ui.isAuthenticated = false;
+          
+          // Clear canvas
+          if (DOM.ctx) {
+            DOM.ctx.clearRect(0, 0, DOM.canvas.width, DOM.canvas.height);
+          }
+          
+          // Hide controls
+          DOM.controls.style.display = 'none';
+          
+          // Show shutdown complete message
+          NotificationManager.show('Direct Ledger Wallet shutdown complete. Data saved successfully.', 'success');
+          
+          // Reset shutdown flag after a delay
+          setTimeout(() => {
+            state.ui.isShuttingDown = false;
+          }, 2000);
+          
+        } catch (error) {
+          console.error('Shutdown error:', error);
+          NotificationManager.show('Error during shutdown. Some data may not have been saved.', 'error');
+          state.ui.isShuttingDown = false;
+        }
+      }
+      
+      static async saveAllData() {
+        // Save transactions
+        const saveData = {
+          transactions: state.transactions,
+          wallet: state.userWallet,
+          version: '3.0.0',
+          timestamp: new Date().toISOString(),
+          shutdownTime: new Date().toISOString()
+        };
+        
+        localStorage.setItem('blockchainLedger_v3', JSON.stringify(saveData));
+        
+        // Also save to a backup location
+        localStorage.setItem('blockchainLedger_backup', JSON.stringify(saveData));
+      }
+      
+      static restart() {
+        // Clear shutdown state
+        state.ui.isShuttingDown = false;
+        
+        // Show controls
+        DOM.controls.style.display = 'flex';
+        
+        // Restart authentication
+        authManager.checkPin();
+      }
+    }
+    
+    // ======================
+    // Event Listeners Setup
+    // ======================
+    
+    function setupEventListeners() {
+      // Authentication
+      DOM.pinSubmit.addEventListener('click', () => {
+        authManager.validatePin(DOM.pinInput.value);
+      });
+      
+      DOM.pinInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          authManager.validatePin(DOM.pinInput.value);
+        }
+      });
+      
+      // Shutdown
+      DOM.shutdownButton.addEventListener('click', UIManager.showShutdownModal.bind(UIManager));
+      DOM.cancelShutdown.addEventListener('click', UIManager.hideShutdownModal.bind(UIManager));
+      DOM.confirmShutdown.addEventListener('click', () => {
+        UIManager.hideShutdownModal();
+        ShutdownManager.shutdown();
+      });
+      
+      // Canvas interactions - Fixed binding
+      DOM.canvas.addEventListener('mousedown', InteractionManager.handleMouseDown.bind(InteractionManager));
+      DOM.canvas.addEventListener('mouseup', InteractionManager.handleMouseUp.bind(InteractionManager));
+      DOM.canvas.addEventListener('mousemove', Utils.throttle(InteractionManager.handleMouseMove.bind(InteractionManager), 16));
+      DOM.canvas.addEventListener('click', InteractionManager.handleClick.bind(InteractionManager));
+      DOM.canvas.addEventListener('wheel', InteractionManager.handleWheel.bind(InteractionManager), { passive: false });
+      DOM.canvas.addEventListener('mouseleave', () => {
+        state.ui.dragging = false;
+        state.ui.hoveredBlockIndex = -1;
+        RenderEngine.requestDraw();
+      });
+      
+      // Window events - Fixed binding
+      window.addEventListener('resize', Utils.debounce(CanvasManager.resizeCanvas.bind(CanvasManager), 250));
+      window.addEventListener('keydown', InteractionManager.handleKeyboard.bind(InteractionManager));
+      
+      // UI Controls
+      document.getElementById('addTxButton')?.addEventListener('click', () => {
+        if (state.ui.isAuthenticated) DOM.txModal.style.display = 'flex';
+      });
+      
+      document.getElementById('generateButton')?.addEventListener('click', () => {
+        if (state.ui.isAuthenticated) TransactionManager.generateGalaxy(1000);
+      });
+      
+      document.getElementById('clearButton')?.addEventListener('click', () => {
+        if (state.ui.isAuthenticated && confirm('Clear entire ledger?')) {
+          TransactionManager.clearLedger();
+          NotificationManager.show('Ledger cleared', 'warning');
+        }
+      });
+      
+      document.getElementById('saveButton')?.addEventListener('click', DataManager.saveToStorage.bind(DataManager));
+      document.getElementById('loadButton')?.addEventListener('click', DataManager.loadFromStorage.bind(DataManager));
+      
+      document.getElementById('paymentButton')?.addEventListener('click', () => {
+        if (state.ui.isAuthenticated) DOM.paymentModal.style.display = 'flex';
+      });
+      
+      document.getElementById('walletButton')?.addEventListener('click', () => {
+        if (state.ui.isAuthenticated) UIManager.showPanel('wallet');
+      });
+      
+      document.getElementById('analyticsButton')?.addEventListener('click', () => {
+        if (state.ui.isAuthenticated) UIManager.showPanel('analytics');
+      });
+      
+      document.getElementById('generateQRButton')?.addEventListener('click', () => {
+        if (!state.ui.isAuthenticated) return;
+        const amount = parseFloat(prompt('Enter amount for QR code:', '25.00'));
+        if (!isNaN(amount) && amount > 0) {
+          const note = prompt('Enter note (optional):', '') || '';
+          QRCodeManager.generateQRCode(amount, note);
+        }
+      });
+      
+      document.getElementById('scanQRButton')?.addEventListener('click', () => {
+        if (state.ui.isAuthenticated) DOM.scanModal.style.display = 'flex';
+      });
+      
+      document.getElementById('historyModeButton')?.addEventListener('click', UIManager.toggleHistoryMode.bind(UIManager));
+      
+      document.getElementById('forkButton')?.addEventListener('click', () => {
+        if (state.ui.selectedTxId) {
+          TransactionManager.forkTransaction(state.ui.selectedTxId);
+        } else {
+          NotificationManager.show('Select a transaction first!', 'warning');
+        }
+      });
+      
+      // Search and filter
+      DOM.searchBox?.addEventListener('input', Utils.debounce((e) => {
+        state.ui.searchQuery = e.target.value.toLowerCase();
+        RenderEngine.requestDraw();
+      }, 300));
+      
+      DOM.filterSelect?.addEventListener('change', (e) => {
+        state.ui.filterType = e.target.value;
+        RenderEngine.requestDraw();
+      });
+      
+      DOM.zoomSlider?.addEventListener('input', (e) => {
+        state.ui.zoom = parseFloat(e.target.value);
+        DOM.zoomDisplay.textContent = state.ui.zoom.toFixed(1) + 'x';
+        RenderEngine.updateZoomInfo();
+        RenderEngine.requestDraw();
+      });
+      
+      // Theme toggle
+      DOM.themeToggle?.addEventListener('click', UIManager.toggleTheme.bind(UIManager));
+      
+      // Modal close buttons - Fixed to use specific IDs
+      document.getElementById('closeTxModal')?.addEventListener('click', () => {
+        DOM.txModal.style.display = 'none';
+      });
+      
+      document.getElementById('closePaymentModal')?.addEventListener('click', () => {
+        DOM.paymentModal.style.display = 'none';
+      });
+      
+      document.getElementById('closeQRModal')?.addEventListener('click', () => {
+        DOM.qrcodeModal.style.display = 'none';
+      });
+      
+      document.getElementById('closeScanModal')?.addEventListener('click', () => {
+        DOM.scanModal.style.display = 'none';
+      });
+      
+      document.getElementById('closeAnalyticsModal')?.addEventListener('click', () => {
+        DOM.analyticsModal.style.display = 'none';
+      });
+      
+      // Forms
+      document.getElementById('txForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const newTx = {
+          from: document.getElementById('txFrom').value,
+          to: document.getElementById('txTo').value,
+          amount: parseFloat(document.getElementById('txAmount').value),
+          description: document.getElementById('txDesc').value || 'Manual Transaction'
+        };
+        
+        TransactionManager.addTransaction(newTx);
+        DOM.txModal.style.display = 'none';
+        e.target.reset();
+        NotificationManager.show('Transaction added successfully!', 'success');
+      });
+      
+      document.getElementById('paymentForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const recipient = document.getElementById('paymentRecipient').value;
+        const amount = parseFloat(document.getElementById('paymentAmount').value);
+        const note = document.getElementById('paymentNote').value;
+        const speed = document.getElementById('paymentSpeed').value;
+        
+        if (WalletManager.processPayment(recipient, amount, note, speed)) {
+          DOM.paymentModal.style.display = 'none';
+          e.target.reset();
+        }
+      });
+      
+      // QR Code simulation
+      document.getElementById('simulateScan')?.addEventListener('click', QRCodeManager.simulateQRScan.bind(QRCodeManager));
+    }
+    
+    // ======================
+    // Global Functions (for onclick handlers)
+    // ======================
+    
+    window.moveTransaction = function() {
+      NotificationManager.show('Move functionality: Drag to reorder timeline!', 'default');
+    };
+    
+    window.deleteTransaction = function() {
+      if (state.ui.selectedTxId && confirm('Delete this transaction from history?')) {
+        TransactionManager.deleteTransaction(state.ui.selectedTxId);
+      }
+    };
+    
+    window.forkFromHere = function() {
+      if (state.ui.selectedTxId) {
+        TransactionManager.forkTransaction(state.ui.selectedTxId);
+      }
+    };
+    
+    window.openPaymentModal = function() {
+      DOM.paymentModal.style.display = 'flex';
+    };
+    
+    window.addFunds = function() {
+      const amount = parseFloat(prompt('Enter amount to add:', '100.00'));
+      if (!isNaN(amount) && amount > 0) {
+        WalletManager.addFunds(amount);
+      }
+    };
+    
+    window.restartLedger = function() {
+      if (confirm('Restart the Direct Ledger Wallet?')) {
+        ShutdownManager.restart();
+      }
+    };
+    
+    // ======================
+    // Application Initialization
+    // ======================
+    
+    function initializeApp() {
+      setupEventListeners();
+      RenderEngine.animate();
+      authManager.checkPin();
+      
+      // Add some helpful keyboard shortcuts info
+      console.log(`
+    🚀 Enhanced Blockchain Ledger v3.0.0 Loaded!
+    
+    Keyboard shortcuts:
+    • Ctrl/Cmd + S: Save ledger
+    • Ctrl/Cmd + O: Load ledger  
+    • Ctrl/Cmd + Plus: Zoom in
+    • Ctrl/Cmd + Minus: Zoom out
+    • Escape: Close panels
+    • Mouse wheel + Ctrl: Zoom
+    • Mouse wheel: Pan
+    • Shutdown button: Power off ledger
+      `);
+    }
+    
+    // Start the application when DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', initializeApp);
+  </script>
 </body>
 </html>
