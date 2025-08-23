@@ -14,6 +14,8 @@
         --bg-color-2: #1a1a2e;
         --pixel-glow: #ffffff;
         --fork-color: #9b59b6;
+        --payment-color: #16a085;
+        --qrcode-color: #2c3e50;
     }
     * { box-sizing: border-box; }
     body {
@@ -109,6 +111,141 @@
       cursor: pointer;
     }
     
+    /* Payment Modal Styles */
+    .payment-modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+    }
+    .payment-content {
+      background-color: var(--bg-color-2);
+      padding: 2rem;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    }
+    .payment-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .payment-form input, .payment-form select {
+      padding: 10px;
+      border-radius: 8px;
+      border: 2px solid var(--payment-color);
+      background: rgba(52, 73, 94, 0.8);
+      color: white;
+    }
+    .payment-form label {
+      font-weight: 600;
+      color: var(--payment-color);
+    }
+    .wallet-balance {
+      background: rgba(22, 160, 133, 0.2);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      text-align: center;
+      border: 1px solid var(--payment-color);
+    }
+    .wallet-balance h3 {
+      margin: 0 0 0.5rem 0;
+      color: var(--payment-color);
+    }
+    .balance-amount {
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
+    
+    /* QR Code Modal Styles */
+    .qrcode-modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+    }
+    .qrcode-content {
+      background-color: var(--bg-color-2);
+      padding: 2rem;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+    .qrcode-container {
+      margin: 1.5rem 0;
+      padding: 1rem;
+      background: white;
+      border-radius: 8px;
+      display: inline-block;
+    }
+    .qrcode-info {
+      margin-top: 1rem;
+      font-size: 1.1rem;
+    }
+    .qrcode-amount {
+      font-weight: bold;
+      color: var(--payment-color);
+      font-size: 1.5rem;
+    }
+    
+    /* Scan Modal Styles */
+    .scan-modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+    }
+    .scan-content {
+      background-color: var(--bg-color-2);
+      padding: 2rem;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+    .scan-area {
+      margin: 1.5rem 0;
+      height: 300px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 2px dashed var(--qrcode-color);
+    }
+    .scan-placeholder {
+      color: var(--qrcode-color);
+      font-size: 1.2rem;
+    }
+    .scan-info {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+    
     #controls {
       padding: 1rem;
       background: rgba(10, 10, 15, 0.95);
@@ -151,6 +288,14 @@
     .mode-button.active {
         background: linear-gradient(135deg, var(--highlight-color), #f39c12);
         box-shadow: 0 0 20px rgba(241, 196, 64, 0.6);
+    }
+    
+    .payment-button {
+        background: linear-gradient(135deg, var(--payment-color), #1abc9c) !important;
+    }
+    
+    .qrcode-button {
+        background: linear-gradient(135deg, var(--qrcode-color), #34495e) !important;
     }
     
     #searchBox {
@@ -246,6 +391,14 @@
       opacity: 1;
     }
     
+    .payment-notification {
+        background: rgba(22, 160, 133, 0.9) !important;
+    }
+    
+    .qrcode-notification {
+        background: rgba(44, 62, 80, 0.9) !important;
+    }
+    
     @keyframes slideIn {
         from { opacity: 0; transform: translateX(-20px); }
         to { opacity: 1; transform: translateX(0); }
@@ -293,7 +446,6 @@
       <button id="pinSubmit">Access Ledger</button>
     </div>
   </div>
-
   <!-- Transaction Modal -->
   <div id="txModal" class="tx-modal">
     <div class="tx-content">
@@ -320,12 +472,93 @@
       </form>
     </div>
   </div>
-
+  
+  <!-- Payment Modal -->
+  <div id="paymentModal" class="payment-modal">
+    <div class="payment-content">
+      <button id="closePaymentModal" class="close-btn">&times;</button>
+      <h2>DirectLedger Payment</h2>
+      <div class="wallet-balance">
+        <h3>Your Wallet Balance</h3>
+        <div class="balance-amount" id="walletBalance">$0.00</div>
+      </div>
+      <form id="paymentForm" class="payment-form">
+        <div>
+          <label for="paymentRecipient">Recipient ID:</label>
+          <input type="text" id="paymentRecipient" placeholder="Enter recipient's wallet ID" required>
+        </div>
+        <div>
+          <label for="paymentAmount">Amount:</label>
+          <input type="number" id="paymentAmount" step="0.01" min="0.01" required>
+        </div>
+        <div>
+          <label for="paymentNote">Note (optional):</label>
+          <input type="text" id="paymentNote" placeholder="What's this payment for?">
+        </div>
+        <div>
+          <label for="paymentSpeed">Transfer Speed:</label>
+          <select id="paymentSpeed">
+            <option value="instant">Instant (0.5% fee)</option>
+            <option value="fast" selected>Fast (0.2% fee)</option>
+            <option value="standard">Standard (no fee)</option>
+          </select>
+        </div>
+        <button type="submit" class="payment-button">Send Payment</button>
+      </form>
+    </div>
+  </div>
+  
+  <!-- QR Code Modal -->
+  <div id="qrcodeModal" class="qrcode-modal">
+    <div class="qrcode-content">
+      <button id="closeQRModal" class="close-btn">&times;</button>
+      <h2>Scan to Pay</h2>
+      <div class="qrcode-container">
+        <canvas id="qrcodeCanvas" width="200" height="200"></canvas>
+      </div>
+      <div class="qrcode-info">
+        <div>Amount: <span class="qrcode-amount" id="qrAmount">$0.00</span></div>
+        <div>To: <span id="qrRecipient">Your Wallet</span></div>
+      </div>
+      <div style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">
+        Show this QR code to the payer or share it with them
+      </div>
+    </div>
+  </div>
+  
+  <!-- Scan QR Code Modal -->
+  <div id="scanModal" class="scan-modal">
+    <div class="scan-content">
+      <button id="closeScanModal" class="close-btn">&times;</button>
+      <h2>Scan QR Code to Pay</h2>
+      <div class="scan-area">
+        <div class="scan-placeholder">
+          <div>📷 Camera Preview</div>
+          <div style="font-size: 0.9rem; margin-top: 0.5rem;">Point camera at QR code</div>
+        </div>
+      </div>
+      <div class="scan-info">
+        This would access your device camera to scan QR codes in a real implementation
+      </div>
+      <button id="simulateScan" class="qrcode-button" style="margin-top: 1rem;">Simulate QR Scan</button>
+    </div>
+  </div>
+  
   <div id="controls">
     <div class="control-group">
       <button id="addTxButton">✨ Add Transaction</button>
       <button id="generateButton">🌌 Generate Galaxy</button>
       <button id="clearButton">🗑️ Clear Ledger</button>
+    </div>
+    
+    <div class="control-group">
+      <button id="paymentButton" class="payment-button">💳 DirectLedger Payment</button>
+      <button id="walletButton" class="payment-button">👛 My Wallet</button>
+    </div>
+    
+    <div class="control-group">
+      <button id="generateQRButton" class="qrcode-button">📱 Generate QR Code</button>
+      <button id="scanQRButton" class="qrcode-button">📷 Scan QR Code</button>
     </div>
     
     <div class="control-group">
@@ -339,6 +572,8 @@
         <option value="all">All Transactions</option>
         <option value="source">Source Only</option>
         <option value="destination">Destination Only</option>
+        <option value="payment">Payments Only</option>
+        <option value="qrcode">QR Code Payments</option>
       </select>
     </div>
     
@@ -380,20 +615,41 @@
     </div>
   </div>
   
+  <!-- Wallet Panel -->
+  <div id="walletPanel" class="details-panel" style="right: 10px; left: auto; width: 350px;">
+    <h3>DirectLedger Wallet</h3>
+    <div style="background: rgba(22, 160, 133, 0.2); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; text-align: center;">
+      <div style="font-size: 0.9rem; opacity: 0.8;">Wallet ID</div>
+      <div id="walletId" style="font-family: monospace; word-break: break-all; font-weight: bold;">DL-XXXX-XXXX-XXXX</div>
+    </div>
+    <div style="background: rgba(22, 160, 133, 0.2); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; text-align: center;">
+      <div style="font-size: 0.9rem; opacity: 0.8;">Available Balance</div>
+      <div id="walletPanelBalance" style="font-size: 1.5rem; font-weight: bold;">$0.00</div>
+    </div>
+    <div style="margin-bottom: 1rem;">
+      <h4 style="margin-top: 0; color: var(--payment-color);">Recent Payments</h4>
+      <div id="recentPayments" style="max-height: 150px; overflow-y: auto;">
+        <p style="opacity: 0.6; text-align: center;">No payments yet</p>
+      </div>
+    </div>
+    <div style="display: flex; gap: 0.5rem;">
+      <button onclick="document.getElementById('paymentModal').style.display='flex'" style="flex: 1;">Send Money</button>
+      <button onclick="addFunds()" style="flex: 1;">Add Funds</button>
+    </div>
+  </div>
+  
   <div id="notification" class="notification"></div>
   
   <script>
     /**
-     * Scalable Temporal Blockchain Ledger
+     * Scalable Temporal Blockchain Ledger with DirectLedger Payment System and QR Code Support
      * A high-performance visualization tool for blockchain transactions
      * 
-     * @version 1.0.0
+     * @version 2.1.0
      * @author Your Name
      * @license MIT
      */
-
     'use strict';
-
     // ======================
     // DOM Element References
     // ======================
@@ -409,6 +665,28 @@
     const txForm = document.getElementById('txForm');
     const closeTxModal = document.getElementById('closeTxModal');
     
+    // Payment modal elements
+    const paymentModal = document.getElementById('paymentModal');
+    const paymentForm = document.getElementById('paymentForm');
+    const closePaymentModal = document.getElementById('closePaymentModal');
+    const walletBalance = document.getElementById('walletBalance');
+    const walletPanel = document.getElementById('walletPanel');
+    const walletId = document.getElementById('walletId');
+    const walletPanelBalance = document.getElementById('walletPanelBalance');
+    const recentPayments = document.getElementById('recentPayments');
+    
+    // QR Code modal elements
+    const qrcodeModal = document.getElementById('qrcodeModal');
+    const closeQRModal = document.getElementById('closeQRModal');
+    const qrcodeCanvas = document.getElementById('qrcodeCanvas');
+    const qrAmount = document.getElementById('qrAmount');
+    const qrRecipient = document.getElementById('qrRecipient');
+    
+    // Scan QR Code modal elements
+    const scanModal = document.getElementById('scanModal');
+    const closeScanModal = document.getElementById('closeScanModal');
+    const simulateScan = document.getElementById('simulateScan');
+    
     // Canvas and UI elements
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
@@ -421,6 +699,10 @@
     const loadButton = document.getElementById('loadButton');
     const historyModeButton = document.getElementById('historyModeButton');
     const forkButton = document.getElementById('forkButton');
+    const paymentButton = document.getElementById('paymentButton');
+    const walletButton = document.getElementById('walletButton');
+    const generateQRButton = document.getElementById('generateQRButton');
+    const scanQRButton = document.getElementById('scanQRButton');
     const countDisplay = document.getElementById('countDisplay');
     const detailsPanel = document.getElementById('detailsPanel');
     const searchBox = document.getElementById('searchBox');
@@ -440,6 +722,25 @@
      */
     let transactions = [];
     let blocks = [];
+    
+    /**
+     * DirectLedger Payment System State
+     */
+    let userWallet = {
+      id: '',
+      balance: 0,
+      transactions: []
+    };
+    
+    /**
+     * QR Code Payment State
+     */
+    let currentQRCode = {
+      recipient: '',
+      amount: 0,
+      note: '',
+      timestamp: null
+    };
     
     /**
      * UI state variables
@@ -547,10 +848,285 @@
         resizeCanvas();
         updateZoomInfo();
         
+        // Initialize DirectLedger Wallet
+        initializeWallet();
+        
         // Auto-generate a small galaxy for demo
         setTimeout(() => {
             generateGalaxy(100);
         }, 500);
+    }
+    
+    // ======================
+    // DirectLedger Payment System
+    // ======================
+    
+    /**
+     * Initialize user wallet
+     */
+    function initializeWallet() {
+        // Try to load wallet from localStorage
+        const savedWallet = localStorage.getItem('directLedgerWallet');
+        if (savedWallet) {
+            userWallet = JSON.parse(savedWallet);
+        } else {
+            // Create new wallet
+            userWallet = {
+                id: generateWalletId(),
+                balance: 100.00, // Starting balance for demo
+                transactions: []
+            };
+            saveWallet();
+        }
+        
+        // Update UI
+        updateWalletUI();
+    }
+    
+    /**
+     * Generate a unique wallet ID
+     * @returns {string} Wallet ID
+     */
+    function generateWalletId() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let result = 'DL-';
+        for (let i = 0; i < 12; i++) {
+            if (i > 0 && i % 4 === 0) result += '-';
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+    }
+    
+    /**
+     * Save wallet to localStorage
+     */
+    function saveWallet() {
+        localStorage.setItem('directLedgerWallet', JSON.stringify(userWallet));
+    }
+    
+    /**
+     * Update wallet UI elements
+     */
+    function updateWalletUI() {
+        walletId.textContent = userWallet.id;
+        walletBalance.textContent = `$${userWallet.balance.toFixed(2)}`;
+        walletPanelBalance.textContent = `$${userWallet.balance.toFixed(2)}`;
+        
+        // Update recent payments
+        if (userWallet.transactions.length === 0) {
+            recentPayments.innerHTML = '<p style="opacity: 0.6; text-align: center;">No payments yet</p>';
+        } else {
+            recentPayments.innerHTML = '';
+            const recent = userWallet.transactions.slice(-5).reverse();
+            recent.forEach(tx => {
+                const isOutgoing = tx.from === userWallet.id;
+                const txEl = document.createElement('div');
+                txEl.style.padding = '0.5rem';
+                txEl.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
+                txEl.innerHTML = `
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>${isOutgoing ? 'To: ' + tx.to.substring(0, 8) + '...' : 'From: ' + tx.from.substring(0, 8) + '...'}</span>
+                        <span style="font-weight: bold; color: ${isOutgoing ? '#e74c3c' : '#2ecc71'};">
+                            ${isOutgoing ? '-' : '+'}$${tx.amount}
+                        </span>
+                    </div>
+                    <div style="font-size: 0.8rem; opacity: 0.7;">${new Date(tx.timestamp).toLocaleDateString()}</div>
+                `;
+                recentPayments.appendChild(txEl);
+            });
+        }
+    }
+    
+    /**
+     * Show wallet panel
+     */
+    function showWallet() {
+        updateWalletUI();
+        walletPanel.style.display = 'block';
+        detailsPanel.style.display = 'none';
+    }
+    
+    /**
+     * Add funds to wallet (demo function)
+     */
+    function addFunds() {
+        const amount = parseFloat(prompt('Enter amount to add to your wallet:', '50.00'));
+        if (!isNaN(amount) && amount > 0) {
+            userWallet.balance += amount;
+            
+            // Add transaction record
+            userWallet.transactions.push({
+                id: `ADD-${Date.now()}`,
+                from: 'SYSTEM',
+                to: userWallet.id,
+                amount: amount,
+                description: 'Funds Added',
+                timestamp: new Date().toISOString(),
+                type: 'add_funds'
+            });
+            
+            saveWallet();
+            updateWalletUI();
+            showNotification(`Added $${amount.toFixed(2)} to your wallet!`, 'payment-notification');
+        }
+    }
+    
+    /**
+     * Process a DirectLedger payment
+     * @param {string} recipient - Recipient wallet ID
+     * @param {number} amount - Payment amount
+     * @param {string} note - Payment note
+     * @param {string} speed - Transfer speed
+     * @param {string} paymentType - Type of payment (standard or qrcode)
+     */
+    function processPayment(recipient, amount, note, speed, paymentType = 'standard') {
+        // Calculate fee based on speed
+        let fee = 0;
+        if (speed === 'instant') fee = amount * 0.005;
+        else if (speed === 'fast') fee = amount * 0.002;
+        
+        const totalAmount = amount + fee;
+        
+        // Check if user has enough balance
+        if (userWallet.balance < totalAmount) {
+            showNotification('Insufficient balance for this payment!', 'payment-notification');
+            return false;
+        }
+        
+        // Create payment transaction
+        const paymentTx = {
+            id: `${paymentType === 'qrcode' ? 'QRP' : 'PAY'}-${Date.now()}`,
+            from: userWallet.id,
+            to: recipient,
+            amount: amount,
+            fee: fee,
+            description: note || 'DirectLedger Payment',
+            timestamp: new Date().toISOString(),
+            speed: speed,
+            type: 'payment',
+            paymentType: paymentType,
+            status: 'pending'
+        };
+        
+        // Deduct from user balance
+        userWallet.balance -= totalAmount;
+        
+        // Add to wallet transactions
+        userWallet.transactions.push(paymentTx);
+        
+        // Add to main ledger for visualization
+        transactions.push(paymentTx);
+        blocks.push({ type: 'source', txId: paymentTx.id, data: paymentTx });
+        blocks.push({ type: 'destination', txId: paymentTx.id, data: paymentTx });
+        
+        // Simulate payment processing
+        setTimeout(() => {
+            paymentTx.status = 'completed';
+            saveWallet();
+            showNotification(`${paymentType === 'qrcode' ? 'QR Code ' : ''}Payment of $${amount.toFixed(2)} sent successfully!`, 'payment-notification');
+        }, speed === 'instant' ? 500 : speed === 'fast' ? 2000 : 5000);
+        
+        saveWallet();
+        updateWalletUI();
+        updateDisplay();
+        
+        return true;
+    }
+    
+    // ======================
+    // QR Code Payment System
+    // ======================
+    
+    /**
+     * Generate QR Code for payment
+     * @param {number} amount - Payment amount
+     * @param {string} note - Payment note
+     */
+    function generateQRCode(amount, note = '') {
+        // Store current QR code data
+        currentQRCode = {
+            recipient: userWallet.id,
+            amount: amount,
+            note: note,
+            timestamp: new Date().toISOString()
+        };
+        
+        // Update UI
+        qrAmount.textContent = `$${amount.toFixed(2)}`;
+        qrRecipient.textContent = userWallet.id;
+        
+        // Generate QR code (simplified for demo)
+        const qrCtx = qrcodeCanvas.getContext('2d');
+        qrCtx.fillStyle = 'white';
+        qrCtx.fillRect(0, 0, 200, 200);
+        
+        // Draw a simple pattern to represent QR code
+        qrCtx.fillStyle = 'black';
+        const cellSize = 10;
+        for (let x = 0; x < 20; x++) {
+            for (let y = 0; y < 20; y++) {
+                if ((x + y) % 2 === 0 || Math.random() > 0.5) {
+                    qrCtx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                }
+            }
+        }
+        
+        // Draw position markers (corners)
+        const markerSize = 7;
+        // Top-left
+        for (let x = 0; x < markerSize; x++) {
+            for (let y = 0; y < markerSize; y++) {
+                if (x === 0 || y === 0 || x === markerSize - 1 || y === markerSize - 1 || 
+                    (x > 1 && x < markerSize - 2 && y > 1 && y < markerSize - 2)) {
+                    qrCtx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                }
+            }
+        }
+        // Top-right
+        for (let x = 13; x < 20; x++) {
+            for (let y = 0; y < markerSize; y++) {
+                if (x === 13 || y === 0 || x === 19 || y === markerSize - 1 || 
+                    (x < 18 && x > 14 && y > 1 && y < markerSize - 2)) {
+                    qrCtx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                }
+            }
+        }
+        // Bottom-left
+        for (let x = 0; x < markerSize; x++) {
+            for (let y = 13; y < 20; y++) {
+                if (x === 0 || y === 13 || x === markerSize - 1 || y === 19 || 
+                    (x > 1 && x < markerSize - 2 && y < 18 && y > 14)) {
+                    qrCtx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                }
+            }
+        }
+        
+        // Show modal
+        qrcodeModal.style.display = 'flex';
+        showNotification('QR Code generated! Show this to the payer.', 'qrcode-notification');
+    }
+    
+    /**
+     * Process QR Code payment
+     * @param {Object} qrData - QR Code data
+     */
+    function processQRCodePayment(qrData) {
+        // In a real implementation, this would validate the QR code
+        // For demo, we'll use the currentQRCode data
+        
+        if (!qrData || !qrData.recipient || !qrData.amount) {
+            showNotification('Invalid QR Code!', 'qrcode-notification');
+            return false;
+        }
+        
+        // Check if user is trying to pay themselves
+        if (qrData.recipient === userWallet.id) {
+            showNotification('Cannot pay yourself!', 'qrcode-notification');
+            return false;
+        }
+        
+        // Process payment with standard speed (no fee for QR payments)
+        return processPayment(qrData.recipient, qrData.amount, qrData.note, 'standard', 'qrcode');
     }
     
     // ======================
@@ -583,16 +1159,86 @@
     });
     
     // ======================
+    // Payment Modal
+    // ======================
+    
+    // Close payment modal
+    closePaymentModal.addEventListener('click', () => {
+        paymentModal.style.display = 'none';
+    });
+    
+    // Payment form submission
+    paymentForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const recipient = document.getElementById('paymentRecipient').value;
+        const amount = parseFloat(document.getElementById('paymentAmount').value);
+        const note = document.getElementById('paymentNote').value;
+        const speed = document.getElementById('paymentSpeed').value;
+        
+        if (processPayment(recipient, amount, note, speed)) {
+            paymentModal.style.display = 'none';
+            paymentForm.reset();
+        }
+    });
+    
+    // ======================
+    // QR Code Modal
+    // ======================
+    
+    // Close QR modal
+    closeQRModal.addEventListener('click', () => {
+        qrcodeModal.style.display = 'none';
+    });
+    
+    // ======================
+    // Scan QR Code Modal
+    // ======================
+    
+    // Close scan modal
+    closeScanModal.addEventListener('click', () => {
+        scanModal.style.display = 'none';
+    });
+    
+    // Simulate QR scan
+    simulateScan.addEventListener('click', () => {
+        // In a real implementation, this would use device camera to scan QR code
+        // For demo, we'll simulate a successful scan with sample data
+        
+        // Create sample QR data (in a real app, this would come from scanning)
+        const sampleQRData = {
+            recipient: 'DL-ABCD-EFGH-IJKL', // Sample recipient
+            amount: 25.00,                  // Sample amount
+            note: 'Coffee',                 // Sample note
+            timestamp: new Date().toISOString()
+        };
+        
+        // Process the payment
+        if (processQRCodePayment(sampleQRData)) {
+            scanModal.style.display = 'none';
+            showNotification('QR Code payment processed successfully!', 'qrcode-notification');
+        }
+    });
+    
+    // ======================
     // Notification System
     // ======================
     
     /**
      * Show a notification message
      * @param {string} message - The message to display
+     * @param {string} type - Notification type (default, payment, or qrcode)
      */
-    function showNotification(message) {
+    function showNotification(message, type = 'default') {
         const notification = document.getElementById('notification');
         notification.textContent = message;
+        notification.className = 'notification';
+        
+        if (type === 'payment') {
+            notification.classList.add('payment-notification');
+        } else if (type === 'qrcode') {
+            notification.classList.add('qrcode-notification');
+        }
+        
         notification.classList.add('show');
         
         setTimeout(() => {
@@ -629,6 +1275,35 @@
     addTxButton.addEventListener('click', () => {
         if (!isAuthenticated) return;
         txModal.style.display = 'flex';
+    });
+    
+    // Payment button
+    paymentButton.addEventListener('click', () => {
+        if (!isAuthenticated) return;
+        paymentModal.style.display = 'flex';
+    });
+    
+    // Wallet button
+    walletButton.addEventListener('click', () => {
+        if (!isAuthenticated) return;
+        showWallet();
+    });
+    
+    // Generate QR button
+    generateQRButton.addEventListener('click', () => {
+        if (!isAuthenticated) return;
+        
+        const amount = parseFloat(prompt('Enter amount for QR code:', '10.00'));
+        if (!isNaN(amount) && amount > 0) {
+            const note = prompt('Enter note for payment (optional):', '') || '';
+            generateQRCode(amount, note);
+        }
+    });
+    
+    // Scan QR button
+    scanQRButton.addEventListener('click', () => {
+        if (!isAuthenticated) return;
+        scanModal.style.display = 'flex';
     });
     
     // Generate galaxy button
@@ -801,6 +1476,7 @@
             requestDraw();
         } else {
             detailsPanel.style.display = 'none';
+            walletPanel.style.display = 'none';
             selectedTxId = null;
             requestDraw();
         }
@@ -946,6 +1622,7 @@
         dragOffset = { x: 0, y: 0 };
         selectedTxId = null;
         detailsPanel.style.display = 'none';
+        walletPanel.style.display = 'none';
         updateDisplay();
     }
     
@@ -1036,7 +1713,11 @@
             if (x < -10 || x > canvas.width + 10 || y < -10 || y > canvas.height + 10) continue;
             
             // Apply filter
-            if (filterType !== 'all' && block.type !== filterType) continue;
+            if (filterType !== 'all' && block.type !== filterType) {
+                if (filterType === 'payment' && block.data.type !== 'payment') continue;
+                if (filterType === 'qrcode' && block.data.paymentType !== 'qrcode') continue;
+                if (filterType !== 'payment' && filterType !== 'qrcode' && block.type !== filterType) continue;
+            }
             
             const isSearched = searchQuery && (block.data.id.toLowerCase().includes(searchQuery) || 
                                              block.data.from.toLowerCase().includes(searchQuery) || 
@@ -1046,7 +1727,13 @@
             if (searchQuery && !isSearched) ctx.globalAlpha = 0.1;
             
             // Draw glowing pixel
-            const color = block.type === 'source' ? '#3498db' : '#2ecc71';
+            let color;
+            if (block.data.type === 'payment') {
+                color = block.data.paymentType === 'qrcode' ? '#2c3e50' : '#16a085'; // Different colors for payment types
+            } else {
+                color = block.type === 'source' ? '#3498db' : '#2ecc71';
+            }
+            
             ctx.fillStyle = color;
             ctx.shadowColor = color;
             ctx.shadowBlur = 2;
@@ -1098,10 +1785,22 @@
             ctx.globalAlpha = 1.0;
             if (searchQuery && !isSearched) ctx.globalAlpha = 0.2;
             
+            // Use different color for payment transactions
+            if (tx.type === 'payment') {
+                ctx.strokeStyle = tx.paymentType === 'qrcode' ? 
+                    getComputedStyle(document.documentElement).getPropertyValue('--qrcode-color').trim() :
+                    getComputedStyle(document.documentElement).getPropertyValue('--payment-color').trim();
+            }
+            
             ctx.beginPath();
             ctx.moveTo(posA.x, posA.y);
             ctx.lineTo(posB.x, posB.y);
             ctx.stroke();
+            
+            // Reset color
+            if (tx.type === 'payment') {
+                ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--rung-color').trim();
+            }
         }
         
         // Draw simple hexagons
@@ -1113,7 +1812,11 @@
             if (pos.x < -50 || pos.x > canvas.width + 50 || pos.y < -50 || pos.y > canvas.height + 50) continue;
             
             // Apply filter
-            if (filterType !== 'all' && block.type !== filterType) continue;
+            if (filterType !== 'all' && block.type !== filterType) {
+                if (filterType === 'payment' && block.data.type !== 'payment') continue;
+                if (filterType === 'qrcode' && block.data.paymentType !== 'qrcode') continue;
+                if (filterType !== 'payment' && filterType !== 'qrcode' && block.type !== filterType) continue;
+            }
             
             const isSearched = searchQuery && (block.data.id.toLowerCase().includes(searchQuery) || 
                                              block.data.from.toLowerCase().includes(searchQuery) || 
@@ -1122,9 +1825,16 @@
             ctx.globalAlpha = 1.0;
             if (searchQuery && !isSearched) ctx.globalAlpha = 0.2;
             
-            ctx.fillStyle = block.type === 'source' ? 
-                getComputedStyle(document.documentElement).getPropertyValue('--source-color').trim() : 
-                getComputedStyle(document.documentElement).getPropertyValue('--dest-color').trim();
+            // Use different color for payment transactions
+            if (block.data.type === 'payment') {
+                ctx.fillStyle = block.data.paymentType === 'qrcode' ? 
+                    getComputedStyle(document.documentElement).getPropertyValue('--qrcode-color').trim() :
+                    getComputedStyle(document.documentElement).getPropertyValue('--payment-color').trim();
+            } else {
+                ctx.fillStyle = block.type === 'source' ? 
+                    getComputedStyle(document.documentElement).getPropertyValue('--source-color').trim() : 
+                    getComputedStyle(document.documentElement).getPropertyValue('--dest-color').trim();
+            }
             
             // Draw simple hexagon
             ctx.beginPath();
@@ -1186,9 +1896,20 @@
             ctx.lineTo(posB.x, posB.y);
             
             ctx.lineWidth = (isHovered || isSelected) ? 5 * zoom : 2 * zoom;
-            ctx.strokeStyle = (isHovered || isSelected) ? 
-                getComputedStyle(document.documentElement).getPropertyValue('--highlight-color').trim() : 
-                getComputedStyle(document.documentElement).getPropertyValue('--rung-color').trim();
+            
+            // Use different color for payment transactions
+            if (tx.type === 'payment') {
+                ctx.strokeStyle = (isHovered || isSelected) ? 
+                    getComputedStyle(document.documentElement).getPropertyValue('--highlight-color').trim() : 
+                    (tx.paymentType === 'qrcode' ? 
+                        getComputedStyle(document.documentElement).getPropertyValue('--qrcode-color').trim() :
+                        getComputedStyle(document.documentElement).getPropertyValue('--payment-color').trim());
+            } else {
+                ctx.strokeStyle = (isHovered || isSelected) ? 
+                    getComputedStyle(document.documentElement).getPropertyValue('--highlight-color').trim() : 
+                    getComputedStyle(document.documentElement).getPropertyValue('--rung-color').trim();
+            }
+            
             ctx.stroke();
         }
         ctx.globalAlpha = 1.0;
@@ -1202,7 +1923,11 @@
             if (pos.x < -50 || pos.x > canvas.width + 50 || pos.y < -50 || pos.y > canvas.height + 50) continue;
             
             // Apply filter
-            if (filterType !== 'all' && block.type !== filterType) continue;
+            if (filterType !== 'all' && block.type !== filterType) {
+                if (filterType === 'payment' && block.data.type !== 'payment') continue;
+                if (filterType === 'qrcode' && block.data.paymentType !== 'qrcode') continue;
+                if (filterType !== 'payment' && filterType !== 'qrcode' && block.type !== filterType) continue;
+            }
             
             drawDetailedHexBlock(block, pos.x, pos.y, index, blockSize);
         }
@@ -1225,9 +1950,17 @@
         ctx.globalAlpha = 1.0;
         if (searchQuery && !isSearched) ctx.globalAlpha = 0.1;
         ctx.save();
-        ctx.fillStyle = block.type === 'source' ? 
-            getComputedStyle(document.documentElement).getPropertyValue('--source-color').trim() : 
-            getComputedStyle(document.documentElement).getPropertyValue('--dest-color').trim();
+        
+        // Use different color for payment transactions
+        if (block.data.type === 'payment') {
+            ctx.fillStyle = block.data.paymentType === 'qrcode' ? 
+                getComputedStyle(document.documentElement).getPropertyValue('--qrcode-color').trim() :
+                getComputedStyle(document.documentElement).getPropertyValue('--payment-color').trim();
+        } else {
+            ctx.fillStyle = block.type === 'source' ? 
+                getComputedStyle(document.documentElement).getPropertyValue('--source-color').trim() : 
+                getComputedStyle(document.documentElement).getPropertyValue('--dest-color').trim();
+        }
         
         if (historyMode) {
             ctx.shadowColor = getComputedStyle(document.documentElement).getPropertyValue('--fork-color').trim();
@@ -1266,9 +1999,24 @@
             
             const fontSize = Math.max(8, blockSize * 0.15 * zoom);
             ctx.font = `bold ${fontSize}px Segoe UI`;
-            ctx.fillText(block.type === 'source' ? 'FROM' : 'TO', x, y - fontSize * 1.2);
+            
+            let label = block.type === 'source' ? 'FROM' : 'TO';
+            if (block.data.type === 'payment') {
+                label = block.type === 'source' ? 'PAYER' : 'PAYEE';
+                if (block.data.paymentType === 'qrcode') {
+                    label = block.type === 'source' ? 'QR PAYER' : 'QR PAYEE';
+                }
+            }
+            
+            ctx.fillText(label, x, y - fontSize * 1.2);
             ctx.font = `${fontSize * 0.8}px Segoe UI`;
-            ctx.fillText(block.type === 'source' ? block.data.from : block.data.to, x, y);
+            
+            let displayText = block.type === 'source' ? block.data.from : block.data.to;
+            if (displayText.length > 10) {
+                displayText = displayText.substring(0, 10) + '...';
+            }
+            
+            ctx.fillText(displayText, x, y);
             if (zoom > 1.2) {
                 ctx.fillText(`ID: ${block.data.id.slice(-4)}`, x, y + fontSize * 1.2);
             }
@@ -1342,12 +2090,23 @@
         const tx = transactions.find(t => t.id === txId);
         if (!tx) return;
         detailsPanel.style.display = 'block';
+        walletPanel.style.display = 'none';
         document.getElementById('detailId').textContent = tx.id;
         document.getElementById('detailFrom').textContent = tx.from;
         document.getElementById('detailTo').textContent = tx.to;
         document.getElementById('detailAmount').textContent = `$${tx.amount}`;
         document.getElementById('detailDesc').textContent = tx.description;
         document.getElementById('detailTs').textContent = new Date(tx.timestamp).toLocaleString();
+        
+        // Show fee for payment transactions
+        if (tx.type === 'payment' && tx.fee) {
+            document.getElementById('detailDesc').textContent = `${tx.description} (Fee: $${tx.fee.toFixed(2)})`;
+        }
+        
+        // Show payment type for QR code payments
+        if (tx.paymentType === 'qrcode') {
+            document.getElementById('detailDesc').textContent = `${tx.description} (QR Code Payment)`;
+        }
     }
     
     /**
@@ -1356,7 +2115,7 @@
     function updateZoomInfo() {
         const info = document.getElementById('zoomInfo');
         if (zoom < PIXEL_THRESHOLD) {
-            info.innerHTML = '<strong>Galaxy View</strong><br>Each pixel represents a transaction. Blue = source, Green = destination.';
+            info.innerHTML = '<strong>Galaxy View</strong><br>Each pixel represents a transaction. Blue = source, Green = destination, Teal = payment, Dark blue = QR payment.';
         } else if (zoom < SIMPLE_THRESHOLD) {
             info.innerHTML = '<strong>Cluster View</strong><br>Simple hexagons showing transaction structure.';
         } else {
@@ -1419,6 +2178,6 @@
     
     // Check PIN on load
     checkPin();
-</script>
+  </script>
 </body>
 </html>
