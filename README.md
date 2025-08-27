@@ -1,14 +1,7 @@
-# Graeme-Gladman
-The Infinite Scale LOD (Level of Detail) hexagonal block chain ledger visualization system.
+## Hex Ledger
+View the [Hex Ledger](https://github.com/23hillstreet-art/Graeme-Gladman/blob/main/Hex%20Ledger) file.
 
-# Direct Ledger Wallet
-[![Visitors](https://visitor-badge.laobi.icu/badge?page_id=23hillstreet-art.Graeme-Gladman)](https://github.com/23hillstreet-art/Graeme-Gladman)
-[![Downloads](https://img.shields.io/github/downloads/23hillstreet-art.Graeme-Gladman/total.svg)](https://github.com/23hillstreet-art/Graeme-Gladman/releases)
-
-## Description
-Your project description here...
-
-## 🔒 Privacy & Security Philosophy
+[![File views](https://visitor-badge.laobi.icu/badge?page_id=23hillstreet-art.Graeme-Gladman.Hex_Ledger)](https://github.com/23hillstreet-art/Graeme-Gladman/blob/main/Hex%20Ledger)
 
 In an era of increasing surveillance and data exploitation, the Scalable Temporal Blockchain Ledger is designed as a fortress for your financial data. We believe that understanding blockchain transactions shouldn't require sacrificing your privacy.
 
