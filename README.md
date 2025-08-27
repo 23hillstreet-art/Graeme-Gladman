@@ -1,5 +1,14 @@
-# Graeme-Gladman
+# Direct Ledger Wallet
+by Graeme-Gladman
+
 The Infinite Scale LOD (Level of Detail) hexagonal block chain ledger visualization system.
+
+[![Visitors](https://visitor-badge.laobi.icu/badge?page_id=Graeme-Gladman.Direct-Ledger-Wallet)](https://github.com/Graeme-Gladman/Direct-Ledger-Wallet)
+[![Downloads](https://img.shields.io/github/downloads/Graeme-Gladman/Direct-Ledger-Wallet/total.svg)](https://github.com/Graeme-Gladman/Direct-Ledger-Wallet/releases)
+
+## Description
+Your project description here...
+
 ## 🔒 Privacy & Security Philosophy
 
 In an era of increasing surveillance and data exploitation, the Scalable Temporal Blockchain Ledger is designed as a fortress for your financial data. We believe that understanding blockchain transactions shouldn't require sacrificing your privacy.
