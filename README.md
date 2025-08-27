@@ -1,10 +1,9 @@
-# Direct Ledger Wallet
-by Graeme-Gladman
-
+# Graeme-Gladman
 The Infinite Scale LOD (Level of Detail) hexagonal block chain ledger visualization system.
 
-[![Visitors](https://visitor-badge.laobi.icu/badge?page_id=Graeme-Gladman.Direct-Ledger-Wallet)](https://github.com/Graeme-Gladman/Direct-Ledger-Wallet)
-[![Downloads](https://img.shields.io/github/downloads/Graeme-Gladman/Direct-Ledger-Wallet/total.svg)](https://github.com/Graeme-Gladman/Direct-Ledger-Wallet/releases)
+# Direct Ledger Wallet
+[![Visitors](https://visitor-badge.laobi.icu/badge?page_id=23hillstreet-art.Graeme-Gladman)](https://github.com/23hillstreet-art/Graeme-Gladman)
+[![Downloads](https://img.shields.io/github/downloads/23hillstreet-art.Graeme-Gladman/total.svg)](https://github.com/23hillstreet-art/Graeme-Gladman/releases)
 
 ## Description
 Your project description here...
