@@ -2952,34 +2952,92 @@
         ShutdownManager.restart();
       }
     };
-    
-    // ======================
-    // Application Initialization
-    // ======================
-    
-    function initializeApp() {
-      setupEventListeners();
-      RenderEngine.animate();
-      authManager.checkPin();
-      
-      // Add some helpful keyboard shortcuts info
-      console.log(`
-    🚀 Enhanced Blockchain Ledger v3.0.0 Loaded!
-    
-    Keyboard shortcuts:
-    • Ctrl/Cmd + S: Save ledger
-    • Ctrl/Cmd + O: Load ledger  
-    • Ctrl/Cmd + Plus: Zoom in
-    • Ctrl/Cmd + Minus: Zoom out
-    • Escape: Close panels
-    • Mouse wheel + Ctrl: Zoom
-    • Mouse wheel: Pan
-    • Shutdown button: Power off ledger
-      `);
-    }
-    
-    // Start the application when DOM is fully loaded
-    document.addEventListener('DOMContentLoaded', initializeApp);
+// ======================
+// UI Adjustment Function
+// ======================
+
+function adjustUIElements() {
+  // Move exit button further to the right
+  const exitButton = document.getElementById('shutdownButton');
+  if (exitButton) {
+    exitButton.style.marginLeft = '50px';
+    exitButton.style.paddingRight = '15px';
+  }
+  
+  // Make pop-up transactions and history darker
+  const modals = document.querySelectorAll('.modal');
+  const panels = document.querySelectorAll('.panel');
+  
+  // Apply darker background to modals and panels
+  [...modals, ...panels].forEach(element => {
+    element.style.backgroundColor = 'rgba(20, 20, 30, 0.95)'; // Darker background
+    element.style.color = '#f0f0f0'; // Lighter text for contrast
+  });
+  
+  // Specifically target transaction history elements
+  const historyElements = document.querySelectorAll('.payment-item, .tx-status');
+  historyElements.forEach(element => {
+    element.style.backgroundColor = 'rgba(30, 30, 40, 0.8)';
+    element.style.color = '#e0e0e0';
+  });
+  
+  // Ensure fork button is visible and properly positioned
+  const forkButton = document.getElementById('forkButton');
+  if (forkButton) {
+    forkButton.style.marginRight = '30px';
+    forkButton.style.zIndex = '10';
+    forkButton.style.position = 'relative';
+    forkButton.style.display = 'inline-block'; // Ensure it's visible
+    forkButton.style.visibility = 'visible'; // Explicitly set visibility
+  }
+  
+  // Ensure history button is visible and properly positioned
+  const historyButton = document.getElementById('historyModeButton');
+  if (historyButton) {
+    historyButton.style.zIndex = '10';
+    historyButton.style.position = 'relative';
+    historyButton.style.display = 'inline-block'; // Ensure it's visible
+    historyButton.style.visibility = 'visible'; // Explicitly set visibility
+  }
+  
+  // Check if buttons are in a flex container and adjust if needed
+  const buttonContainer = exitButton?.parentElement;
+  if (buttonContainer) {
+    buttonContainer.style.gap = '20px';
+    buttonContainer.style.overflow = 'visible'; // Ensure buttons aren't clipped
+  }
+}
+
+// ======================
+// Application Initialization
+// ======================
+
+function initializeApp() {
+  setupEventListeners();
+  RenderEngine.animate();
+  authManager.checkPin();
+  
+  // Call our UI adjustment function
+  adjustUIElements();
+  
+  // Add some helpful keyboard shortcuts info
+  console.log(`
+🚀 Enhanced Blockchain Ledger v3.0.0 Loaded!
+
+Keyboard shortcuts:
+• Ctrl/Cmd + S: Save ledger
+• Ctrl/Cmd + O: Load ledger  
+• Ctrl/Cmd + Plus: Zoom in
+• Ctrl/Cmd + Minus: Zoom out
+• Escape: Close panels
+• Mouse wheel + Ctrl: Zoom
+• Mouse wheel: Pan
+• Shutdown button: Power off ledger
+  `);
+}
+
+// Start the application when DOM is fully loaded
+document.addEventListener('DOMContentLoaded', initializeApp);
   </script>
 </body>
 </html>
