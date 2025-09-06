@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Enhanced Scalable Temporal Blockchain Ledger</title>
+  <title>Enhanced Scalable Temporal Blockchain Ledger - Dual Plane Storage</title>
   <style>
     :root {
         --source-color: #3498db;
@@ -23,6 +23,14 @@
         --glass-bg: rgba(255, 255, 255, 0.05);
         --glass-border: rgba(255, 255, 255, 0.1);
         --shadow-color: rgba(0, 0, 0, 0.3);
+        /* New colors for the second hexagon plane */
+        --plane2-source-color: #9b59b6;
+        --plane2-dest-color: #1abc9c;
+        --plane2-connection-color: #e67e22;
+        /* Storage status colors */
+        --storage-low: #27ae60;
+        --storage-medium: #f39c12;
+        --storage-high: #e74c3c;
     }
     * { box-sizing: border-box; }
     body {
@@ -51,7 +59,7 @@
       -webkit-backdrop-filter: blur(25px);
     }
     
-    /* Improved Modal Styles */
+    /* Enhanced Modal Styles */
     .modal {
       display: none;
       position: fixed;
@@ -308,6 +316,12 @@
       display: none;
     }
     
+    .storage-panel {
+      right: 20px;
+      top: 100px;
+      display: none;
+    }
+    
     .panel h3 { 
       margin-top: 0; 
       border-bottom: 2px solid var(--highlight-color); 
@@ -514,6 +528,140 @@
       color: var(--highlight-color);
     }
     
+    /* Plane Toggle Switch */
+    .plane-toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      background: var(--glass-bg);
+      border-radius: 20px;
+      border: 1px solid var(--glass-border);
+    }
+    
+    .toggle-switch {
+      position: relative;
+      width: 50px;
+      height: 24px;
+      background: #475569;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .toggle-switch.active {
+      background: var(--highlight-color);
+    }
+    
+    .toggle-slider {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.3s;
+    }
+    
+    .toggle-switch.active .toggle-slider {
+      transform: translateX(26px);
+    }
+    
+    .plane-label {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    
+    /* Storage Management Styles */
+    .storage-meter {
+      margin: 1rem 0;
+      padding: 1rem;
+      background: var(--glass-bg);
+      border-radius: 12px;
+      border: 1px solid var(--glass-border);
+    }
+    
+    .storage-bar {
+      width: 100%;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 0.5rem 0;
+      position: relative;
+    }
+    
+    .storage-fill {
+      height: 100%;
+      border-radius: 10px;
+      transition: width 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .storage-fill::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: shimmer 2s infinite;
+    }
+    
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    
+    .storage-fill.low {
+      background: var(--storage-low);
+    }
+    
+    .storage-fill.medium {
+      background: var(--storage-medium);
+    }
+    
+    .storage-fill.high {
+      background: var(--storage-high);
+    }
+    
+    .storage-stats {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+    
+    .storage-allocation {
+      display: flex;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    
+    .allocation-option {
+      flex: 1;
+      padding: 0.5rem;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .allocation-option:hover {
+      background: var(--glass-strong);
+      transform: translateY(-2px);
+    }
+    
+    .allocation-option.active {
+      background: var(--highlight-color);
+      color: #000;
+    }
+    
     /* Mobile Responsive */
     @media (max-width: 768px) {
       #controls {
@@ -544,6 +692,15 @@
       .modal-content {
         width: 95%;
         padding: 1.5rem;
+      }
+      
+      .plane-toggle {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .storage-allocation {
+        flex-direction: column;
       }
     }
     
@@ -683,6 +840,13 @@
         <label class="control-label">Description:</label>
         <input type="text" id="txDesc" class="form-input" placeholder="Optional description">
         
+        <label class="control-label">Target Plane:</label>
+        <select id="txPlane" class="form-input">
+          <option value="auto">Auto (Recommended)</option>
+          <option value="1">Plane 1</option>
+          <option value="2">Plane 2</option>
+        </select>
+        
         <button type="submit" class="btn btn-success" style="margin-top: 1rem;">Add Transaction</button>
       </form>
     </div>
@@ -766,6 +930,68 @@
     </div>
   </div>
   
+  <!-- Storage Management Modal -->
+  <div id="storageModal" class="modal">
+    <div class="modal-content">
+      <button id="closeStorageModal" class="btn btn-small" style="position: absolute; right: 1rem; top: 1rem;">✕</button>
+      <h2>💾 Storage Management</h2>
+      
+      <div class="storage-meter">
+        <h4>Plane 1 Storage</h4>
+        <div class="storage-bar">
+          <div class="storage-fill" id="storageBar1"></div>
+        </div>
+        <div class="storage-stats">
+          <span id="storageUsed1">0</span> / <span id="storageCapacity1">10,000</span> transactions
+        </div>
+      </div>
+      
+      <div class="storage-meter">
+        <h4>Plane 2 Storage</h4>
+        <div class="storage-bar">
+          <div class="storage-fill" id="storageBar2"></div>
+        </div>
+        <div class="storage-stats">
+          <span id="storageUsed2">0</span> / <span id="storageCapacity2">10,000</span> transactions
+        </div>
+      </div>
+      
+      <div class="storage-meter">
+        <h4>Total System Storage</h4>
+        <div class="storage-bar">
+          <div class="storage-fill" id="storageBarTotal"></div>
+        </div>
+        <div class="storage-stats">
+          <span id="storageUsedTotal">0</span> / <span id="storageCapacityTotal">20,000</span> transactions
+        </div>
+      </div>
+      
+      <div style="margin: 1.5rem 0;">
+        <h4>Storage Allocation Strategy</h4>
+        <div class="storage-allocation">
+          <div class="allocation-option active" data-strategy="balanced">
+            <div style="font-weight: bold;">Balanced</div>
+            <div style="font-size: 0.8rem; opacity: 0.8;">Distribute evenly</div>
+          </div>
+          <div class="allocation-option" data-strategy="priority">
+            <div style="font-weight: bold;">Priority</div>
+            <div style="font-size: 0.8rem; opacity: 0.8;">Plane 1 first</div>
+          </div>
+          <div class="allocation-option" data-strategy="efficiency">
+            <div style="font-weight: bold;">Efficiency</div>
+            <div style="font-size: 0.8rem; opacity: 0.8;">Fill sequentially</div>
+          </div>
+        </div>
+      </div>
+      
+      <div style="display: flex; gap: 1rem;">
+        <button id="optimizeStorage" class="btn btn-primary" style="flex: 1;">Optimize Storage</button>
+        <button id="clearPlane1" class="btn btn-danger" style="flex: 1;">Clear Plane 1</button>
+        <button id="clearPlane2" class="btn btn-danger" style="flex: 1;">Clear Plane 2</button>
+      </div>
+    </div>
+  </div>
+  
   <!-- Main Controls -->
   <div id="controls" class="glass">
     <div class="control-group">
@@ -778,6 +1004,7 @@
       <button id="paymentButton" class="btn btn-payment">💳 Payment</button>
       <button id="walletButton" class="btn btn-payment">👛 Wallet</button>
       <button id="analyticsButton" class="btn">📊 Analytics</button>
+      <button id="storageButton" class="btn">💾 Storage</button>
       <!-- FIXED: Added commodity button to controls -->
       <button id="commodityButton" class="btn">🪙 Commodities</button>
     </div>
@@ -790,6 +1017,14 @@
     <div class="control-group">
       <button id="historyModeButton" class="btn">⏳ History Mode</button>
       <button id="forkButton" class="btn">🔀 Fork Timeline</button>
+    </div>
+    
+    <!-- Plane Toggle Control -->
+    <div class="control-group plane-toggle">
+      <span class="plane-label" id="planeLabel">Plane 1</span>
+      <div class="toggle-switch" id="planeToggle">
+        <div class="toggle-slider"></div>
+      </div>
     </div>
     
     <div class="control-group search-container">
@@ -841,11 +1076,13 @@
     <p><strong>Amount:</strong> <span id="detailAmount" style="color: var(--rung-color); font-weight: bold;"></span></p>
     <p><strong>Description:</strong> <span id="detailDesc"></span></p>
     <p><strong>Status:</strong> <span id="detailStatus"></span></p>
+    <p><strong>Plane:</strong> <span id="detailPlane"></span></p>
     <p><strong>Timestamp:</strong> <span id="detailTs"></span></p>
     <div id="historyActions" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--glass-border);">
       <button onclick="moveTransaction()" class="btn btn-small">📋 Move</button>
       <button onclick="deleteTransaction()" class="btn btn-small" style="margin: 0 0.5rem;">❌ Delete</button>
       <button onclick="forkFromHere()" class="btn btn-small">🔀 Fork Here</button>
+      <button onclick="moveToOtherPlane()" class="btn btn-small">🔄 Move Plane</button>
     </div>
   </div>
   
@@ -880,7 +1117,49 @@
     </div>
   </div>
   
-
+  <!-- Storage Panel -->
+  <div id="storagePanel" class="panel storage-panel">
+    <h3>💾 Storage Management</h3>
+    <div class="storage-meter">
+      <h4>Plane 1</h4>
+      <div class="storage-bar">
+        <div class="storage-fill" id="panelStorageBar1"></div>
+      </div>
+      <div class="storage-stats">
+        <span id="panelStorageUsed1">0</span> / <span id="panelStorageCapacity1">10,000</span>
+      </div>
+    </div>
+    
+    <div class="storage-meter">
+      <h4>Plane 2</h4>
+      <div class="storage-bar">
+        <div class="storage-fill" id="panelStorageBar2"></div>
+      </div>
+      <div class="storage-stats">
+        <span id="panelStorageUsed2">0</span> / <span id="panelStorageCapacity2">10,000</span>
+      </div>
+    </div>
+    
+    <div class="storage-meter">
+      <h4>Total System</h4>
+      <div class="storage-bar">
+        <div class="storage-fill" id="panelStorageBarTotal"></div>
+      </div>
+      <div class="storage-stats">
+        <span id="panelStorageUsedTotal">0</span> / <span id="panelStorageCapacityTotal">20,000</span>
+      </div>
+    </div>
+    
+    <div style="margin-top: 1rem;">
+      <h4>Allocation Strategy</h4>
+      <div id="panelAllocationStrategy" style="font-weight: bold; color: var(--highlight-color);">Balanced</div>
+    </div>
+    
+    <div style="margin-top: 1rem;">
+      <button onclick="openStorageModal()" class="btn btn-primary" style="width: 100%;">Manage Storage</button>
+    </div>
+  </div>
+  
   <!-- Commodity panel -->
 <div id="commodityPanel" class="panel commodity-panel">
   <h3>🪙 Commodity Trading</h3>
@@ -930,10 +1209,9 @@
   <script>
     /**
      * Enhanced Scalable Temporal Blockchain Ledger
-     * High-performance visualization with advanced features
-     * Now with Gold and Silver backing
+     * Dual Plane Storage System with Real Additional Capacity
      * 
-     * @version 3.0.0
+     * @version 3.1.0
      * @author Enhanced by Claude
      * @license MIT
      */
@@ -943,8 +1221,12 @@
     // ======================
     class LedgerState {
       constructor() {
-        this.transactions = [];
-        this.blocks = [];
+        // Separate transaction storage for each plane
+        this.transactions1 = [];  // Plane 1 transactions
+        this.transactions2 = [];  // Plane 2 transactions
+        this.blocks1 = [];        // Plane 1 blocks
+        this.blocks2 = [];        // Plane 2 blocks
+        
         this.userWallet = {
           id: '',
           balance: 0,
@@ -954,12 +1236,14 @@
             silver: 0   // Balance in silver tokens
           }
         };
+        
         this.currentQRCode = {
           recipient: '',
           amount: 0,
           note: '',
           timestamp: null
         };
+        
         this.ui = {
           zoom: 1.0,
           dragOffset: { x: 0, y: 0 },
@@ -974,8 +1258,10 @@
           animationFrameId: null,
           isAuthenticated: false,
           darkTheme: true,
-          isShuttingDown: false
+          isShuttingDown: false,
+          currentPlane: 1 // Track which plane is currently visible (1 or 2)
         };
+        
         this.performance = {
           fps: 60,
           frameCount: 0,
@@ -983,12 +1269,14 @@
           renderTime: 0,
           blockPool: []
         };
+        
         this.analytics = {
           txRate: 0,
           totalVolume: 0,
           activeWallets: new Set(),
           networkHealth: 'healthy'
         };
+        
         this.commodities = {
           gold: {
             name: "Gold",
@@ -1007,9 +1295,343 @@
             reserveRatio: 1.0        // 100% backed
           }
         };
+        
+        // Storage configuration
+        this.storage = {
+          plane1: {
+            capacity: 10000,  // Max transactions per plane
+            used: 0,
+            transactions: []
+          },
+          plane2: {
+            capacity: 10000,  // Max transactions per plane
+            used: 0,
+            transactions: []
+          },
+          allocationStrategy: 'balanced', // balanced, priority, efficiency
+          totalCapacity: 20000  // Combined capacity
+        };
+      }
+      
+      // Helper method to get current plane data
+      getCurrentPlaneData() {
+        return {
+          transactions: this.ui.currentPlane === 1 ? this.transactions1 : this.transactions2,
+          blocks: this.ui.currentPlane === 1 ? this.blocks1 : this.blocks2,
+          storage: this.ui.currentPlane === 1 ? this.storage.plane1 : this.storage.plane2
+        };
+      }
+      
+      // Helper method to get other plane data
+      getOtherPlaneData() {
+        return {
+          transactions: this.ui.currentPlane === 1 ? this.transactions2 : this.transactions1,
+          blocks: this.ui.currentPlane === 1 ? this.blocks2 : this.blocks1,
+          storage: this.ui.currentPlane === 1 ? this.storage.plane2 : this.storage.plane1
+        };
+      }
+      
+      // Get all transactions from both planes
+      getAllTransactions() {
+        return [...this.transactions1, ...this.transactions2];
+      }
+      
+      // Get total storage usage
+      getTotalStorageUsage() {
+        return this.storage.plane1.used + this.storage.plane2.used;
       }
     }
+    
     const state = new LedgerState();
+    
+    // ======================
+    // Storage Management System
+    // ======================
+    class StorageManager {
+      static allocateTransaction(txData, targetPlane = 'auto') {
+        let plane;
+        
+        if (targetPlane === 'auto') {
+          // Use allocation strategy
+          plane = this.getOptimalPlane();
+        } else {
+          plane = parseInt(targetPlane);
+        }
+        
+        // Check if plane has capacity
+        if (!this.hasCapacity(plane)) {
+          // Try the other plane
+          plane = plane === 1 ? 2 : 1;
+          
+          if (!this.hasCapacity(plane)) {
+            throw new Error('Both planes at full capacity');
+          }
+        }
+        
+        return plane;
+      }
+      
+      static getOptimalPlane() {
+        const strategy = state.storage.allocationStrategy;
+        const plane1Usage = state.storage.plane1.used / state.storage.plane1.capacity;
+        const plane2Usage = state.storage.plane2.used / state.storage.plane2.capacity;
+        
+        switch (strategy) {
+          case 'balanced':
+            // Allocate to the plane with more available space
+            return plane1Usage <= plane2Usage ? 1 : 2;
+            
+          case 'priority':
+            // Always try Plane 1 first, then Plane 2
+            return state.storage.plane1.used < state.storage.plane1.capacity ? 1 : 2;
+            
+          case 'efficiency':
+            // Fill planes sequentially
+            return state.storage.plane1.used < state.storage.plane1.capacity ? 1 : 2;
+            
+          default:
+            return 1;
+        }
+      }
+      
+      static hasCapacity(plane) {
+        const storage = plane === 1 ? state.storage.plane1 : state.storage.plane2;
+        return storage.used < storage.capacity;
+      }
+      
+      static addTransactionToPlane(txData, plane) {
+        const storage = plane === 1 ? state.storage.plane1 : state.storage.plane2;
+        const transactions = plane === 1 ? state.transactions1 : state.transactions2;
+        const blocks = plane === 1 ? state.blocks1 : state.blocks2;
+        
+        // Add to storage
+        transactions.push(txData);
+        storage.transactions.push(txData.id);
+        storage.used = transactions.length;
+        
+        // Create blocks
+        blocks.push({ type: 'source', txId: txData.id, data: txData, plane: plane });
+        blocks.push({ type: 'destination', txId: txData.id, data: txData, plane: plane });
+        
+        // Update analytics
+        state.analytics.activeWallets.add(txData.from);
+        state.analytics.activeWallets.add(txData.to);
+        state.analytics.totalVolume += parseFloat(txData.fiatValue || txData.amount);
+        
+        // Update storage UI
+        this.updateStorageUI();
+      }
+      
+      static removeTransaction(txId) {
+        // Find and remove from both planes
+        let removed = false;
+        
+        for (let plane = 1; plane <= 2; plane++) {
+          const transactions = plane === 1 ? state.transactions1 : state.transactions2;
+          const blocks = plane === 1 ? state.blocks1 : state.blocks2;
+          const storage = plane === 1 ? state.storage.plane1 : state.storage.plane2;
+          
+          const txIndex = transactions.findIndex(t => t.id === txId);
+          if (txIndex !== -1) {
+            const tx = transactions[txIndex];
+            
+            // Remove from transactions
+            transactions.splice(txIndex, 1);
+            
+            // Remove from storage tracking
+            const storageIndex = storage.transactions.indexOf(txId);
+            if (storageIndex !== -1) {
+              storage.transactions.splice(storageIndex, 1);
+            }
+            storage.used = transactions.length;
+            
+            // Remove blocks
+            state.blocks1 = state.blocks1.filter(b => b.txId !== txId);
+            state.blocks2 = state.blocks2.filter(b => b.txId !== txId);
+            
+            // Update analytics
+            state.analytics.totalVolume -= parseFloat(tx.fiatValue || tx.amount);
+            
+            removed = true;
+          }
+        }
+        
+        if (removed) {
+          this.updateStorageUI();
+        }
+        
+        return removed;
+      }
+      
+      static moveTransactionToPlane(txId, targetPlane) {
+        // Find the transaction
+        let tx = null;
+        let sourcePlane = null;
+        
+        for (let plane = 1; plane <= 2; plane++) {
+          const transactions = plane === 1 ? state.transactions1 : state.transactions2;
+          const foundTx = transactions.find(t => t.id === txId);
+          if (foundTx) {
+            tx = foundTx;
+            sourcePlane = plane;
+            break;
+          }
+        }
+        
+        if (!tx || sourcePlane === targetPlane) {
+          return false;
+        }
+        
+        // Check capacity
+        if (!this.hasCapacity(targetPlane)) {
+          NotificationManager.show(`Plane ${targetPlane} is at full capacity!`, 'error');
+          return false;
+        }
+        
+        // Remove from source plane
+        const sourceTransactions = sourcePlane === 1 ? state.transactions1 : state.transactions2;
+        const sourceStorage = sourcePlane === 1 ? state.storage.plane1 : state.storage.plane2;
+        const sourceIndex = sourceTransactions.findIndex(t => t.id === txId);
+        
+        if (sourceIndex !== -1) {
+          sourceTransactions.splice(sourceIndex, 1);
+          const storageIndex = sourceStorage.transactions.indexOf(txId);
+          if (storageIndex !== -1) {
+            sourceStorage.transactions.splice(storageIndex, 1);
+          }
+          sourceStorage.used = sourceTransactions.length;
+        }
+        
+        // Add to target plane
+        this.addTransactionToPlane(tx, targetPlane);
+        
+        // Update blocks
+        state.blocks1 = state.blocks1.filter(b => b.txId !== txId);
+        state.blocks2 = state.blocks2.filter(b => b.txId !== txId);
+        
+        const targetBlocks = targetPlane === 1 ? state.blocks1 : state.blocks2;
+        targetBlocks.push({ type: 'source', txId: tx.id, data: tx, plane: targetPlane });
+        targetBlocks.push({ type: 'destination', txId: tx.id, data: tx, plane: targetPlane });
+        
+        this.updateStorageUI();
+        NotificationManager.show(`Transaction moved to Plane ${targetPlane}`, 'success');
+        
+        return true;
+      }
+      
+      static clearPlane(plane) {
+        if (plane === 1) {
+          state.transactions1 = [];
+          state.blocks1 = [];
+          state.storage.plane1.used = 0;
+          state.storage.plane1.transactions = [];
+        } else {
+          state.transactions2 = [];
+          state.blocks2 = [];
+          state.storage.plane2.used = 0;
+          state.storage.plane2.transactions = [];
+        }
+        
+        this.updateStorageUI();
+        NotificationManager.show(`Plane ${plane} cleared`, 'success');
+      }
+      
+      static optimizeStorage() {
+        // Rebalance transactions between planes based on current strategy
+        const allTransactions = state.getAllTransactions();
+        const targetPlane1Count = Math.floor(allTransactions.length / 2);
+        const targetPlane2Count = allTransactions.length - targetPlane1Count;
+        
+        // Clear both planes
+        this.clearPlane(1);
+        this.clearPlane(2);
+        
+        // Reallocate transactions
+        allTransactions.forEach((tx, index) => {
+          const targetPlane = index < targetPlane1Count ? 1 : 2;
+          this.addTransactionToPlane(tx, targetPlane);
+        });
+        
+        NotificationManager.show('Storage optimized successfully', 'success');
+      }
+      
+      static updateStorageUI() {
+        // Update storage bars and stats
+        this.updateStorageBar('storageBar1', state.storage.plane1.used, state.storage.plane1.capacity);
+        this.updateStorageBar('storageBar2', state.storage.plane2.used, state.storage.plane2.capacity);
+        this.updateStorageBar('storageBarTotal', state.getTotalStorageUsage(), state.storage.totalCapacity);
+        
+        // Update panel storage bars
+        this.updateStorageBar('panelStorageBar1', state.storage.plane1.used, state.storage.plane1.capacity);
+        this.updateStorageBar('panelStorageBar2', state.storage.plane2.used, state.storage.plane2.capacity);
+        this.updateStorageBar('panelStorageBarTotal', state.getTotalStorageUsage(), state.storage.totalCapacity);
+        
+        // Update text displays
+        this.updateStorageText('storageUsed1', state.storage.plane1.used);
+        this.updateStorageText('storageUsed2', state.storage.plane2.used);
+        this.updateStorageText('storageUsedTotal', state.getTotalStorageUsage());
+        
+        this.updateStorageText('panelStorageUsed1', state.storage.plane1.used);
+        this.updateStorageText('panelStorageUsed2', state.storage.plane2.used);
+        this.updateStorageText('panelStorageUsedTotal', state.getTotalStorageUsage());
+        
+        // Update transaction count
+        TransactionManager.updateDisplay();
+      }
+      
+      static updateStorageBar(barId, used, capacity) {
+        const bar = document.getElementById(barId);
+        if (!bar) return;
+        
+        const percentage = (used / capacity) * 100;
+        bar.style.width = `${percentage}%`;
+        
+        // Update color based on usage
+        bar.className = 'storage-fill';
+        if (percentage < 50) {
+          bar.classList.add('low');
+        } else if (percentage < 80) {
+          bar.classList.add('medium');
+        } else {
+          bar.classList.add('high');
+        }
+      }
+      
+      static updateStorageText(elementId, value) {
+        const element = document.getElementById(elementId);
+        if (element) {
+          element.textContent = value.toLocaleString();
+        }
+      }
+      
+      static setAllocationStrategy(strategy) {
+        state.storage.allocationStrategy = strategy;
+        
+        // Update UI
+        document.querySelectorAll('.allocation-option').forEach(option => {
+          option.classList.remove('active');
+        });
+        
+        const activeOption = document.querySelector(`[data-strategy="${strategy}"]`);
+        if (activeOption) {
+          activeOption.classList.add('active');
+        }
+        
+        // Update panel display
+        const panelStrategy = document.getElementById('panelAllocationStrategy');
+        if (panelStrategy) {
+          const strategyNames = {
+            balanced: 'Balanced',
+            priority: 'Priority',
+            efficiency: 'Efficiency'
+          };
+          panelStrategy.textContent = strategyNames[strategy] || strategy;
+        }
+        
+        NotificationManager.show(`Allocation strategy set to ${strategy}`, 'success');
+      }
+    }
+    
     // ======================
     // Commodity Manager
     // ======================
@@ -1128,6 +1750,7 @@
         return true;
       }
     }
+    
     // ======================
     // Enhanced Performance Monitoring
     // ======================
@@ -1178,7 +1801,8 @@
         }
         
         if (blockElement) {
-          blockElement.textContent = state.blocks.length.toLocaleString();
+          const currentPlaneData = state.getCurrentPlaneData();
+          blockElement.textContent = currentPlaneData.blocks.length.toLocaleString();
         }
       }
       
@@ -1190,58 +1814,68 @@
     
     const perfMonitor = new PerformanceMonitor();
     
-      // ======================
+    // ======================
     // Enhanced DOM Management
     // ======================
-           const DOM = {
-          // Authentication
-          pinModal: document.getElementById('pinModal'),
-          pinInput: document.getElementById('pinInput'),
-          pinSubmit: document.getElementById('pinSubmit'),
-          pinMessage: document.getElementById('pinMessage'),
-          // Shutdown
-          shutdownModal: document.getElementById('shutdownModal'),
-          shutdownButton: document.getElementById('shutdownButton'),
-          cancelShutdown: document.getElementById('cancelShutdown'),
-          confirmShutdown: document.getElementById('confirmShutdown'),
-          // Modals
-          txModal: document.getElementById('txModal'),
-          paymentModal: document.getElementById('paymentModal'),
-          qrcodeModal: document.getElementById('qrcodeModal'),
-          scanModal: document.getElementById('scanModal'),
-          analyticsModal: document.getElementById('analyticsModal'),
-          // Canvas and main UI
-          canvas: document.getElementById('canvas'),
-          ctx: document.getElementById('canvas')?.getContext('2d'),
-          // Controls
-          controls: document.getElementById('controls'),
-          searchBox: document.getElementById('searchBox'),
-          filterSelect: document.getElementById('filterSelect'),
-          zoomSlider: document.getElementById('zoomSlider'),
-          zoomDisplay: document.getElementById('zoomDisplay'),
-          countDisplay: document.getElementById('countDisplay'),
-          // Panels
-          detailsPanel: document.getElementById('detailsPanel'),
-          walletPanel: document.getElementById('walletPanel'),
-          analyticsPanel: document.getElementById('analyticsPanel'),
-          commodityPanel: document.getElementById('commodityPanel'),
+    const DOM = {
+      // Authentication
+      pinModal: document.getElementById('pinModal'),
+      pinInput: document.getElementById('pinInput'),
+      pinSubmit: document.getElementById('pinSubmit'),
+      pinMessage: document.getElementById('pinMessage'),
+      // Shutdown
+      shutdownModal: document.getElementById('shutdownModal'),
+      shutdownButton: document.getElementById('shutdownButton'),
+      cancelShutdown: document.getElementById('cancelShutdown'),
+      confirmShutdown: document.getElementById('confirmShutdown'),
+      // Modals
+      txModal: document.getElementById('txModal'),
+      paymentModal: document.getElementById('paymentModal'),
+      qrcodeModal: document.getElementById('qrcodeModal'),
+      scanModal: document.getElementById('scanModal'),
+      analyticsModal: document.getElementById('analyticsModal'),
+      storageModal: document.getElementById('storageModal'),
+      // Canvas and main UI
+      canvas: document.getElementById('canvas'),
+      ctx: document.getElementById('canvas')?.getContext('2d'),
+      // Controls
+      controls: document.getElementById('controls'),
+      searchBox: document.getElementById('searchBox'),
+      filterSelect: document.getElementById('filterSelect'),
+      zoomSlider: document.getElementById('zoomSlider'),
+      zoomDisplay: document.getElementById('zoomDisplay'),
+      countDisplay: document.getElementById('countDisplay'),
+      // Panels
+      detailsPanel: document.getElementById('detailsPanel'),
+      walletPanel: document.getElementById('walletPanel'),
+      analyticsPanel: document.getElementById('analyticsPanel'),
+      storagePanel: document.getElementById('storagePanel'),
+      commodityPanel: document.getElementById('commodityPanel'),
+      // Commodity
+      goldPrice: document.getElementById('goldPrice'),
+      silverPrice: document.getElementById('silverPrice'),
+      goldBalance: document.getElementById('goldBalance'),
+      silverBalance: document.getElementById('silverBalance'),
+      // Notification
+      notification: document.getElementById('notification'),
+      // Theme
+      themeToggle: document.getElementById('themeToggle'),
+      // Plane Toggle
+      planeToggle: document.getElementById('planeToggle'),
+      planeLabel: document.getElementById('planeLabel'),
+      // Zoom info
+      zoomInfo: document.getElementById('zoomInfo'),
+      // Storage management
+      storageButton: document.getElementById('storageButton'),
+      closeStorageModal: document.getElementById('closeStorageModal'),
+      optimizeStorage: document.getElementById('optimizeStorage'),
+      clearPlane1: document.getElementById('clearPlane1'),
+      clearPlane2: document.getElementById('clearPlane2')
+    };
     
-          // Commodity
-          goldPrice: document.getElementById('goldPrice'),
-          silverPrice: document.getElementById('silverPrice'),
-          goldBalance: document.getElementById('goldBalance'),
-          silverBalance: document.getElementById('silverBalance'),
-          // Notification
-          notification: document.getElementById('notification'),
-          // Theme
-          themeToggle: document.getElementById('themeToggle'),
-          // Zoom info (FIXED: Added missing element)
-          zoomInfo: document.getElementById('zoomInfo')
-        };
     // ======================
     // Enhanced Utility Functions
     // ======================
-    
     class Utils {
       static formatCurrency(amount) {
         return new Intl.NumberFormat('en-US', {
@@ -1301,104 +1935,117 @@
     // ======================
     // Enhanced Authentication System
     // ======================
-    
-    
-class AuthenticationManager {
-  constructor() {
-    this.maxAttempts = 3;
-    this.attempts = 0;
-    this.lockoutTime = 5 * 60 * 1000; // 5 minutes
-  }
-  async checkPin() {
-    const savedPin = localStorage.getItem('ledgerPin');
-    const lockout = localStorage.getItem('ledgerLockout');
-    // Check if locked out
-    if (lockout && Date.now() < parseInt(lockout)) {
-      const remainingTime = Math.ceil((parseInt(lockout) - Date.now()) / 1000 / 60);
-      DOM.pinMessage.textContent = `Account locked. Try again in ${remainingTime} minutes.`;
-      DOM.pinSubmit.disabled = true;
-      return;
-    }
-    if (savedPin) {
-      DOM.pinMessage.textContent = 'Enter your PIN to access the ledger';
-      DOM.pinSubmit.textContent = 'Access Ledger';
-    } else {
-      DOM.pinMessage.textContent = 'Set a 4-digit PIN to secure your ledger';
-      DOM.pinSubmit.textContent = 'Set PIN';
-    }
-    DOM.pinModal.style.display = 'flex';
-    DOM.pinInput.focus();
-  }
-  async validatePin(pin) {
-    if (pin.length !== 4 || !/^\d{4}$/.test(pin)) {
-      this.showMessage('PIN must be exactly 4 digits');
-      return false;
-    }
-    const savedPin = localStorage.getItem('ledgerPin');
-    if (!savedPin) {
-      // Set new PIN
-      localStorage.setItem('ledgerPin', pin);
-      this.showMessage('PIN set successfully!', 'success');
-      state.ui.isAuthenticated = true;
-      this.closeModal();
-      await this.initializeApplication();
-      return true;
-    } else if (pin === savedPin) {
-      // Correct PIN
-      this.showMessage('Access granted!', 'success');
-      state.ui.isAuthenticated = true;
-      this.attempts = 0;
-      localStorage.removeItem('ledgerLockout');
-      this.closeModal();
-      await this.initializeApplication();
-      return true;
-    } else {
-      // Incorrect PIN
-      this.attempts++;
-      if (this.attempts >= this.maxAttempts) {
-        localStorage.setItem('ledgerLockout', (Date.now() + this.lockoutTime).toString());
-        this.showMessage('Too many failed attempts. Account locked for 5 minutes.', 'error');
-        DOM.pinSubmit.disabled = true;
-      } else {
-        this.showMessage(`Incorrect PIN. ${this.maxAttempts - this.attempts} attempts remaining.`, 'error');
+    class AuthenticationManager {
+      constructor() {
+        this.maxAttempts = 3;
+        this.attempts = 0;
+        this.lockoutTime = 5 * 60 * 1000; // 5 minutes
       }
-      DOM.pinInput.value = '';
-      return false;
+      
+      async checkPin() {
+        const savedPin = localStorage.getItem('ledgerPin');
+        const lockout = localStorage.getItem('ledgerLockout');
+        
+        // Check if locked out
+        if (lockout && Date.now() < parseInt(lockout)) {
+          const remainingTime = Math.ceil((parseInt(lockout) - Date.now()) / 1000 / 60);
+          DOM.pinMessage.textContent = `Account locked. Try again in ${remainingTime} minutes.`;
+          DOM.pinSubmit.disabled = true;
+          return;
+        }
+        
+        if (savedPin) {
+          DOM.pinMessage.textContent = 'Enter your PIN to access the ledger';
+          DOM.pinSubmit.textContent = 'Access Ledger';
+        } else {
+          DOM.pinMessage.textContent = 'Set a 4-digit PIN to secure your ledger';
+          DOM.pinSubmit.textContent = 'Set PIN';
+        }
+        
+        DOM.pinModal.style.display = 'flex';
+        DOM.pinInput.focus();
+      }
+      
+      async validatePin(pin) {
+        if (pin.length !== 4 || !/^\d{4}$/.test(pin)) {
+          this.showMessage('PIN must be exactly 4 digits');
+          return false;
+        }
+        
+        const savedPin = localStorage.getItem('ledgerPin');
+        
+        if (!savedPin) {
+          // Set new PIN
+          localStorage.setItem('ledgerPin', pin);
+          this.showMessage('PIN set successfully!', 'success');
+          state.ui.isAuthenticated = true;
+          this.closeModal();
+          await this.initializeApplication();
+          return true;
+        } else if (pin === savedPin) {
+          // Correct PIN
+          this.showMessage('Access granted!', 'success');
+          state.ui.isAuthenticated = true;
+          this.attempts = 0;
+          localStorage.removeItem('ledgerLockout');
+          this.closeModal();
+          await this.initializeApplication();
+          return true;
+        } else {
+          // Incorrect PIN
+          this.attempts++;
+          if (this.attempts >= this.maxAttempts) {
+            localStorage.setItem('ledgerLockout', (Date.now() + this.lockoutTime).toString());
+            this.showMessage('Too many failed attempts. Account locked for 5 minutes.', 'error');
+            DOM.pinSubmit.disabled = true;
+          } else {
+            this.showMessage(`Incorrect PIN. ${this.maxAttempts - this.attempts} attempts remaining.`, 'error');
+          }
+          DOM.pinInput.value = '';
+          return false;
+        }
+      }
+      
+      showMessage(message, type = 'warning') {
+        DOM.pinMessage.textContent = message;
+        DOM.pinMessage.style.color = `var(--${type}-color)`;
+      }
+      
+      closeModal() {
+        DOM.pinModal.style.display = 'none';
+        DOM.pinInput.value = '';
+        DOM.pinMessage.textContent = '';
+      }
+      
+      async initializeApplication() {
+        try {
+          await CanvasManager.resizeCanvas();
+          RenderEngine.updateZoomInfo();
+          await WalletManager.initialize();
+          await AnalyticsManager.initialize();
+          
+          // Initialize storage UI
+          StorageManager.updateStorageUI();
+          
+          // Show welcome message
+          NotificationManager.show('Welcome to Enhanced Blockchain Ledger with Dual Plane Storage!', 'success');
+          
+          // Auto-generate demo data
+          setTimeout(() => {
+            TransactionManager.generateGalaxy(250);
+          }, 1000);
+        } catch (error) {
+          console.error('Error initializing application:', error);
+          NotificationManager.show('Error initializing application. Please refresh.', 'error');
+        }
+      }
     }
-  }
-  showMessage(message, type = 'warning') {
-    DOM.pinMessage.textContent = message;
-    DOM.pinMessage.style.color = `var(--${type}-color)`;
-  }
-  closeModal() {
-    DOM.pinModal.style.display = 'none';
-    DOM.pinInput.value = '';
-    DOM.pinMessage.textContent = '';
-  }
-  async initializeApplication() {
-    try {
-      await CanvasManager.resizeCanvas();
-      RenderEngine.updateZoomInfo();
-      await WalletManager.initialize();
-      await AnalyticsManager.initialize();
-      // Show welcome message
-      NotificationManager.show('Welcome to Enhanced Blockchain Ledger!', 'success');
-      // Auto-generate demo data
-      setTimeout(() => {
-        TransactionManager.generateGalaxy(250);
-      }, 1000);
-    } catch (error) {
-      console.error('Error initializing application:', error);
-      NotificationManager.show('Error initializing application. Please refresh.', 'error');
-    }
-  }
-}
-// Instantiate only once
-const authManager = new AuthenticationManager();
+    
+    const authManager = new AuthenticationManager();
+    
     // ======================
     // Enhanced Canvas Management
     // ======================
-    
     class CanvasManager {
       static async resizeCanvas() {
         if (!state.ui.isAuthenticated) return;
@@ -1424,13 +2071,16 @@ const authManager = new AuthenticationManager();
       }
       
       static centerView() {
-        if (!state.ui.isAuthenticated || state.blocks.length === 0) return;
+        if (!state.ui.isAuthenticated) return;
+        
+        const currentPlaneData = state.getCurrentPlaneData();
+        if (currentPlaneData.blocks.length === 0) return;
         
         const blockSize = 40 * state.ui.zoom;
         const hexWidth = 2 * blockSize;
         const hexHeight = Math.sqrt(3) * blockSize;
         const cols = Math.max(1, Math.floor(DOM.canvas.width / (hexWidth * 0.75)));
-        const rows = Math.ceil(state.blocks.length / cols);
+        const rows = Math.ceil(currentPlaneData.blocks.length / cols);
         const layoutWidth = cols * hexWidth * 0.75;
         const layoutHeight = rows * hexHeight;
         
@@ -1442,7 +2092,6 @@ const authManager = new AuthenticationManager();
     // ======================
     // Enhanced Render Engine
     // ======================
-    
     class RenderEngine {
       static PIXEL_THRESHOLD = 0.3;
       static SIMPLE_THRESHOLD = 0.8;
@@ -1452,7 +2101,11 @@ const authManager = new AuthenticationManager();
         payment: '#16a085',
         qrcode: '#2c3e50',
         connection: '#e74c3c',
-        highlight: '#f1c40f'
+        highlight: '#f1c40f',
+        // Colors for the second plane
+        plane2_source: '#9b59b6',
+        plane2_dest: '#1abc9c',
+        plane2_connection: '#e67e22'
       };
       
       static requestDraw() {
@@ -1474,7 +2127,8 @@ const authManager = new AuthenticationManager();
         
         DOM.ctx.clearRect(0, 0, DOM.canvas.width, DOM.canvas.height);
         
-        if (state.blocks.length === 0) {
+        const currentPlaneData = state.getCurrentPlaneData();
+        if (currentPlaneData.blocks.length === 0) {
           this.drawEmptyState();
           return;
         }
@@ -1500,12 +2154,16 @@ const authManager = new AuthenticationManager();
           this.colors.source = '#2980b9';
           this.colors.dest = '#27ae60';
           this.colors.payment = '#138d75';
+          this.colors.plane2_source = '#8e44ad';
+          this.colors.plane2_dest = '#16a085';
           DOM.ctx.globalCompositeOperation = 'source-over';
         } else {
           // Dark theme (default)
           this.colors.source = '#3498db';
           this.colors.dest = '#2ecc71';
           this.colors.payment = '#16a085';
+          this.colors.plane2_source = '#9b59b6';
+          this.colors.plane2_dest = '#1abc9c';
         }
       }
       
@@ -1514,14 +2172,19 @@ const authManager = new AuthenticationManager();
         DOM.ctx.font = '24px Inter, sans-serif';
         DOM.ctx.textAlign = 'center';
         DOM.ctx.textBaseline = 'middle';
+        
+        const currentPlaneData = state.getCurrentPlaneData();
+        const storage = currentPlaneData.storage;
+        
         DOM.ctx.fillText(
-          'No transactions yet. Click "Add Transaction" or "Generate Galaxy" to start!',
+          `No transactions in Plane ${state.ui.currentPlane}. Storage: ${storage.used.toLocaleString()}/${storage.capacity.toLocaleString()}`,
           DOM.canvas.width / 2,
           DOM.canvas.height / 2
         );
       }
       
       static drawGalaxyView() {
+        const currentPlaneData = state.getCurrentPlaneData();
         const cols = Math.max(1, Math.floor(DOM.canvas.width / 3));
         const spacing = 3;
         
@@ -1530,7 +2193,7 @@ const authManager = new AuthenticationManager();
         // Optimized viewport culling
         const viewportBuffer = 50;
         const startIdx = Math.max(0, Math.floor((-state.ui.dragOffset.y - viewportBuffer) / spacing) * cols);
-        const endIdx = Math.min(state.blocks.length, 
+        const endIdx = Math.min(currentPlaneData.blocks.length, 
           Math.ceil((DOM.canvas.height - state.ui.dragOffset.y + viewportBuffer) / spacing) * cols);
         
         // Batch render pixels for better performance
@@ -1538,7 +2201,7 @@ const authManager = new AuthenticationManager();
         const data = imageData.data;
         
         for (let index = startIdx; index < endIdx; index++) {
-          const block = state.blocks[index];
+          const block = currentPlaneData.blocks[index];
           if (!this.passesFilter(block)) continue;
           
           const col = index % cols;
@@ -1566,6 +2229,7 @@ const authManager = new AuthenticationManager();
       }
       
       static drawClusterView() {
+        const currentPlaneData = state.getCurrentPlaneData();
         const blockSize = 25 * state.ui.zoom;
         const hexWidth = blockSize * 1.8;
         const hexHeight = Math.sqrt(3) * blockSize;
@@ -1589,6 +2253,7 @@ const authManager = new AuthenticationManager();
       }
       
       static drawBlockView() {
+        const currentPlaneData = state.getCurrentPlaneData();
         const blockSize = 40 * state.ui.zoom;
         const hexWidth = 2 * blockSize;
         const hexHeight = Math.sqrt(3) * blockSize;
@@ -1606,14 +2271,21 @@ const authManager = new AuthenticationManager();
       }
       
       static drawConnections(hexWidth, hexHeight, lineWidth) {
-        DOM.ctx.strokeStyle = this.colors.connection;
+        const currentPlaneData = state.getCurrentPlaneData();
+        const connectionColor = state.ui.currentPlane === 1 ? 
+          this.colors.connection : this.colors.plane2_connection;
+        
+        DOM.ctx.strokeStyle = connectionColor;
         DOM.ctx.lineWidth = lineWidth;
         DOM.ctx.lineCap = 'round';
         
-        for (let i = 0; i < state.transactions.length; i++) {
-          const tx = state.transactions[i];
-          const sourceIndex = state.blocks.findIndex(b => b.txId === tx.id && b.type === 'source');
-          const destIndex = state.blocks.findIndex(b => b.txId === tx.id && b.type === 'destination');
+        // Get transactions for current plane only
+        const planeTransactions = state.ui.currentPlane === 1 ? state.transactions1 : state.transactions2;
+        
+        for (let i = 0; i < planeTransactions.length; i++) {
+          const tx = planeTransactions[i];
+          const sourceIndex = currentPlaneData.blocks.findIndex(b => b.txId === tx.id && b.type === 'source');
+          const destIndex = currentPlaneData.blocks.findIndex(b => b.txId === tx.id && b.type === 'destination');
           
           if (sourceIndex === -1 || destIndex === -1) continue;
           
@@ -1624,7 +2296,7 @@ const authManager = new AuthenticationManager();
           if (!this.isConnectionVisible(posA, posB)) continue;
           
           const isHovered = state.ui.hoveredBlockIndex !== -1 && 
-            state.blocks[state.ui.hoveredBlockIndex].txId === tx.id;
+            currentPlaneData.blocks[state.ui.hoveredBlockIndex].txId === tx.id;
           const isSelected = state.ui.selectedTxId === tx.id;
           const isSearched = this.isTransactionSearchMatch(tx);
           
@@ -1639,7 +2311,7 @@ const authManager = new AuthenticationManager();
           } else if (tx.type === 'payment') {
             DOM.ctx.strokeStyle = tx.paymentType === 'qrcode' ? this.colors.qrcode : this.colors.payment;
           } else {
-            DOM.ctx.strokeStyle = this.colors.connection;
+            DOM.ctx.strokeStyle = connectionColor;
           }
           
           DOM.ctx.beginPath();
@@ -1649,7 +2321,7 @@ const authManager = new AuthenticationManager();
           
           // Reset effects
           DOM.ctx.shadowBlur = 0;
-          DOM.ctx.strokeStyle = this.colors.connection;
+          DOM.ctx.strokeStyle = connectionColor;
           DOM.ctx.lineWidth = lineWidth;
         }
         
@@ -1657,8 +2329,9 @@ const authManager = new AuthenticationManager();
       }
       
       static drawDetailedHexBlock(block, x, y, index, blockSize) {
+        const currentPlaneData = state.getCurrentPlaneData();
         const isHovered = state.ui.hoveredBlockIndex !== -1 && 
-          state.blocks[state.ui.hoveredBlockIndex].txId === block.txId;
+          currentPlaneData.blocks[state.ui.hoveredBlockIndex].txId === block.txId;
         const isSelected = state.ui.selectedTxId === block.txId;
         const isSearched = this.isSearchMatch(block);
         
@@ -1747,22 +2420,23 @@ const authManager = new AuthenticationManager();
       static drawOverlayEffects() {
         // Draw selection highlights, animations, etc.
         if (state.ui.hoveredBlockIndex !== -1) {
-          // Add subtle glow effect for hovered items
-          const block = state.blocks[state.ui.hoveredBlockIndex];
+          const currentPlaneData = state.getCurrentPlaneData();
+          const block = currentPlaneData.blocks[state.ui.hoveredBlockIndex];
           // Additional hover effects can be implemented here
         }
       }
       
       // Utility methods
       static getVisibleBlocks(hexWidth, hexHeight) {
+        const currentPlaneData = state.getCurrentPlaneData();
         const visible = [];
         const buffer = 100;
         
-        for (let i = 0; i < state.blocks.length; i++) {
+        for (let i = 0; i < currentPlaneData.blocks.length; i++) {
           const pos = this.getBlockPosition(i, hexWidth, hexHeight);
           if (pos.x > -buffer && pos.x < DOM.canvas.width + buffer &&
               pos.y > -buffer && pos.y < DOM.canvas.height + buffer) {
-            visible.push({ block: state.blocks[i], index: i, pos });
+            visible.push({ block: currentPlaneData.blocks[i], index: i, pos });
           }
         }
         
@@ -1770,12 +2444,13 @@ const authManager = new AuthenticationManager();
       }
       
       static getBlockPosition(index, hexWidth, hexHeight) {
+        const currentPlaneData = state.getCurrentPlaneData();
         const cols = Math.max(1, Math.floor(DOM.canvas.width / (hexWidth * 0.75)));
         const col = index % cols;
         const row = Math.floor(index / cols);
         
         const layoutWidth = cols * hexWidth * 0.75;
-        const layoutHeight = Math.ceil(state.blocks.length / cols) * hexHeight;
+        const layoutHeight = Math.ceil(currentPlaneData.blocks.length / cols) * hexHeight;
         const centerOffsetX = DOM.canvas.width / 2 - layoutWidth / 2;
         const centerOffsetY = DOM.canvas.height / 2 - layoutHeight / 2;
         
@@ -1822,7 +2497,13 @@ const authManager = new AuthenticationManager();
         if (block.data.type === 'payment') {
           return block.data.paymentType === 'qrcode' ? this.colors.qrcode : this.colors.payment;
         }
-        return block.type === 'source' ? this.colors.source : this.colors.dest;
+        
+        // Use different colors based on the current plane
+        if (state.ui.currentPlane === 1) {
+          return block.type === 'source' ? this.colors.source : this.colors.dest;
+        } else {
+          return block.type === 'source' ? this.colors.plane2_source : this.colors.plane2_dest;
+        }
       }
       
       static hexToRgb(hex) {
@@ -1838,17 +2519,20 @@ const authManager = new AuthenticationManager();
         const info = DOM.zoomInfo;
         if (!info) return;
         
+        const currentPlaneData = state.getCurrentPlaneData();
+        const storage = currentPlaneData.storage;
+        
         if (state.ui.zoom < this.PIXEL_THRESHOLD) {
-          info.innerHTML = '<strong>🌌 Galaxy View</strong><br>Each pixel represents a transaction. Zoom in for details.';
+          info.innerHTML = `<strong>🌌 Galaxy View - Plane ${state.ui.currentPlane}</strong><br>Storage: ${storage.used.toLocaleString()}/${storage.capacity.toLocaleString()} transactions`;
         } else if (state.ui.zoom < this.SIMPLE_THRESHOLD) {
-          info.innerHTML = '<strong>🔍 Cluster View</strong><br>Simplified hexagons showing transaction structure.';
+          info.innerHTML = `<strong>🔍 Cluster View - Plane ${state.ui.currentPlane}</strong><br>Storage: ${storage.used.toLocaleString()}/${storage.capacity.toLocaleString()} transactions`;
         } else {
-          info.innerHTML = '<strong>📋 Detail View</strong><br>Full transaction details and interactions.';
+          info.innerHTML = `<strong>📋 Detail View - Plane ${state.ui.currentPlane}</strong><br>Storage: ${storage.used.toLocaleString()}/${storage.capacity.toLocaleString()} transactions`;
         }
       }
     }
     
-  // ======================
+    // ======================
     // Enhanced Transaction Management
     // ======================
     class TransactionManager {
@@ -1876,8 +2560,6 @@ const authManager = new AuthenticationManager();
         const processBatch = () => {
           try {
             const end = Math.min(processed + batchSize, count);
-            const newTransactions = [];
-            const newBlocks = [];
             
             for (let i = processed; i < end; i++) {
               const from = names[Math.floor(Math.random() * names.length)];
@@ -1908,17 +2590,16 @@ const authManager = new AuthenticationManager();
                 status: 'completed'
               };
               
-              newTransactions.push(newTx);
-              newBlocks.push({ type: 'source', txId: newTx.id, data: newTx });
-              newBlocks.push({ type: 'destination', txId: newTx.id, data: newTx });
-              
-              state.analytics.activeWallets.add(from);
-              state.analytics.activeWallets.add(to);
-              state.analytics.totalVolume += parseFloat(newTx.fiatValue || newTx.amount);
+              // Add transaction using storage manager
+              try {
+                const plane = StorageManager.allocateTransaction(newTx);
+                StorageManager.addTransactionToPlane(newTx, plane);
+              } catch (error) {
+                console.warn('Could not add transaction:', error.message);
+                // Stop generation if both planes are full
+                break;
+              }
             }
-            
-            state.transactions.push(...newTransactions);
-            state.blocks.push(...newBlocks);
             
             processed = end;
             this.updateDisplay();
@@ -1927,7 +2608,7 @@ const authManager = new AuthenticationManager();
             if (processed < count) {
               requestIdleCallback(processBatch);
             } else {
-              NotificationManager.show(`Galaxy generated with ${count.toLocaleString()} transactions!`, 'success');
+              NotificationManager.show(`Galaxy generated with ${processed.toLocaleString()} transactions!`, 'success');
               CanvasManager.centerView();
             }
           } catch (error) {
@@ -1939,7 +2620,7 @@ const authManager = new AuthenticationManager();
         processBatch();
       }
       
-      static addTransaction(txData) {
+      static addTransaction(txData = null, targetPlane = 'auto') {
         if (!state.ui.isAuthenticated) return;
         
         const newTx = txData || {
@@ -1954,21 +2635,25 @@ const authManager = new AuthenticationManager();
           status: 'completed'
         };
         
-        state.transactions.push(newTx);
-        state.blocks.push({ type: 'source', txId: newTx.id, data: newTx });
-        state.blocks.push({ type: 'destination', txId: newTx.id, data: newTx });
-        
-        state.analytics.activeWallets.add(newTx.from);
-        state.analytics.activeWallets.add(newTx.to);
-        state.analytics.totalVolume += parseFloat(newTx.fiatValue || newTx.amount);
-        
-        this.updateDisplay();
-        AnalyticsManager.updateRealTimeStats();
+        try {
+          const plane = StorageManager.allocateTransaction(newTx, targetPlane);
+          StorageManager.addTransactionToPlane(newTx, plane);
+          
+          this.updateDisplay();
+          AnalyticsManager.updateRealTimeStats();
+          
+          NotificationManager.show(`Transaction added to Plane ${plane}`, 'success');
+          return true;
+        } catch (error) {
+          NotificationManager.show(error.message, 'error');
+          return false;
+        }
       }
       
       static updateDisplay() {
         if (DOM.countDisplay) {
-          DOM.countDisplay.textContent = `Transactions: ${state.transactions.length.toLocaleString()}`;
+          const currentPlaneData = state.getCurrentPlaneData();
+          DOM.countDisplay.textContent = `Transactions: ${currentPlaneData.transactions.length.toLocaleString()}`;
         }
         RenderEngine.requestDraw();
       }
@@ -1976,27 +2661,28 @@ const authManager = new AuthenticationManager();
       static clearLedger() {
         if (!state.ui.isAuthenticated) return;
         
-        state.transactions = [];
-        state.blocks = [];
+        state.transactions1 = [];
+        state.transactions2 = [];
+        state.blocks1 = [];
+        state.blocks2 = [];
+        state.storage.plane1.used = 0;
+        state.storage.plane1.transactions = [];
+        state.storage.plane2.used = 0;
+        state.storage.plane2.transactions = [];
+        
         state.ui.dragOffset = { x: 0, y: 0 };
         state.ui.selectedTxId = null;
         state.analytics.totalVolume = 0;
         state.analytics.activeWallets.clear();
         
         UIManager.hidePanels();
+        StorageManager.updateStorageUI();
         this.updateDisplay();
         AnalyticsManager.updateRealTimeStats();
       }
       
       static deleteTransaction(txId) {
-        const txIndex = state.transactions.findIndex(t => t.id === txId);
-        if (txIndex !== -1) {
-          const tx = state.transactions[txIndex];
-          state.transactions.splice(txIndex, 1);
-          state.blocks = state.blocks.filter(b => b.txId !== txId);
-          
-          state.analytics.totalVolume -= parseFloat(tx.fiatValue || tx.amount);
-          
+        if (StorageManager.removeTransaction(txId)) {
           state.ui.selectedTxId = null;
           UIManager.hidePanel('details');
           this.updateDisplay();
@@ -2006,7 +2692,17 @@ const authManager = new AuthenticationManager();
       }
       
       static forkTransaction(txId) {
-        const tx = state.transactions.find(t => t.id === txId);
+        // Find the transaction
+        let tx = null;
+        for (let plane = 1; plane <= 2; plane++) {
+          const transactions = plane === 1 ? state.transactions1 : state.transactions2;
+          const foundTx = transactions.find(t => t.id === txId);
+          if (foundTx) {
+            tx = foundTx;
+            break;
+          }
+        }
+        
         if (tx) {
           const forkTx = {
             ...tx,
@@ -2014,11 +2710,18 @@ const authManager = new AuthenticationManager();
             description: tx.description + ' (Timeline Fork)',
             timestamp: new Date().toISOString()
           };
-          this.addTransaction(forkTx);
-          NotificationManager.show('Timeline forked! Created alternate history branch.', 'success');
+          
+          try {
+            const plane = StorageManager.allocateTransaction(forkTx);
+            StorageManager.addTransactionToPlane(forkTx, plane);
+            NotificationManager.show('Timeline forked! Created alternate history branch.', 'success');
+          } catch (error) {
+            NotificationManager.show('Could not fork transaction: ' + error.message, 'error');
+          }
         }
       }
     }
+    
     // ======================
     // Enhanced Wallet Management
     // ======================
@@ -2107,75 +2810,71 @@ const authManager = new AuthenticationManager();
         this.updateRecentPayments(elements.recentPayments);
       }
       
-  // In the WalletManager class, replace the updateRecentPayments method with this fixed version:
-
-static updateRecentPayments(container) {
-  if (!container) return;
-  
-  if (state.userWallet.transactions.length === 0) {
-    container.innerHTML = '<p style="opacity: 0.6; text-align: center; margin: 1rem;">No payments yet</p>';
-    return;
-  }
-  
-  container.innerHTML = '';
-  const recent = state.userWallet.transactions.slice(-5).reverse();
-  
-  recent.forEach(tx => {
-    // FIXED: Added null checks for transaction properties
-    if (!tx) return;
-    
-    const isOutgoing = tx.from === state.userWallet.id;
-    const txEl = document.createElement('div');
-    txEl.className = 'payment-item';
-    txEl.style.cssText = `
-      padding: 0.75rem;
-      border-bottom: 1px solid var(--glass-border);
-      border-radius: 8px;
-      margin-bottom: 0.5rem;
-      background: var(--glass-bg);
-      transition: all 0.2s ease;
-      cursor: pointer;
-    `;
-    
-    // FIXED: Added null checks and default values
-    const amountText = tx.asset === 'fiat' 
-      ? Utils.formatCurrency(parseFloat(tx.amount || 0))
-      : `${parseFloat(tx.amount || 0).toFixed(4)} ${(tx.asset || 'unknown').toUpperCase()} (${Utils.formatCurrency(tx.fiatValue || 0)})`;
-    
-    txEl.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div>
-          <div style="font-weight: 600; color: ${isOutgoing ? 'var(--error-color)' : 'var(--success-color)'};">
-            ${isOutgoing ? '→' : '←'} ${isOutgoing ? (tx.to || 'unknown').substring(0, 12) + '...' : (tx.from || 'unknown').substring(0, 12) + '...'}
-          </div>
-          <div style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.2rem;">
-            ${tx.timestamp ? Utils.formatDate(tx.timestamp) : 'Unknown date'}
-          </div>
-        </div>
-        <div style="text-align: right;">
-          <div style="font-weight: bold; font-size: 1.1rem; color: ${isOutgoing ? 'var(--error-color)' : 'var(--success-color)'};">
-            ${isOutgoing ? '-' : '+'}${amountText}
-          </div>
-          <div class="tx-status tx-status-${tx.status || 'unknown'}" style="margin-top: 0.2rem;">
-            ${tx.status || 'unknown'}
-          </div>
-        </div>
-      </div>
-    `;
-    
-    txEl.addEventListener('mouseenter', () => {
-      txEl.style.background = 'var(--glass-strong)';
-      txEl.style.transform = 'translateX(5px)';
-    });
-    
-    txEl.addEventListener('mouseleave', () => {
-      txEl.style.background = 'var(--glass-bg)';
-      txEl.style.transform = 'translateX(0)';
-    });
-    
-    container.appendChild(txEl);
-  });
-}
+      static updateRecentPayments(container) {
+        if (!container) return;
+        
+        if (state.userWallet.transactions.length === 0) {
+          container.innerHTML = '<p style="opacity: 0.6; text-align: center; margin: 1rem;">No payments yet</p>';
+          return;
+        }
+        
+        container.innerHTML = '';
+        const recent = state.userWallet.transactions.slice(-5).reverse();
+        
+        recent.forEach(tx => {
+          if (!tx) return;
+          
+          const isOutgoing = tx.from === state.userWallet.id;
+          const txEl = document.createElement('div');
+          txEl.className = 'payment-item';
+          txEl.style.cssText = `
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--glass-border);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            background: var(--glass-bg);
+            transition: all 0.2s ease;
+            cursor: pointer;
+          `;
+          
+          const amountText = tx.asset === 'fiat' 
+            ? Utils.formatCurrency(parseFloat(tx.amount || 0))
+            : `${parseFloat(tx.amount || 0).toFixed(4)} ${(tx.asset || 'unknown').toUpperCase()} (${Utils.formatCurrency(tx.fiatValue || 0)})`;
+          
+          txEl.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-weight: 600; color: ${isOutgoing ? 'var(--error-color)' : 'var(--success-color)'};">
+                  ${isOutgoing ? '→' : '←'} ${isOutgoing ? (tx.to || 'unknown').substring(0, 12) + '...' : (tx.from || 'unknown').substring(0, 12) + '...'}
+                </div>
+                <div style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.2rem;">
+                  ${tx.timestamp ? Utils.formatDate(tx.timestamp) : 'Unknown date'}
+                </div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-weight: bold; font-size: 1.1rem; color: ${isOutgoing ? 'var(--error-color)' : 'var(--success-color)'};">
+                  ${isOutgoing ? '-' : '+'}${amountText}
+                </div>
+                <div class="tx-status tx-status-${tx.status || 'unknown'}" style="margin-top: 0.2rem;">
+                  ${tx.status || 'unknown'}
+                </div>
+              </div>
+            </div>
+          `;
+          
+          txEl.addEventListener('mouseenter', () => {
+            txEl.style.background = 'var(--glass-strong)';
+            txEl.style.transform = 'translateX(5px)';
+          });
+          
+          txEl.addEventListener('mouseleave', () => {
+            txEl.style.background = 'var(--glass-bg)';
+            txEl.style.transform = 'translateX(0)';
+          });
+          
+          container.appendChild(txEl);
+        });
+      }
       
       static processPayment(recipient, amount, note, speed, paymentType = 'standard') {
         const fees = { instant: 0.005, fast: 0.002, standard: 0 };
@@ -2205,7 +2904,13 @@ static updateRecentPayments(container) {
         state.userWallet.balance -= totalAmount;
         state.userWallet.transactions.push(paymentTx);
         
-        TransactionManager.addTransaction(paymentTx);
+        try {
+          const plane = StorageManager.allocateTransaction(paymentTx);
+          StorageManager.addTransactionToPlane(paymentTx, plane);
+        } catch (error) {
+          NotificationManager.show('Payment failed: ' + error.message, 'error');
+          return false;
+        }
         
         const processingTime = speed === 'instant' ? 500 : speed === 'fast' ? 2000 : 5000;
         
@@ -2246,10 +2951,10 @@ static updateRecentPayments(container) {
         return true;
       }
     }
+    
     // ======================
     // Enhanced Analytics Management
     // ======================
-    
     class AnalyticsManager {
       static async initialize() {
         try {
@@ -2271,7 +2976,8 @@ static updateRecentPayments(container) {
         };
         
         // Calculate transaction rate (simplified)
-        const recentTx = state.transactions.filter(tx => {
+        const allTransactions = state.getAllTransactions();
+        const recentTx = allTransactions.filter(tx => {
           const age = Date.now() - new Date(tx.timestamp).getTime();
           return age < 60000; // Last minute
         });
@@ -2334,10 +3040,11 @@ static updateRecentPayments(container) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
         // Simple pie chart for transaction types
+        const allTransactions = state.getAllTransactions();
         const types = {
-          standard: state.transactions.filter(tx => tx.type === 'standard').length,
-          payment: state.transactions.filter(tx => tx.type === 'payment' && tx.paymentType !== 'qrcode').length,
-          qrcode: state.transactions.filter(tx => tx.paymentType === 'qrcode').length
+          standard: allTransactions.filter(tx => tx.type === 'standard').length,
+          payment: allTransactions.filter(tx => tx.type === 'payment' && tx.paymentType !== 'qrcode').length,
+          qrcode: allTransactions.filter(tx => tx.paymentType === 'qrcode').length
         };
         
         const total = Object.values(types).reduce((a, b) => a + b, 0);
@@ -2364,161 +3071,204 @@ static updateRecentPayments(container) {
       }
     }
     
-  class UIManager {
-  static showPanel(type) {
-    this.hidePanels();
-    switch (type) {
-      case 'wallet':
-        if (DOM.walletPanel) DOM.walletPanel.style.display = 'block';
-        WalletManager.updateUI();
-        break;
-      case 'analytics':
-        if (DOM.analyticsPanel) DOM.analyticsPanel.style.display = 'block';
-        AnalyticsManager.updateRealTimeStats();
-        break;
-      case 'details':
-        if (DOM.detailsPanel) DOM.detailsPanel.style.display = 'block';
-        break;
-      case 'commodity':
-        console.log('Showing commodity panel');
-        if (DOM.commodityPanel) {
-          console.log('Setting commodity panel display to block');
-          
-          // Force visibility with inline styles to ensure it appears
-          DOM.commodityPanel.style.cssText = `
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            position: fixed !important;
-            top: 100px !important;
-            right: 20px !important;
-            width: 300px !important;
-            z-index: 1000 !important;
-            background: rgba(20, 20, 30, 0.95) !important;
-            color: rgb(240, 240, 240) !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
-            border-radius: 12px !important;
-            padding: 15px !important;
-          `;
-          
-          CommodityManager.updateCommodityUI();
-        } else {
-          console.error('Commodity panel not found in DOM object');
+    // ======================
+    // Enhanced UI Management
+    // ======================
+    class UIManager {
+      static showPanel(type) {
+        this.hidePanels();
+        switch (type) {
+          case 'wallet':
+            if (DOM.walletPanel) DOM.walletPanel.style.display = 'block';
+            WalletManager.updateUI();
+            break;
+          case 'analytics':
+            if (DOM.analyticsPanel) DOM.analyticsPanel.style.display = 'block';
+            AnalyticsManager.updateRealTimeStats();
+            break;
+          case 'storage':
+            if (DOM.storagePanel) DOM.storagePanel.style.display = 'block';
+            StorageManager.updateStorageUI();
+            break;
+          case 'details':
+            if (DOM.detailsPanel) DOM.detailsPanel.style.display = 'block';
+            break;
+          case 'commodity':
+            if (DOM.commodityPanel) {
+              DOM.commodityPanel.style.cssText = `
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                position: fixed !important;
+                top: 100px !important;
+                right: 20px !important;
+                width: 300px !important;
+                z-index: 1000 !important;
+                background: rgba(20, 20, 30, 0.95) !important;
+                color: rgb(240, 240, 240) !important;
+                border: 1px solid rgba(255, 255, 255, 0.2) !important;
+                border-radius: 12px !important;
+                padding: 15px !important;
+              `;
+              CommodityManager.updateCommodityUI();
+            }
+            break;
+          default:
+            console.log('Unknown panel type:', type);
         }
-        break;
-      default:
-        console.log('Unknown panel type:', type);
-    }
-  }
-  
-  static hidePanel(type) {
-    switch (type) {
-      case 'wallet':
-        if (DOM.walletPanel) DOM.walletPanel.style.display = 'none';
-        break;
-      case 'analytics':
-        if (DOM.analyticsPanel) DOM.analyticsPanel.style.display = 'none';
-        break;
-      case 'details':
+      }
+      
+      static hidePanel(type) {
+        switch (type) {
+          case 'wallet':
+            if (DOM.walletPanel) DOM.walletPanel.style.display = 'none';
+            break;
+          case 'analytics':
+            if (DOM.analyticsPanel) DOM.analyticsPanel.style.display = 'none';
+            break;
+          case 'storage':
+            if (DOM.storagePanel) DOM.storagePanel.style.display = 'none';
+            break;
+          case 'details':
+            if (DOM.detailsPanel) DOM.detailsPanel.style.display = 'none';
+            break;
+          case 'commodity':
+            if (DOM.commodityPanel) DOM.commodityPanel.style.display = 'none';
+            break;
+        }
+      }
+      
+      static hidePanels() {
         if (DOM.detailsPanel) DOM.detailsPanel.style.display = 'none';
-        break;
-      case 'commodity':
+        if (DOM.walletPanel) DOM.walletPanel.style.display = 'none';
+        if (DOM.analyticsPanel) DOM.analyticsPanel.style.display = 'none';
+        if (DOM.storagePanel) DOM.storagePanel.style.display = 'none';
         if (DOM.commodityPanel) DOM.commodityPanel.style.display = 'none';
-        break;
-    }
-  }
-
-  static hidePanels() {
-    console.log('Hiding all panels');
-    if (DOM.detailsPanel) DOM.detailsPanel.style.display = 'none';
-    if (DOM.walletPanel) DOM.walletPanel.style.display = 'none';
-    if (DOM.analyticsPanel) DOM.analyticsPanel.style.display = 'none';
-    if (DOM.commodityPanel) {
-      DOM.commodityPanel.style.display = 'none';
-      console.log('Commodity panel hidden');
-    }
-  }
-  
-  static showTransactionDetails(txId) {
-    const tx = state.transactions.find(t => t.id === txId);
-    if (!tx) return;
-    
-    this.showPanel('details');
-    
-    const elements = {
-      detailId: document.getElementById('detailId'),
-      detailFrom: document.getElementById('detailFrom'),
-      detailTo: document.getElementById('detailTo'),
-      detailAmount: document.getElementById('detailAmount'),
-      detailDesc: document.getElementById('detailDesc'),
-      detailStatus: document.getElementById('detailStatus'),
-      detailTs: document.getElementById('detailTs'),
-      historyActions: document.getElementById('historyActions')
-    };
-    
-    if (elements.detailId) elements.detailId.textContent = tx.id;
-    if (elements.detailFrom) elements.detailFrom.textContent = tx.from;
-    if (elements.detailTo) elements.detailTo.textContent = tx.to;
-    if (elements.detailAmount) {
-      let amountText = tx.asset === 'fiat' 
-        ? Utils.formatCurrency(parseFloat(tx.amount))
-        : `${parseFloat(tx.amount).toFixed(4)} ${tx.asset.toUpperCase()}`;
-      if (tx.fiatValue) {
-        amountText += ` (${Utils.formatCurrency(tx.fiatValue)})`;
       }
-      if (tx.fee && tx.fee > 0) {
-        amountText += ` (Fee: ${Utils.formatCurrency(tx.fee)})`;
+      
+      static showTransactionDetails(txId) {
+        // Find the transaction in either plane
+        let tx = null;
+        let txPlane = null;
+        
+        for (let plane = 1; plane <= 2; plane++) {
+          const transactions = plane === 1 ? state.transactions1 : state.transactions2;
+          const foundTx = transactions.find(t => t.id === txId);
+          if (foundTx) {
+            tx = foundTx;
+            txPlane = plane;
+            break;
+          }
+        }
+        
+        if (!tx) return;
+        
+        this.showPanel('details');
+        
+        const elements = {
+          detailId: document.getElementById('detailId'),
+          detailFrom: document.getElementById('detailFrom'),
+          detailTo: document.getElementById('detailTo'),
+          detailAmount: document.getElementById('detailAmount'),
+          detailDesc: document.getElementById('detailDesc'),
+          detailStatus: document.getElementById('detailStatus'),
+          detailPlane: document.getElementById('detailPlane'),
+          detailTs: document.getElementById('detailTs'),
+          historyActions: document.getElementById('historyActions')
+        };
+        
+        if (elements.detailId) elements.detailId.textContent = tx.id;
+        if (elements.detailFrom) elements.detailFrom.textContent = tx.from;
+        if (elements.detailTo) elements.detailTo.textContent = tx.to;
+        if (elements.detailAmount) {
+          let amountText = tx.asset === 'fiat' 
+            ? Utils.formatCurrency(parseFloat(tx.amount))
+            : `${parseFloat(tx.amount).toFixed(4)} ${tx.asset.toUpperCase()}`;
+          if (tx.fiatValue) {
+            amountText += ` (${Utils.formatCurrency(tx.fiatValue)})`;
+          }
+          if (tx.fee && tx.fee > 0) {
+            amountText += ` (Fee: ${Utils.formatCurrency(tx.fee)})`;
+          }
+          elements.detailAmount.textContent = amountText;
+        }
+        if (elements.detailDesc) {
+          let desc = tx.description;
+          if (tx.paymentType === 'qrcode') desc += ' (QR Code Payment)';
+          if (tx.asset !== 'fiat') desc += ` (${tx.asset.toUpperCase()} Transaction)`;
+          elements.detailDesc.textContent = desc;
+        }
+        if (elements.detailStatus) {
+          elements.detailStatus.innerHTML = `<span class="tx-status tx-status-${tx.status}">${tx.status}</span>`;
+        }
+        if (elements.detailPlane) elements.detailPlane.textContent = `Plane ${txPlane}`;
+        if (elements.detailTs) elements.detailTs.textContent = Utils.formatDate(tx.timestamp);
+        if (elements.historyActions) {
+          elements.historyActions.style.display = state.ui.historyMode ? 'block' : 'none';
+        }
       }
-      elements.detailAmount.textContent = amountText;
+      
+      static toggleHistoryMode() {
+        state.ui.historyMode = !state.ui.historyMode;
+        const button = document.getElementById('historyModeButton');
+        if (button) button.classList.toggle('active', state.ui.historyMode);
+        
+        const historyActions = document.getElementById('historyActions');
+        if (historyActions) {
+          historyActions.style.display = state.ui.historyMode ? 'block' : 'none';
+        }
+        
+        RenderEngine.requestDraw();
+        NotificationManager.show(
+          state.ui.historyMode ? 'History mode enabled' : 'History mode disabled',
+          'default'
+        );
+      }
+      
+      static toggleTheme() {
+        state.ui.darkTheme = !state.ui.darkTheme;
+        document.body.style.filter = state.ui.darkTheme ? 'none' : 'invert(1) hue-rotate(180deg)';
+        if (DOM.themeToggle) DOM.themeToggle.textContent = state.ui.darkTheme ? '🌙' : '☀️';
+        RenderEngine.requestDraw();
+      }
+      
+      static showShutdownModal() {
+        if (DOM.shutdownModal) DOM.shutdownModal.style.display = 'flex';
+      }
+      
+      static hideShutdownModal() {
+        if (DOM.shutdownModal) DOM.shutdownModal.style.display = 'none';
+      }
+      
+      static togglePlane() {
+        // Toggle between plane 1 and plane 2
+        state.ui.currentPlane = state.ui.currentPlane === 1 ? 2 : 1;
+        
+        // Update UI
+        if (DOM.planeToggle) {
+          DOM.planeToggle.classList.toggle('active', state.ui.currentPlane === 2);
+        }
+        
+        if (DOM.planeLabel) {
+          DOM.planeLabel.textContent = `Plane ${state.ui.currentPlane}`;
+        }
+        
+        // Update transaction count
+        TransactionManager.updateDisplay();
+        
+        // Re-center view for the new plane
+        CanvasManager.centerView();
+        
+        // Request redraw
+        RenderEngine.requestDraw();
+        
+        // Show notification
+        const currentPlaneData = state.getCurrentPlaneData();
+        const storage = currentPlaneData.storage;
+        NotificationManager.show(`Switched to Plane ${state.ui.currentPlane} (${storage.used.toLocaleString()}/${storage.capacity.toLocaleString()})`, 'default');
+      }
     }
-    if (elements.detailDesc) {
-      let desc = tx.description;
-      if (tx.paymentType === 'qrcode') desc += ' (QR Code Payment)';
-      if (tx.asset !== 'fiat') desc += ` (${tx.asset.toUpperCase()} Transaction)`;
-      elements.detailDesc.textContent = desc;
-    }
-    if (elements.detailStatus) {
-      elements.detailStatus.innerHTML = `<span class="tx-status tx-status-${tx.status}">${tx.status}</span>`;
-    }
-    if (elements.detailTs) elements.detailTs.textContent = Utils.formatDate(tx.timestamp);
-    if (elements.historyActions) {
-      elements.historyActions.style.display = state.ui.historyMode ? 'block' : 'none';
-    }
-  }
-  
-  static toggleHistoryMode() {
-    state.ui.historyMode = !state.ui.historyMode;
-    const button = document.getElementById('historyModeButton');
-    if (button) button.classList.toggle('active', state.ui.historyMode);
     
-    const historyActions = document.getElementById('historyActions');
-    if (historyActions) {
-      historyActions.style.display = state.ui.historyMode ? 'block' : 'none';
-    }
-    
-    RenderEngine.requestDraw();
-    NotificationManager.show(
-      state.ui.historyMode ? 'History mode enabled' : 'History mode disabled',
-      'default'
-    );
-  }
-  
-  static toggleTheme() {
-    state.ui.darkTheme = !state.ui.darkTheme;
-    document.body.style.filter = state.ui.darkTheme ? 'none' : 'invert(1) hue-rotate(180deg)';
-    if (DOM.themeToggle) DOM.themeToggle.textContent = state.ui.darkTheme ? '🌙' : '☀️';
-    RenderEngine.requestDraw();
-  }
-  
-  static showShutdownModal() {
-    if (DOM.shutdownModal) DOM.shutdownModal.style.display = 'flex';
-  }
-  
-  static hideShutdownModal() {
-    if (DOM.shutdownModal) DOM.shutdownModal.style.display = 'none';
-  }
-}
-	
     // ======================
     // Enhanced Notification System
     // ======================
@@ -2559,6 +3309,7 @@ static updateRecentPayments(container) {
         }
       }
     }
+    
     // ======================
     // Enhanced QR Code System
     // ======================
@@ -2678,6 +3429,7 @@ static updateRecentPayments(container) {
         }
       }
     }
+    
     // ======================
     // Enhanced Interaction Management
     // ======================
@@ -2754,7 +3506,8 @@ static updateRecentPayments(container) {
         if (!state.ui.isAuthenticated) return;
         
         if (state.ui.hoveredBlockIndex !== -1) {
-          const block = state.blocks[state.ui.hoveredBlockIndex];
+          const currentPlaneData = state.getCurrentPlaneData();
+          const block = currentPlaneData.blocks[state.ui.hoveredBlockIndex];
           state.ui.selectedTxId = block.txId;
           UIManager.showTransactionDetails(block.txId);
           RenderEngine.requestDraw();
@@ -2830,6 +3583,7 @@ static updateRecentPayments(container) {
         RenderEngine.requestDraw();
       }
     }
+    
     // ======================
     // Enhanced Data Management
     // ======================
@@ -2837,13 +3591,15 @@ static updateRecentPayments(container) {
       static saveToStorage() {
         try {
           const saveData = {
-            transactions: state.transactions,
+            transactions1: state.transactions1,
+            transactions2: state.transactions2,
             wallet: state.userWallet,
-            version: '3.0.0',
+            storage: state.storage,
+            version: '3.1.0',
             timestamp: new Date().toISOString()
           };
           
-          localStorage.setItem('blockchainLedger_v3', JSON.stringify(saveData));
+          localStorage.setItem('blockchainLedger_v3_1', JSON.stringify(saveData));
           NotificationManager.show('Ledger saved successfully!', 'success');
         } catch (e) {
           console.error('Error saving to storage:', e);
@@ -2853,7 +3609,7 @@ static updateRecentPayments(container) {
       
       static loadFromStorage() {
         try {
-          const saved = localStorage.getItem('blockchainLedger_v3');
+          const saved = localStorage.getItem('blockchainLedger_v3_1');
           if (!saved) {
             // Try legacy format
             return this.loadLegacyFormat();
@@ -2861,23 +3617,41 @@ static updateRecentPayments(container) {
           
           const data = JSON.parse(saved);
           
-          if (data.transactions && Array.isArray(data.transactions)) {
+          if (data.transactions1 && data.transactions2) {
             TransactionManager.clearLedger();
             
-            data.transactions.forEach(tx => {
-              state.transactions.push(tx);
-              state.blocks.push({ type: 'source', txId: tx.id, data: tx });
-              state.blocks.push({ type: 'destination', txId: tx.id, data: tx });
+            // Load transactions for both planes
+            data.transactions1.forEach(tx => {
+              state.transactions1.push(tx);
+              state.blocks1.push({ type: 'source', txId: tx.id, data: tx, plane: 1 });
+              state.blocks1.push({ type: 'destination', txId: tx.id, data: tx, plane: 1 });
+              state.storage.plane1.transactions.push(tx.id);
             });
+            
+            data.transactions2.forEach(tx => {
+              state.transactions2.push(tx);
+              state.blocks2.push({ type: 'source', txId: tx.id, data: tx, plane: 2 });
+              state.blocks2.push({ type: 'destination', txId: tx.id, data: tx, plane: 2 });
+              state.storage.plane2.transactions.push(tx.id);
+            });
+            
+            // Update storage counts
+            state.storage.plane1.used = state.transactions1.length;
+            state.storage.plane2.used = state.transactions2.length;
             
             if (data.wallet) {
               state.userWallet = { ...state.userWallet, ...data.wallet };
               WalletManager.updateUI();
             }
             
+            if (data.storage) {
+              state.storage.allocationStrategy = data.storage.allocationStrategy || 'balanced';
+            }
+            
             TransactionManager.updateDisplay();
             AnalyticsManager.updateRealTimeStats();
-            NotificationManager.show(`Loaded ${data.transactions.length} transactions!`, 'success');
+            StorageManager.updateStorageUI();
+            NotificationManager.show(`Loaded ${(data.transactions1.length + data.transactions2.length).toLocaleString()} transactions!`, 'success');
           }
         } catch (e) {
           console.error('Error loading from storage:', e);
@@ -2886,18 +3660,24 @@ static updateRecentPayments(container) {
       }
       
       static loadLegacyFormat() {
-        const legacy = localStorage.getItem('blockchainLedger');
+        const legacy = localStorage.getItem('blockchainLedger_v3');
         if (!legacy) {
           NotificationManager.show('No saved ledger found', 'warning');
           return;
         }
         
         try {
-          const transactions = JSON.parse(legacy);
-          if (Array.isArray(transactions)) {
+          const data = JSON.parse(legacy);
+          if (data.transactions && Array.isArray(data.transactions)) {
             TransactionManager.clearLedger();
-            transactions.forEach(tx => TransactionManager.addTransaction(tx));
-            NotificationManager.show('Loaded legacy format successfully!', 'success');
+            
+            // Migrate legacy transactions to dual plane system
+            data.transactions.forEach((tx, index) => {
+              const plane = (index % 2) + 1; // Alternate between planes
+              StorageManager.addTransactionToPlane(tx, plane);
+            });
+            
+            NotificationManager.show('Migrated legacy format to dual plane system!', 'success');
           }
         } catch (e) {
           console.error('Error loading legacy format:', e);
@@ -2907,13 +3687,17 @@ static updateRecentPayments(container) {
       
       static exportData() {
         const exportData = {
-          transactions: state.transactions,
+          transactions1: state.transactions1,
+          transactions2: state.transactions2,
           wallet: state.userWallet,
+          storage: state.storage,
           metadata: {
-            version: '3.0.0',
+            version: '3.1.0',
             exportDate: new Date().toISOString(),
-            totalTransactions: state.transactions.length,
-            totalVolume: state.analytics.totalVolume
+            totalTransactions: state.getAllTransactions().length,
+            totalVolume: state.analytics.totalVolume,
+            plane1Usage: state.storage.plane1.used,
+            plane2Usage: state.storage.plane2.used
           }
         };
         
@@ -2921,13 +3705,14 @@ static updateRecentPayments(container) {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `blockchain-ledger-${new Date().toISOString().split('T')[0]}.json`;
+        a.download = `blockchain-ledger-dual-plane-${new Date().toISOString().split('T')[0]}.json`;
         a.click();
         URL.revokeObjectURL(url);
         
         NotificationManager.show('Ledger exported successfully!', 'success');
       }
     }
+    
     // ======================
     // Enhanced Shutdown Management
     // ======================
@@ -2980,14 +3765,16 @@ static updateRecentPayments(container) {
         try {
           // Save transactions
           const saveData = {
-            transactions: state.transactions,
+            transactions1: state.transactions1,
+            transactions2: state.transactions2,
             wallet: state.userWallet,
-            version: '3.0.0',
+            storage: state.storage,
+            version: '3.1.0',
             timestamp: new Date().toISOString(),
             shutdownTime: new Date().toISOString()
           };
           
-          localStorage.setItem('blockchainLedger_v3', JSON.stringify(saveData));
+          localStorage.setItem('blockchainLedger_v3_1', JSON.stringify(saveData));
           
           // Also save to a backup location
           localStorage.setItem('blockchainLedger_backup', JSON.stringify(saveData));
@@ -3008,42 +3795,41 @@ static updateRecentPayments(container) {
         authManager.checkPin();
       }
     }
+    
     // ======================
     // Commodity UI Setup
     // ======================
     function addCommodityUI() {
-  // FIXED: Remove the duplicate button creation since we already have it in HTML
-  
-  // Only set up the event listeners for the existing buttons
-  document.getElementById('buyGoldButton')?.addEventListener('click', () => {
-    const amount = parseFloat(prompt('Enter amount in fiat to spend on gold:', '100'));
-    if (!isNaN(amount) && amount > 0) {
-      CommodityManager.buyCommodityTokens(amount, 'gold');
+      // Only set up the event listeners for the existing buttons
+      document.getElementById('buyGoldButton')?.addEventListener('click', () => {
+        const amount = parseFloat(prompt('Enter amount in fiat to spend on gold:', '100'));
+        if (!isNaN(amount) && amount > 0) {
+          CommodityManager.buyCommodityTokens(amount, 'gold');
+        }
+      });
+      
+      document.getElementById('sellGoldButton')?.addEventListener('click', () => {
+        const amount = parseFloat(prompt('Enter amount of gold tokens to sell:', '0.1'));
+        if (!isNaN(amount) && amount > 0) {
+          CommodityManager.sellCommodityTokens(amount, 'gold');
+        }
+      });
+      
+      document.getElementById('buySilverButton')?.addEventListener('click', () => {
+        const amount = parseFloat(prompt('Enter amount in fiat to spend on silver:', '100'));
+        if (!isNaN(amount) && amount > 0) {
+          CommodityManager.buyCommodityTokens(amount, 'silver');
+        }
+      });
+      
+      document.getElementById('sellSilverButton')?.addEventListener('click', () => {
+        const amount = parseFloat(prompt('Enter amount of silver tokens to sell:', '1'));
+        if (!isNaN(amount) && amount > 0) {
+          CommodityManager.sellCommodityTokens(amount, 'silver');
+        }
+      });
     }
-  });
-  
-  document.getElementById('sellGoldButton')?.addEventListener('click', () => {
-    const amount = parseFloat(prompt('Enter amount of gold tokens to sell:', '0.1'));
-    if (!isNaN(amount) && amount > 0) {
-      CommodityManager.sellCommodityTokens(amount, 'gold');
-    }
-  });
-  
-  document.getElementById('buySilverButton')?.addEventListener('click', () => {
-    const amount = parseFloat(prompt('Enter amount in fiat to spend on silver:', '100'));
-    if (!isNaN(amount) && amount > 0) {
-      CommodityManager.buyCommodityTokens(amount, 'silver');
-    }
-  });
-  
-  document.getElementById('sellSilverButton')?.addEventListener('click', () => {
-    const amount = parseFloat(prompt('Enter amount of silver tokens to sell:', '1'));
-    if (!isNaN(amount) && amount > 0) {
-      CommodityManager.sellCommodityTokens(amount, 'silver');
-    }
-  });
-}
-
+    
     // ======================
     // UI Adjustment Function
     // ======================
@@ -3091,6 +3877,7 @@ static updateRecentPayments(container) {
         buttonContainer.style.overflow = 'visible';
       }
     }
+    
     // ======================
     // Event Listeners Setup
     // ======================
@@ -3173,28 +3960,28 @@ static updateRecentPayments(container) {
         if (state.ui.isAuthenticated) UIManager.showPanel('analytics');
       });
       
-     // In the setupEventListeners function, replace the commodity button listener with this:
-
-		const commodityButton = document.getElementById('commodityButton');
-		console.log('Commodity button found:', !!commodityButton); // Check if button exists
-
-		if (commodityButton) {
-		  commodityButton.addEventListener('click', () => {
-			console.log('Commodity button clicked');
-			console.log('Authentication status:', state.ui.isAuthenticated);
-			
-			if (state.ui.isAuthenticated) {
-			  console.log('Attempting to show commodity panel');
-			  UIManager.showPanel('commodity');
-			} else {
-			  console.log('User not authenticated');
-			  NotificationManager.show('Please authenticate first', 'warning');
-			}
-		  });
-		} else {
-		  console.error('Commodity button not found in DOM');
-		}
-
+      document.getElementById('storageButton')?.addEventListener('click', () => {
+        if (state.ui.isAuthenticated) {
+          if (DOM.storageModal) {
+            DOM.storageModal.style.display = 'flex';
+            StorageManager.updateStorageUI();
+          } else {
+            UIManager.showPanel('storage');
+          }
+        }
+      });
+      
+      const commodityButton = document.getElementById('commodityButton');
+      if (commodityButton) {
+        commodityButton.addEventListener('click', () => {
+          if (state.ui.isAuthenticated) {
+            UIManager.showPanel('commodity');
+          } else {
+            NotificationManager.show('Please authenticate first', 'warning');
+          }
+        });
+      }
+      
       document.getElementById('generateQRButton')?.addEventListener('click', () => {
         if (!state.ui.isAuthenticated) return;
         const amount = parseFloat(prompt('Enter amount for QR code:', '25.00'));
@@ -3217,6 +4004,11 @@ static updateRecentPayments(container) {
           NotificationManager.show('Select a transaction first!', 'warning');
         }
       });
+      
+      // Plane toggle
+      if (DOM.planeToggle) {
+        DOM.planeToggle.addEventListener('click', UIManager.togglePlane.bind(UIManager));
+      }
       
       // Search and filter
       if (DOM.searchBox) {
@@ -3268,6 +4060,10 @@ static updateRecentPayments(container) {
         if (DOM.analyticsModal) DOM.analyticsModal.style.display = 'none';
       });
       
+      document.getElementById('closeStorageModal')?.addEventListener('click', () => {
+        if (DOM.storageModal) DOM.storageModal.style.display = 'none';
+      });
+      
       // Forms
       const txForm = document.getElementById('txForm');
       if (txForm) {
@@ -3281,10 +4077,12 @@ static updateRecentPayments(container) {
             description: document.getElementById('txDesc')?.value || 'Manual Transaction'
           };
           
-          TransactionManager.addTransaction(newTx);
-          if (DOM.txModal) DOM.txModal.style.display = 'none';
-          e.target.reset();
-          NotificationManager.show('Transaction added successfully!', 'success');
+          const targetPlane = document.getElementById('txPlane')?.value || 'auto';
+          
+          if (TransactionManager.addTransaction(newTx, targetPlane)) {
+            if (DOM.txModal) DOM.txModal.style.display = 'none';
+            e.target.reset();
+          }
         });
       }
       
@@ -3304,39 +4102,85 @@ static updateRecentPayments(container) {
         });
       }
       
+      // Storage management
+      document.getElementById('optimizeStorage')?.addEventListener('click', () => {
+        StorageManager.optimizeStorage();
+      });
+      
+      document.getElementById('clearPlane1')?.addEventListener('click', () => {
+        if (confirm('Clear all transactions from Plane 1?')) {
+          StorageManager.clearPlane(1);
+        }
+      });
+      
+      document.getElementById('clearPlane2')?.addEventListener('click', () => {
+        if (confirm('Clear all transactions from Plane 2?')) {
+          StorageManager.clearPlane(2);
+        }
+      });
+      
+      // Allocation strategy selection
+      document.querySelectorAll('.allocation-option').forEach(option => {
+        option.addEventListener('click', () => {
+          const strategy = option.dataset.strategy;
+          StorageManager.setAllocationStrategy(strategy);
+        });
+      });
+      
       // QR Code simulation
       document.getElementById('simulateScan')?.addEventListener('click', QRCodeManager.simulateQRScan.bind(QRCodeManager));
     }
+    
     // ======================
     // Global Functions (for onclick handlers)
     // ======================
     window.moveTransaction = function() {
       NotificationManager.show('Move functionality: Drag to reorder timeline!', 'default');
     };
+    
     window.deleteTransaction = function() {
       if (state.ui.selectedTxId && confirm('Delete this transaction from history?')) {
         TransactionManager.deleteTransaction(state.ui.selectedTxId);
       }
     };
+    
     window.forkFromHere = function() {
       if (state.ui.selectedTxId) {
         TransactionManager.forkTransaction(state.ui.selectedTxId);
       }
     };
+    
+    window.moveToOtherPlane = function() {
+      if (state.ui.selectedTxId) {
+        const targetPlane = state.ui.currentPlane === 1 ? 2 : 1;
+        StorageManager.moveTransactionToPlane(state.ui.selectedTxId, targetPlane);
+      }
+    };
+    
     window.openPaymentModal = function() {
       if (DOM.paymentModal) DOM.paymentModal.style.display = 'flex';
     };
+    
     window.addFunds = function() {
       const amount = parseFloat(prompt('Enter amount to add:', '100.00'));
       if (!isNaN(amount) && amount > 0) {
         WalletManager.addFunds(amount);
       }
     };
+    
+    window.openStorageModal = function() {
+      if (DOM.storageModal) {
+        DOM.storageModal.style.display = 'flex';
+        StorageManager.updateStorageUI();
+      }
+    };
+    
     window.restartLedger = function() {
       if (confirm('Restart the Direct Ledger Wallet?')) {
         ShutdownManager.restart();
       }
     };
+    
     // ======================
     // Enhanced Application Initialization
     // ======================
@@ -3355,8 +4199,18 @@ static updateRecentPayments(container) {
       adjustUIElements();
       
       console.log(`
-🚀 Enhanced Blockchain Ledger v3.0.0 Loaded!
+🚀 Enhanced Blockchain Ledger v3.1.0 Loaded!
 🪙 Now with Gold and Silver backing!
+💾 Dual Plane Storage System - Real additional capacity!
+📊 Total storage capacity: 20,000 transactions (10,000 per plane)
+
+Features:
+• Automatic transaction allocation between planes
+• Storage optimization and management
+• Move transactions between planes
+• Visual storage monitoring
+• Multiple allocation strategies
+
 Keyboard shortcuts:
 • Ctrl/Cmd + S: Save ledger
 • Ctrl/Cmd + O: Load ledger  
@@ -3368,6 +4222,7 @@ Keyboard shortcuts:
 • Shutdown button: Power off ledger
       `);
     }
+    
     document.addEventListener('DOMContentLoaded', initializeApp);
   </script>
 </body>
